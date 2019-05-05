@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Deterministic and Statistical Python Profiling</title>
+  <meta name="description" content="If you want to be sure that your applications are working optimally, then sooner or later you will end up turning to profiling techniques to identify and cor...">
+  <meta name="theme-color" content="#100808" />
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://p403n1x87.github.io//python/profiling/2019/05/05/python-profiling.html">
+  <link rel="alternate" type="application/rss+xml" title="The Hub of Heliopolis" href="https://p403n1x87.github.io//feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+  <div class="site-title">
+    ~# <a href="/">the-<strong>hub</strong>-of-heliopolis</a><span class="blinking-cursor">&block;</span>
+  </div>
+  <div class="wrapper">
+    <nav class="site-nav">
+      <div class="trigger">
+        
+          
+        
+          
+          <a class="page-link" href="/">Posts</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <h1 class="post-title" itemprop="name headline">Deterministic and Statistical Python Profiling</h1>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="sidepane post-header">
+    
+    <div class="post-info">
+  <div class="post-detail"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>&nbsp;2019 May 5</div>
+  <div class="post-detail"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp;<span class="reading-time" title="Estimated read time">
+  
+  
+    a 23 minute read
+  
+</span>
+</div>
+  <div class="flex-container flex-row post-detail">
+  <div><i class="fa fa-archive" aria-hidden="true"></i></div>&nbsp;
+  <div><span class="category">Python</span><span class="category">Profiling</span></div>
+</div>
+<div class="flex-container flex-row post-detail">
+  <div><i class="fa fa-tags" aria-hidden="true"></i></div>&nbsp;
+  <div class="flex-container flex-row flex-wrap"><span class="tag">Programming</span><span class="tag">Python</span><span class="tag">Austin</span><span class="tag">Profiling</span></div>
+</div>
+
+  
+</div>
+
+
+    <div class="toc">
+      <div class="heading">Table of Contents</div>
+      <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#brief-introduction-to-profiling">Brief Introduction to Profiling</a></li>
+<li class="toc-entry toc-h2"><a href="#python-profiling">Python Profiling</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#standard-python-profiling">Standard Python Profiling</a></li>
+<li class="toc-entry toc-h3"><a href="#a-look-under-the-bonnet">A Look Under the Bonnet</a></li>
+<li class="toc-entry toc-h3"><a href="#statistical-profiling">Statistical Profiling</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#enter--austin">Enter  Austin</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#on-your-marks">On Your Marks</a></li>
+<li class="toc-entry toc-h3"><a href="#flame-graphs-with-austin">Flame Graphs with Austin</a></li>
+<li class="toc-entry toc-h3"><a href="#the-tui">The TUI</a></li>
+<li class="toc-entry toc-h3"><a href="#web-austin">Web Austin</a></li>
+<li class="toc-entry toc-h3"><a href="#write-your-own">Write Your Own</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#conclusions">Conclusions</a></li>
+</ul>
+    </div>
+
+  </header>
+
+  <div class="post-text">
+
+    <div class="post-excerpt">
+      <p>If you want to be sure that your applications are working optimally, then sooner or later you will end up turning to profiling techniques to identify and correct potential issues with your code.
+In this post, I discuss some of the current profiling tools and techniques for Python. The official documentation has a <a href="https://docs.python.org/3/library/profile.html">whole section</a> on the subject, but we shall go beyond that and have a look at some alternative solutions, especially in the area of sampling profilers.</p>
+
+    </div>
+
+    <div class="post-content" itemprop="articleBody">
+      <h2 id="brief-introduction-to-profiling">
+<a id="brief-introduction-to-profiling" class="anchor" href="#brief-introduction-to-profiling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Brief Introduction to Profiling</h2>
+
+<p>Let’s start with a quick introduction to what <em>profiling</em> is. <em>Profiling</em> is a run-time program analysis technique. Generally, a certain level of <em>instrumentation</em> is required to retrieve some kind of <em>tracing</em> information while the program is running. This is usually in the form of tracing instructions interleaved with the line of your source code, like debug statements, for instance, usually enriched with timestamp information or other relevant details, like memory usage, etc… .</p>
+
+<p>One normally distinguishes between two main categories of profilers:</p>
+
+<p><em>event-based</em> (or <em>deterministic</em>)</p>
+
+<p>and</p>
+
+<p><em>statistical</em> (or <em>sampling</em>).</p>
+
+<p>Profilers in the first category make use of <em>hooks</em> that allow registering event callbacks. At the lowest level, these hooks are provided directly by the operating system and allow you to trace events like function calls and returns. Virtual machines and interpreters, like JVM and CPython, provide <em>software</em> hooks instead, for generally the same events, but also for language-specific features, like class loading for instance. The reason why profilers in this category are called <em>deterministic</em> is that, by listening to the various events, you can get a deterministic view of what is happening inside your application.</p>
+
+<p>In contrast, <em>statistical</em> profilers tend to provide approximate figures only, obtained by, e.g., sampling the call stack at regular interval of times. These samples can then be analysed statistically to provide meaningful metrics for the profiled target.</p>
+
+<p>One might get the impression that deterministic profilers are a better choice than statistical profilers. However, both categories come with pros and cons. For example, statistical profilers usually require less instrumentation, if none at all, and introduce less overhead in the profiled target program. Therefore, if a statistical profiler can guarantee a certain accuracy on the metrics that can be derived from them, then it is usually a better choice over a more accurate deterministic profiler that can introduce higher overhead.</p>
+
+<h2 id="python-profiling">
+<a id="python-profiling" class="anchor" href="#python-profiling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Python Profiling</h2>
+
+<p>There are quite a plethora of profiling tools available for Python, either deterministic or statistical. The official documentation describes the use of the Python profiling interface through two different implementations:</p>
+
+<ul>
+  <li>
+<a href="https://docs.python.org/3/library/profile.html#module-profile"><code class="highlighter-rouge">profile</code></a>,</li>
+  <li>
+<a href="https://docs.python.org/3/library/profile.html#module-cProfile"><code class="highlighter-rouge">cProfile</code></a>.</li>
+</ul>
+
+<p>The former is a pure Python module and, as such, introduces more overhead than the latter, which is a C extension that implements the same interface as <code class="highlighter-rouge">profile</code>. They both fit into the category of <em>deterministic</em> profilers and make use of the Python C API <a href="https://docs.python.org/3/c-api/init.html#profiling-and-tracing"><code class="highlighter-rouge">PyEval_SetProfile</code></a> to register event hooks.</p>
+
+<h3 id="standard-python-profiling">
+<a id="standard-python-profiling" class="anchor" href="#standard-python-profiling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Standard Python Profiling</h3>
+
+<p>Let’s have a look at how to use <code class="highlighter-rouge">cProfile</code>, as this will be the standard choice for a deterministic profiler. Here is an example that will profile the call-stack of <code class="highlighter-rouge">psutil.process_iter</code>.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c1"># File: process_iter.py
+</span>
+<span class="kn">import</span> <span class="nn">cProfile</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+
+<span class="n">cProfile</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+  <span class="s">'[list(psutil.process_iter()) for i in range(1_000)]'</span><span class="p">,</span>
+  <span class="s">'process_iter'</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>The above code runs <code class="highlighter-rouge">psutil.process_iter</code> for 1000 times through cProfile and sends the output to the <code class="highlighter-rouge">process_iter</code> file in the current working directory. A good reason to save the result to a file is that one can then use a tool like <a href="https://github.com/jrfonseca/gprof2dot">gprof2dot</a> to provide a graphical representation of the collected data. This tool turns the output of cProfile into a dot graph which can then be visualised to make better sense of it. E.g., these are the commands required to collect the data and visualise it in the form of a DOT graph inside a PDF document:</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>$ 
+$ </pre></div>
+<div><pre>
+python3 process_iter.py
+gprof2dot -f pstats process_iter | dot -Tpdf -o process_iter.pdf
+</pre></div>
+</div></div>
+
+<p>This is what the result will look like. The colours help us identify the branches of execution where most of the time is spent.</p>
+
+<p><img src="https://p403n1x87.github.io//images/python-profiling/process_iter.svg" alt="process_iter"></p>
+
+<h3 id="a-look-under-the-bonnet">
+<a id="a-look-under-the-bonnet" class="anchor" href="#a-look-under-the-bonnet" aria-hidden="true"><span class="octicon octicon-link"></span></a>A Look Under the Bonnet</h3>
+
+<p>The output of a tool like gprof2dot can be quite intuitive to understand, especially if you have had some prior experience with profilers. However, in order to better appreciate what is still to come it is best if we have a quick look at some of the basics of the Python execution model.</p>
+
+<p>Python is an interpreted language and the reference implementation of its interpreter is <a href="https://en.wikipedia.org/wiki/CPython">CPython</a>. As the name suggests, it is written in C, and it offers a C API that can be used to write C extensions.</p>
+
+<p>One of the fundamental objects of CPython is the interpreter itself, which has a data structure associated with it, namely <code class="highlighter-rouge">PyInterpreterState</code>. In principle, there can be many instances of <code class="highlighter-rouge">PyInterpreterState</code> within the same process, but for the sake of simplicity, we shall ignore this possibility here. One of the fields of this C data structure is <code class="highlighter-rouge">tstate_head</code>, which points to the first element of a doubly-linked list of instances of the <code class="highlighter-rouge">PyThreadState</code> structure. As you can imagine, this other data structure represents the state of a thread of execution associated with the referring interpreter instance. We can navigate this list by following the references of its field <code class="highlighter-rouge">next</code> (and navigate back with <code class="highlighter-rouge">prev</code>).</p>
+
+<p>Each instance of <code class="highlighter-rouge">PyThreadState</code> points to the current execution frame, which is the object that bears the information about the execution of a code block via the field <code class="highlighter-rouge">frame</code>. This is described by the <code class="highlighter-rouge">PyFrameObject</code> structure, which is also a list. In fact, this is the stack that we are after. Each frame will have, in general, a parent frame that can be retrieved by means of the <code class="highlighter-rouge">f_back</code> pointer on the <code class="highlighter-rouge">PyFrameObject</code> structure. The picture produced by gprof2dot of the previous section is the graphical representation of this stack of frames. The information contained in the first row of each box comes from the <code class="highlighter-rouge">PyCodeObject</code> structure, which can be obtained from every instance of <code class="highlighter-rouge">PyFrameObject</code> via the <code class="highlighter-rouge">f_code</code> field. In particular, <code class="highlighter-rouge">PyCodeObject</code> allows you to retrieve the name of the file that contains the Python code being executed in that frame as well as its line number and the name of the context (e.g. the current function).</p>
+
+<p>Sometimes the C API changes between releases, but the following image is a fairly stable representation of the relations between the above-mentioned structures that are common among many of the major CPython releases.</p>
+
+<p align="center">
+  <img src="https://p403n1x87.github.io//images/python-profiling/python_structs.svg" alt="CPython data structures">
+</p>
+
+<p>The loop around <code class="highlighter-rouge">PyFrameObject</code>, which represents its field <code class="highlighter-rouge">f_back</code>, creates the structure of a singly-linked list of frame objects. This is precisely the frame stack.</p>
+
+<p>The Python profiling API can be demonstrated with some simple Python code. The following example declares a decorator, <code class="highlighter-rouge">@profile</code>, that can be used to extract the frame stack generated by the execution of a function. In this case, we define the factorial function</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sys</span>
+
+
+<span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">profiler</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">"c_"</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">frame</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s">"{code.co_name}@{frame.f_lineno}"</span><span class="p">)</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"{:12} {}"</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s">" -&gt; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stack</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">old_profiler</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getprofile</span><span class="p">()</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">setprofile</span><span class="p">(</span><span class="n">profiler</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">setprofile</span><span class="p">(</span><span class="n">old_profiler</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+
+<span class="o">@</span><span class="n">profile</span>
+<span class="k">def</span> <span class="nf">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">factorial</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></code></pre></figure>
+
+<p>Note that the coding of the <code class="highlighter-rouge">profiler</code> function can be simplified considerably by using the <code class="highlighter-rouge">inspect</code> module:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="o">...</span>
+
+  <span class="k">def</span> <span class="nf">profiler</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+      <span class="k">if</span> <span class="s">"c_"</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+          <span class="k">return</span>
+
+      <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="s">"{f.function}@{f.lineno}"</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]]</span>
+      <span class="k">print</span><span class="p">(</span><span class="s">"{:8} {}"</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s">" -&gt; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stack</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+
+<span class="o">...</span></code></pre></figure>
+
+<h3 id="statistical-profiling">
+<a id="statistical-profiling" class="anchor" href="#statistical-profiling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Statistical Profiling</h3>
+
+<p>For a profiler from the statistical category, we have to look for external tools. In this case, The “standard” approach is to make use of a system call like <code class="highlighter-rouge">setitimer</code>, which is used to register a signal handler that gets called at regular intervals of time. The general idea is to register a callback that gets a snapshot of the current frame stack when triggered. An example of a profiler that works like this is <a href="https://github.com/vmprof/vmprof-python">vmprof</a>.</p>
+
+<p>Some drawbacks of this approach are: 1. the signal handler runs in the same process as the Python interpreter, and generally the main thread; 2. signals can interrupt system calls, which can cause stalls in the running program.</p>
+
+<p>There are other approaches that can be taken in order to implement a statistical profiler, though. An example is <a href="https://github.com/uber/pyflame">pyflame</a>, which is more in the spirit of a debugging tool and uses <code class="highlighter-rouge">ptrace</code>-like system calls. The situation is a bit more involved here since the profiler is now an external process. The general idea is to use <code class="highlighter-rouge">ptrace</code> to pause the running Python program, read its virtual memory and reconstruct the frame stack from it. Here, the main challenges are 1. to find the location of the relevant CPython data structures in memory and 2. parse them to extract the frame stack information. The differences between Python 2 and Python 3 and the occasional changes of the CPython ABI within the same minor release add up to the complexity of the task.</p>
+
+<p>Once all has been taken care of, though, a statistical profiler of this kind has the potential of lowering the overhead caused by source instrumentation even further so that the payoff is generally worth the effort.</p>
+
+<h2 id="enter--austin">
+<a id="enter--austin" class="anchor" href="#enter--austin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enter <img src="https://p403n1x87.github.io//images/python-profiling/austin_logo_white.svg" height="32px" style="max-width:100%;"> Austin</h2>
+
+<p>We just saw that with a tool like pyflame we can get away with no instrumentation. An objection that can be raised against it, though, is that it still halts the profiled program in order to read the interpreter state. System calls like <code class="highlighter-rouge">ptrace</code> were designed for debugging tools, for which it is desirable to stop the execution at some point, inspect memory, step over one instruction or a whole line of source code at a time etc…. Ideally, we would like our profiler to interfere as little as possible with the profiled program.</p>
+
+<p>This is where a tool like <a href="https://github.com/P403n1x87/austin">Austin</a> comes into play. Austin is, strictly speaking, not a full-fledged profiler on its own. In fact, Austin is merely a frame stack sampler for CPython. Concretely, this means that all Austin does is to sample the frame stack of a running Python program at (almost) regular intervals of time.</p>
+
+<p>A similar approach is followed by <a href="https://github.com/benfred/py-spy">py-spy</a>, another Python profiler written in Rust and inspired by <a href="https://github.com/rbspy/rbspy">rbspy</a>. However, Austin tends to provide higher performance in general for two main reasons. One is that it is written in pure C, with no external dependencies other than the standard C library. The other is that Austin is just a frame stack sampler. It focuses on dumping the relevant parts of the Python interpreter state as quickly as possible and delegates any data aggregations and analysis to external tools. In theory, Austin offers you higher sampling rates at virtually no cost at the expenses of the profiled process. This makes Austin the ideal choice for profiling production code at run-time, with not even a single line of instrumentation required!</p>
+
+<p>So, how does Austin read the virtual memory of another process without halting it? Many platforms offer system calls to do just that. On Linux, for example, the system call is <a href="http://man7.org/linux/man-pages/man2/process_vm_readv.2.html"><code class="highlighter-rouge">process_vm_readv</code></a>. Once one has located the instance of <code class="highlighter-rouge">PyInterpreterState</code>, everything else follows automatically, as we saw with the discussion on some of the details of the CPython execution model.</p>
+
+<h3 id="on-your-marks">
+<a id="on-your-marks" class="anchor" href="#on-your-marks" aria-hidden="true"><span class="octicon octicon-link"></span></a>On Your Marks</h3>
+
+<p>At this point you might have started, quite understandably, to be a bit concerned with concurrency issues. What can we actually make of a memory dump from a running process we have no control over? What guarantees do we have that the moment we decide to peek at the Python interpreter state, we find all the relevant data structures in a consistent state? The answer to this question lies in the difference in execution speed between C and Python code, the latter being, on average, order of 10 times faster than the former. So what we have here is a race between Austin (which is written in C) and the Python target. When Austin samples the Python interpreter memory, it does so quite quickly compared to the scale of execution of a Python code block. On the other hand, CPython is also written in C, can refresh its state pretty quickly too. As a cinematic analogy, think that we are trying to create an animation by taking snapshots of a moving subject in quick succession. If the motion we are trying to capture is not too abrupt (compared to the time it takes to take a snapshot, that is), then we won’t spot any motion blur and our images will be perfectly clear. This video of the Cassini flyby over Jupiter, Europa and Io, for instance, been made from still images, visualises this idea clearly.</p>
+
+<p align="center">
+  <iframe width="100%" height="315" src="https://www.youtube.com/embed/-0JxkZjwpRg" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
+  </iframe>
+</p>
+
+<p>With Austin, each frame stack sample is the analogue of a snapshot and the moving subject is the Python code being executed by the interpreter. Of course, Austin could be unlucky and decide to sample precisely during the moment CPython is in the middle of updating the frame stack. However, based on our previous considerations, we can expect this to be a rather rare event. Sometimes a picture is worth a thousand words, so here is an idealistic “CPython vs Austin” execution timeline comparison.</p>
+
+<p align="center">
+  <img src="https://p403n1x87.github.io//images/python-profiling/timeline.svg" alt="CPython and Austin timeline comparison">
+</p>
+
+<p>Now one could argue that, in order to decrease the error rate, an approach similar to pyflame, where we halt the execution before taking a snapshot, would be a better solution. In fact, it makes practically no difference. Indeed it could happen that the profiler decides to call <code class="highlighter-rouge">ptrace</code> while CPython is in the middle of refreshing the frame stack. In this case, it doesn’t really matter whether CPython has been halted or not, the frame stack will be in an inconsistent state anyway.</p>
+
+<p>As a final wrap-up comment to this digression, statistical profilers for Python like Austin can produce reliable output, as the error rate tends to be very low. This is possible because Austin is written in pure C and therefore offers optimal sampling performance.</p>
+
+<h3 id="flame-graphs-with-austin">
+<a id="flame-graphs-with-austin" class="anchor" href="#flame-graphs-with-austin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Flame Graphs with Austin</h3>
+
+<p>The simplest way to turn Austin into a basic profiler is to pipe it to a tool like Brendan Gregg’s <a href="https://github.com/brendangregg/FlameGraph">FlameGraph</a>. For example, assuming that <code class="highlighter-rouge">austin</code> is in your <code class="highlighter-rouge">PATH</code> variable (e.g. because you have installed it from the Snap Store with <code class="highlighter-rouge">sudo snap install austin --beta --classic</code>) and that <code class="highlighter-rouge">flamegraph.pl</code> is installed in <code class="highlighter-rouge">/opt/flamegraph</code>, we can do</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>$ </pre></div>
+<div><pre>
+austin python3 process_iter.py | /opt/flamegraph/flamegraph.pl --countname=usec &gt; process_iter.svg
+</pre></div>
+</div></div>
+
+<p>We are using <code class="highlighter-rouge">--countname=usec</code> because Austin samples frame stacks in microseconds and this information will then be part of the output of the flame graph tool. The following image is the result that I have got from running the above command.</p>
+
+<object data="https://p403n1x87.github.io//images/python-profiling/process_iter_fg.svg" type="image/svg+xml" width="100%">
+  <img src="https://p403n1x87.github.io//images/python-profiling/process_iter_fg.svg" style="width:100%;">
+</object>
+
+<p>Austin is now included in the official Debian repositories. This means that you can install it with</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre># </pre></div>
+<div><pre>
+apt install austin
+</pre></div>
+</div></div>
+
+<p>on Linux distributions that are derived from Debian. On Windows, Austin can be installed from <a href="https://chocolatey.org/packages/austin">Chocolatey</a> with the command</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>&gt; </pre></div>
+<div><pre>
+choco install austin --pre
+</pre></div>
+</div></div>
+
+<p>Alternatively, you can just head to the <a href="https://github.com/P403n1x87/austin/releases">release</a> page on GitHub and download the appropriate binary release for your platform.</p>
+
+<h3 id="the-tui">
+<a id="the-tui" class="anchor" href="#the-tui" aria-hidden="true"><span class="octicon octicon-link"></span></a>The TUI</h3>
+
+<p>The GitHub repository of Austin comes with a TUI application written in Python and based on <code class="highlighter-rouge">curses</code>. It provides an example of an application that uses the output from Austin to display <em>live</em> top-like profiling statistics of a running Python program.</p>
+
+<p>If you want to try it, you can install it with</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>$ </pre></div>
+<div><pre>
+pip install git+https://github.com/P403n1x87/austin.git
+</pre></div>
+</div></div>
+
+<p>and run it with</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>$ </pre></div>
+<div><pre>
+austin-tui python3 /path/to/process_iter.py
+</pre></div>
+</div></div>
+
+<p>By default, the TUI shows only the current frame being executed in the selected thread. You can navigate through the different threads with <kbd>⇞ Page Up</kbd> and <kbd>⇟ Page Down</kbd>. You can also view all the collected samples with the Full Mode, which can be toggled with <kbd>F</kbd>. The currently executing frame will be highlighted and a tree representation of the current frame stack will be available on the right-hand side of the terminal.</p>
+
+<p align="center">
+  <img src="https://p403n1x87.github.io//images/python-profiling/austin-tui_threads_nav.gif" alt="Austin TUI">
+</p>
+
+<p>If you are a statistician or a data scientist working with Python, you can use the TUI to peek at your model while it is training to see what is going on and to identify areas of your code that could potentially be optimised to run faster. For example, let’s assume that you are training a model on Linux in a single process using the command</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>$ </pre></div>
+<div><pre>
+python3 my_model.py
+</pre></div>
+</div></div>
+
+<p>You can attach the TUI to your model with the command (as superuser)</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre># </pre></div>
+<div><pre>
+austin-tui -p `pgrep -f my_model.py | head -n 1` -i 10000
+</pre></div>
+</div></div>
+
+<p>The <code class="highlighter-rouge">pgrep</code> part is there to select the PID of the Python process that is running your model, while <code class="highlighter-rouge">-i 10000</code> sets the sampling interval to 10 ms.</p>
+
+<h3 id="web-austin">
+<a id="web-austin" class="anchor" href="#web-austin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Web Austin</h3>
+
+<p>Web Austin is another example of how to use Austin to build a profiling tool. In this case, we make use of the <a href="https://github.com/spiermar/d3-flame-graph">d3-flame-graph</a> plugin for <a href="https://d3js.org/">D3</a> to produce a <strong>live</strong> flame graph visualisation of the collected samples inside a web browser. This opens up to <em>remote profiling</em>, as the web application can be served on an arbitrary IPv4 address.</p>
+
+<p>Like the TUI, Web Austin can be installed from GitHub with</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre>$ </pre></div>
+<div><pre>
+pip install git+https://github.com/P403n1x87/austin.git
+</pre></div>
+</div></div>
+
+<p>Assuming you are still interested to see what is happening inside your statistical model while it is training, you can use the command</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row">
+<div class="pad-right"><pre># </pre></div>
+<div><pre>
+austin-web -p `pgrep -f my-model.py | head -n 1` -i 10000
+</pre></div>
+</div></div>
+
+<p>As for the TUI, the command line arguments are the same as Austin’s. When Web Austin starts up, it creates a simple HTTP server that serves on <code class="highlighter-rouge">localhost</code> at an ephemeral port.</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row"><div><pre>
+# austin-web -p `pgrep -f my-model.py | head -n 1` -i 10000
+_____      ___       __    ______       _______              __________             _____
+____/|_    __ |     / /_______  /_      ___    |___  __________  /___(_)______      ____/|_
+_|    /    __ | /| / /_  _ \_  __ \     __  /| |  / / /_  ___/  __/_  /__  __ \     _|    /
+/_ __|     __ |/ |/ / /  __/  /_/ /     _  ___ / /_/ /_(__  )/ /_ _  / _  / / /     /_ __|
+ |/        ____/|__/  \___//_.___/      /_/  |_\__,_/ /____/ \__/ /_/  /_/ /_/       |/
+
+
+* Sampling process with PID 3711 (python3 my_model.py)
+* Web Austin is running on http://localhost:34257. Press Ctrl+C to stop.
+</pre></div></div></div>
+
+<p>If you then open <code class="highlighter-rouge">http://localhost:34257</code> in your browser you will then see a web application that looks like the following</p>
+
+<p align="center">
+  <img src="https://p403n1x87.github.io//images/python-profiling/web-austin.gif" alt="Web Austin">
+</p>
+
+<blockquote>
+  <p>Note that an active internet connection is required for the application to work, as the d3-flame-graph plugin, as well as some fonts, are retrieved from remote sources.</p>
+</blockquote>
+
+<p>If you want to change the host and the port of the HTTP server created by Web Austin you can set the environment variables <code class="highlighter-rouge">WEBAUSTIN_HOST</code> and <code class="highlighter-rouge">WEBAUSTIN_PORT</code>. If you want to run the Web Austin web application on, e.g., <code class="highlighter-rouge">0.0.0.0:8080</code>, so that it can be accessed from everywhere, use the command</p>
+
+<div class="terminal"><div class="terminal-body flex-container flex-row"><div><pre>
+# WEBAUSTIN_HOST="0.0.0.0" WEBAUSTIN_PORT=8080 austin-web -p `pgrep -f my-model.py | head -n 1` -i 10000
+_____      ___       __    ______       _______              __________             _____
+____/|_    __ |     / /_______  /_      ___    |___  __________  /___(_)______      ____/|_
+_|    /    __ | /| / /_  _ \_  __ \     __  /| |  / / /_  ___/  __/_  /__  __ \     _|    /
+/_ __|     __ |/ |/ / /  __/  /_/ /     _  ___ / /_/ /_(__  )/ /_ _  / _  / / /     /_ __|
+ |/        ____/|__/  \___//_.___/      /_/  |_\__,_/ /____/ \__/ /_/  /_/ /_/       |/
+
+
+* Sampling process with PID 3711 (python3 my_model.py)
+* Web Austin is running on http://0.0.0.0:8080. Press Ctrl+C to stop.
+</pre></div></div></div>
+
+<h3 id="write-your-own">
+<a id="write-your-own" class="anchor" href="#write-your-own" aria-hidden="true"><span class="octicon octicon-link"></span></a>Write Your Own</h3>
+
+<p>Austin’s Powers (!) reside in its very simplicity. The “hard” problem of sampling the Python frame stack has been solved for you so that you can focus on processing the samples to produce the required metrics.</p>
+
+<p>If you decide to write a tool in Python, the Austin project on GitHub comes with a Python wrapper. Depending on your preferences, you can choose between a thread-based approach or an <code class="highlighter-rouge">asyncio</code> one. Just as an example, let’s see how to use the <code class="highlighter-rouge">AsyncAustin</code> class to make a custom profiler based on the samples collected by Austin.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">austin</span> <span class="kn">import</span> <span class="n">AsyncAustin</span>
+<span class="kn">from</span> <span class="nn">austin.stats</span> <span class="kn">import</span> <span class="n">parse_line</span>
+
+
+<span class="k">class</span> <span class="nc">MyAustin</span><span class="p">(</span><span class="n">AsyncAustin</span><span class="p">):</span>
+
+    <span class="c1"># Subclass AsyncAustin and implement this callback. This will be called
+</span>    <span class="c1"># every time Austin generates a sample. The convenience method parse_line
+</span>    <span class="c1"># will parse the sample and produce the thread name, the stack of contexts
+</span>    <span class="c1"># with the corresponding line numbers and the measured duration for the
+</span>    <span class="c1"># sample.
+</span>
+    <span class="k">def</span> <span class="nf">on_sample_received</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">parse_line</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">encode</span><span class="p">()))</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">my_austin</span> <span class="o">=</span> <span class="n">MyAustin</span><span class="p">()</span>
+
+    <span class="n">my_austin</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">my_austin</span><span class="o">.</span><span class="n">wait</span><span class="p">():</span>
+       <span class="k">raise</span> <span class="nb">RuntimeError</span><span class="p">(</span><span class="s">"Austin failed to start"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"MyAustin is starting..."</span><span class="p">)</span>
+        <span class="n">my_austin</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"The profiled target has terminated."</span><span class="p">)</span>
+    <span class="k">except</span> <span class="nb">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"MyAustin has been terminated from keyboard."</span><span class="p">)</span></code></pre></figure>
+
+<p>As the example above shows, it is enough to inherit from <code class="highlighter-rouge">AsyncAustin</code> and define the <code class="highlighter-rouge">on_sample_received</code> callback. This will get called every time Austin produces a sample. You can then do whatever you like with it. Here we simply pass the <code class="highlighter-rouge">sample</code>, which is just a binary string in the format <code class="highlighter-rouge">Thread [tid];[func] ([mod]);#[line no];[func] ...;L[line no] [usec]</code> to the <code class="highlighter-rouge">parse_line</code> function, which conveniently split the string into its main components, i.e. the thread identifier, the stack of frames and the sample duration. We then print the resulting triple to screen.</p>
+
+<p>The rest of the code is there to create an instance of this custom Austin application. We call <code class="highlighter-rouge">wait</code> to ensure that Austin has been started successfully. The optional argument is a timeout, which defaults to 1. If Austin is not started within 1 second, <code class="highlighter-rouge">wait</code> returns <code class="highlighter-rouge">False</code>. If we do not wish to do anything else with the event loop, we can then simply call the <code class="highlighter-rouge">join</code> methods which schedules the main read loop that calls the <code class="highlighter-rouge">on_sample_received</code> callback whenever a sample is read from Austin’s <code class="highlighter-rouge">stdout</code> file descriptor.</p>
+
+<h2 id="conclusions">
+<a id="conclusions" class="anchor" href="#conclusions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusions</h2>
+
+<p>In this post, we have seen a few profiling options for Python. We have argued that some statistical profilers, like Austin, can prove valuable tools. Whilst providing approximate figures, the accuracy is in general quite high and the error rate very low. Furthermore, no instrumentation is required and the overhead introduced is very minimal, all aspects that make a tool like Austin a perfect choice for many Python profiling needs.</p>
+
+<p>A feature that distinguishes Austin from the rest is its extreme simplicity which implies great flexibility. By just sampling the frame stack of the Python interpreter, the user is left with the option of using the collected samples to derive the metrics that best suit the problem at hand.</p>
+
+    </div>
+
+    <div class="comments">
+  <h1>Comments</h1>
+
+  
+    
+    
+    <ul class="comment-list">
+      
+        
+        
+      
+    </ul>
+  
+
+  <h2 id="comment-hdr">Leave a comment</h2>
+  <script src="https://p403n1x87.github.io//js/comments.js"></script>
+
+<form id     = "post-comment"
+      class  = "comment"
+      method = "post"
+      action = "">
+
+  <input type        = "text"
+         name        = "fields[name]"
+         id          = "name"
+         placeholder = "Name"/>
+
+  <input type        = "text"
+         name        = "fields[email]"
+         placeholder = "E-mail address (optional; stored hashed for privacy)"/>
+
+  <textarea name        = "fields[comment]"
+            id          = "comment"
+            rows        = "5"
+            placeholder = "Write your comment here. You can use markdown and LaTeX (use $...$ to inline)"></textarea>
+
+  <button type  = "button"
+          class = "flat_button"
+          id    = "btn-submit-comment"
+          onClick="submitComment();">
+    SUBMIT FOR APPROVAL
+  </button>
+
+
+  <!-- Hidden fields -->
+
+   <input type  = "hidden"
+          name  = "fields[pic]"
+          value = "austin"/>
+
+    <input type  = "hidden"
+           id    = "timestamp"
+           name  = "fields[timestamp]"
+           value = "1557091937"/>
+
+    <input type  = "hidden"
+           id    = "parent"
+           name  = "fields[parent]"
+           value = "0"/>
+
+</form>
+
+<div id="snackbar"></div>
+
+
+</div>
+
+  </div>
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The Hub of Heliopolis</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>The Hub of Heliopolis is maintained by Gabriele N. Tornetta</li>
+          <li><a href="mailto:phoenix1987@gmail.com">phoenix1987@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <i class="fa fa-github" aria-hidden="true"></i>&nbsp;<a href="https://github.com/P403n1x87"><span class="username">P403n1x87</span></a>
+
+          </li>
+          
+
+          
+
+          <li>
+            <i class="fa fa-rss-square" aria-hidden="true"></i>&nbsp;<a href="/feed.xml">Subscribe</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>The Hub of Heliopolis is the <i>tech bay</i> of <a href="http://thenestofheliopolis.blogspot.co.uk/">The Nest of Heliopolis</a>. It is the home of all my <i>encounters</i> with technology that I consider worth sharing with the World.
+</p>
+      </div>
+    </div>
+
+    <div class="footer-copyright">
+      Copyright (C) 2017 Gabriele N. Tornetta. All rights reserved.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    
+      <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+    
+
+    <script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+    <!-- MathJax support -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+
+  </body>
+
+</html>
