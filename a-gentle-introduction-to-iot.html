@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - A Gentle Introduction to IoT</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="raspberry pi" />
+    <meta name="tags" content="wsgi" />
+    <meta name="tags" content="electronics" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/buzz.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-75 bg-black">
+      <h1 class="entry-title">A Gentle Introduction to IoT</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2017-07-31T19:30:15+01:00">
+          &#128197; Mon 31 July 2017
+        </time>
+        <span class="readtime py-1">&#9202; A 19 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/iot.html">IoT</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/raspberry-pi.html">raspberry pi</a>
+            <a class="tag" href="./tag/wsgi.html">wsgi</a>
+            <a class="tag" href="./tag/electronics.html">electronics</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>The IoT revolution has started. But what is it exactly? Is it hard to take part to it? In this post I present you with all the details of a very simple and almost inexpensive <i>Internet of Things</i> project. Read through as we go from assembling the required hardware, to coding the software that will drive it, exploring some of the most modern free technologies that are on offer today. At the end we will be able to take control of some LEDs over the internet, from wherever we are. Consider this as a launch pad to more complex and exciting IoT projects.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#preamble">Preamble</a><ul>
+<li><a href="#whats-iot">What's IoT?</a></li>
+<li><a href="#the-project">The Project</a></li>
+</ul>
+</li>
+<li><a href="#the-hardware">The Hardware</a><ul>
+<li><a href="#the-gpio-pins">The GPIO Pins</a></li>
+<li><a href="#the-circuit">The Circuit</a></li>
+</ul>
+</li>
+<li><a href="#the-software">The Software</a><ul>
+<li><a href="#the-rpi-python-module">The RPi Python Module</a></li>
+<li><a href="#the-wsgi-specification">The WSGI Specification</a></li>
+<li><a href="#writing-the-web-application">Writing the Web Application</a></li>
+<li><a href="#configuring-apache">Configuring Apache</a></li>
+</ul>
+</li>
+<li><a href="#conclusions">Conclusions</a></li>
+</ul>
+</div>
+<h1 id="preamble">Preamble</h1>
+<p>No, I'm afraid this post is not on how to build your army of toy soldiers. If
+the disappointment hasn't stopped you from reading any further, what I will
+discuss here is something simpler and more peaceful, involving general
+electronics single board computers, LEDs, Python, web servers and web
+applications. All in just one place!</p>
+<p>I will try to introduce the fundamental concepts of IoT by example, and I will
+do so by sharing my recent hands-on experience with my first Raspberry Pi, and
+how this has led me to get to know of fascinating technologies of the modern
+era. If your main objective is still to build an army of toy soldiers, this is
+definitely a first step (however you should consider using technology for better
+purposes, really!).</p>
+<p>I will try not to give much for granted, but of course I will have to draw a
+line at some point, or this post would have never been finished! The subject is
+software, but it is also hardware, for the former would make little sense
+without the latter.</p>
+<p>The approach will be very practical. We will start with a concrete problem, and
+we shall see how to solve it, both from a hardware and a software perspective.</p>
+<h2 id="whats-iot">What's IoT?</h2>
+<p>Can you eat it? Well, although your are free of munching on a breadboard if you
+really want to, IoT, as you probably know already, stands for <em>Internet of
+Things</em>. This term is used to indicate the inter-networking of physical devices
+(the <em>things</em>) that are equipped with electronics, sensors, motors etc.. and
+that communicate information with each other, sometimes taking actions based on
+the received inputs. In this sense, every-day life devices, like the fridges or
+the washing machines in our homes, or vending machines, or cars even, become
+<em>smart</em>.</p>
+<p>Even though the first example of <em>smart things</em> appeared in the 1982 (and you
+can surely consider the toy army of Toy Story as an example of IoT in early
+animation movies), it is around 2016 that the IoT has evolved greatly, and the
+key aspect is the almost ubiquitous availability of wireless networks that allow
+an increasing pool of diverse devices to communicate with one another.</p>
+<p>The IoT example of this post is somewhat a classic, but that will hopefully give
+you a rough idea of what the IoT is also about, in case this is the first time
+that you came across it. It is also quite simple and with a contained cost, but
+nonetheless will spawn many interesting connections with some fascinating modern
+technologies.</p>
+<h2 id="the-project">The Project</h2>
+<p>So what is exactly the project described in this post about? The idea is to turn
+some LEDs on and off by sending commands to a Raspberry Pi through a web page.
+This might seem quite a trivial project, but it has given me the opportunity to
+refresh some rusty knowledge of electronics that dated back to my undergraduate
+years, as well as learn a great deal of new things from the software side too.</p>
+<h1 id="the-hardware">The Hardware</h1>
+<p>In this first part I will describe all the hardware that is necessary for the
+project. The main one is, I would say, a single-board computer like a Raspberry
+Pi. In my case, I'm using a Raspberry Pi 3 Model B running the Raspbian OS. To
+turn an LED on and off we will use one of the GPIO pins. For commodity, I will
+also use a T-cobbler to connect all the GPIO pins on a breadboard, where the
+rest of the circuit will be assembled. All that we still need are a couple of
+jumper wires, a 220 Ω resistor and an LED of your favourite colour. To
+summarise, here is the minimum required:</p>
+<ul>
+<li>1x Raspberry Pi</li>
+<li>1x breadboard</li>
+<li>1x T-cobbler and a bus cable (alternatively 2x male-to-female jumper wires)</li>
+<li>2x male-to-male jumper wires</li>
+<li>1x 220 Ω resistor</li>
+<li>1x LED (about 20 mA max current)</li>
+</ul>
+<h2 id="the-gpio-pins">The GPIO Pins</h2>
+<p>Before looking at the circuit, it is probably best to mention a few facts about
+the Raspberry Pi. In particular, the key part here is the set of GPIO pins that
+it provides.</p>
+<p>The General Purpose Input-Output pins represent, as the name itself suggests, a
+way to connect to external devices in order to send commands to and from the
+Raspberry Pi. Some of these can be set to work as input or output, and can be
+set either high (3.3 V or a logic 1) or low (0 V or a logic 0). Some pins can be
+used together for other purposes, like communicating with another device through
+a Serial Peripheral Interface (SPI), attaching LCD screen through the Display
+Parallel Interface (DPI) etc.... Good references for the Raspberry Pi GPIO pins
+are <a href="https://pinout.xyz/">this website</a> and the <a href="https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/BCM2835-ARM-Peripherals.pdf">Broadcom BCM2835 ARM
+Peripherals</a>
+manual.</p>
+<p>From the software side, the pins can be conveniently configured and controlled
+by means of the RPi Python module. The thing to be mindful of is that there are
+a bunch of different naming conventions for the pins on the Raspberry Pi. The
+main ones, to use a terminology proper of the RPi module, is <code>BOARD</code> and <code>BCM</code>.
+The former is a pin numbering that reflects the physical location of the pins on
+the PCB. Pin number one is on the top-left corner and gives a 3.3 V fixed
+output. Pin 2 is the one to its right, Pin 3 is the one below it, and so forth.
+The latter is the numbering convention used in the Broadcom manual.</p>
+<h2 id="the-circuit">The Circuit</h2>
+<p>Here is the schematic of the circuit that we want to build.</p>
+<p><img alt="The circuit schematics" class="center-image" src="./images/iot/iot_schem.png">
+<em>The schematic of the circuit, showing all the components used for this project.</em></p>
+<p>As I have already mentioned, I prefer using a T-cobbler to connect all the GPIO
+pins to the breadboard. In case you are not using one, this is what your
+breadboard should look like this picture.</p>
+<p><img alt="The physical components" class="center-image" src="./images/iot/iot_bb.png">
+<em>Another schematic representation of the circuit, showing how the components are physically connected with each other on the breadboard and the Raspberry Pi 3 Model B.</em></p>
+<p>Where did the magic number 220 Ω come from? The explanation is very simple and
+essentially based on Ohm's law. Across a resistor <span class="math">\(R\)</span> to which a voltage
+difference of <span class="math">\(V\)</span> is applied, the current flowing through it is given by</p>
+<div class="math">$$I = \frac VR.$$</div>
+<p>An LED is a diode, i.e. a p-n junction, that is capable of emitting light. In
+<em>forward bias</em>, an order-one approximation of a diode is given by a small
+resistor (order of 10 Ω) in series with a voltage generator (of about -0.67 V).
+The manufacturer of the LED usually provides the maximum current that the diode
+can withstand. In the case of common LEDs, this value is around 20 mA.
+Considering that, when a GPIO pin is on, it will provide 3.3 V to our circuit,
+in order not to burn our LED we need to use a resistor of resistance <span class="math">\(R\)</span> given
+by the inequality</p>
+<div class="math">$$\frac{3.3\text{ V} - 0.67\text{ V}} R \leq 20\text{ mA},$$</div>
+<p>which yields</p>
+<div class="math">$$R\geq 130\ \Omega.$$</div>
+<p>For a better estimate, we can look at the V-I chart provided by the
+manufacturer, which would probably give us a minimum value closer to 200 Ω.
+Anything below and you might risk frying your LED. Using a way bigger resistor,
+however, would starve it of current and it would not turn on at all. But with
+220 Ω we should be perfectly fine (and safe!).</p>
+<h1 id="the-software">The Software</h1>
+<p>Now that we have assembled the required hardware, it is time to see how to
+control it. What we have done so far is to connect the Raspberry Pi with a very
+simple one-wire device, i.e. an LED. The IoT is the possibility of controlling a
+device from the internet, anywhere in the world, with the actual device that we
+want to control possibly miles and miles away from us.</p>
+<p>What we now need is then a simple interface, accessible from the internet, that
+allows us to control the LED. Let's see how to create such interface,
+step-by-step.</p>
+<p>But before we go any further, let's have a look, like we did with the hardware
+part, at all that we will need.</p>
+<ul>
+<li>Python (2.7 or later; note that the project has been tested with Python2.7
+   and it might have to be adapted slightly to work with Python3)</li>
+<li>a web server e.g. Apache2</li>
+<li>a text editor of your choice.</li>
+</ul>
+<p>Yep, that's all.</p>
+<h2 id="the-rpi-python-module">The RPi Python Module</h2>
+<p>On Raspbian there is a pretty simple way to control the GPIO pin that comes
+already bundled with the OS. I'm talking about the
+<a href="https://pypi.python.org/pypi/RPi.GPIO">RPi</a> Python module. For the simple task
+that we want to achieve here, RPi exposes all the features that we need.
+However, keep in mind that more advanced tasks, like real-time applications,
+cannot be solved by this module. This is not just because it is a Python module,
+but a "limitation" of any OS based on the Linux kernel, which is multitasking in
+nature. This means that the kernel can decide on its own how to allocate
+resources for all the running processes, potentially giving rise to jitter in
+your applications.</p>
+<p>Another important limitation that should push you towards other approaches, like
+<a href="http://wiringpi.com/">wiringPi</a>, is the lack of hardware PWM. PWM stands for
+Pulse-Width Modulation and is a technique used to encode a message in a pulsing
+signal. Some of the common uses are that of dimming an LED (recall that an LED
+response is exponential, even though we treated it as linear in our first-order
+approximation discussed above), or controlling a motor, but this is a topic that
+would take us away from the main focus of this post, and it might be the subject
+of a future one.</p>
+<p>Returning to our project, let's have a look at how to turn our LED on. Recall
+from the schematic above that we are using the GPIO Pin 16 (according to the
+Broadcom convention), which is the 36th physical pin on the GPIO.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">G</span>     <span class="c1"># Import the GPIO component from the RPi module</span>
+
+<span class="n">LED</span> <span class="o">=</span> <span class="mi">36</span>                 <span class="c1"># Define a constant with the pin number where the LED</span>
+                         <span class="c1"># is connected</span>
+
+<span class="n">G</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>       <span class="c1"># Set the pin numbering mode to the physical number</span>
+
+<span class="n">G</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>   <span class="c1"># Set the LED pin to output mode</span>
+
+<span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>         <span class="c1"># Set the pin to high (3.3 V)</span>
+</pre></div>
+
+
+<p>We can type the above lines of Python code directly into the Python interpreter.
+To turn the LED off we can either set the value on the pin 36 back to 0</p>
+<div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+
+<p>or clean up the GPIO configuration with</p>
+<div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+
+
+<p>If we'll ever want to use more than just one LED on our breadboard, we can
+encapsulate most of the above code inside a Python class so that it can be
+reused instead of having to type it every time with setup a new LED. A
+minimalist Python class that would represent a physical LED would be something
+like</p>
+<div class="highlight"><pre><span></span><span class="c1"># File: led.py</span>
+<span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">G</span>
+
+<span class="n">G</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">LED</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ch</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_ch</span> <span class="o">=</span> <span class="n">ch</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">on</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">))</span>
+
+  <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
+  <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+  <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Our code for turning an LED on and off would then reduce to the following few
+lines</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">led</span>  <span class="kn">import</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="n">led_red</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>
+
+<span class="n">led_red</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+
+<span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">led_red</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
+</pre></div>
+
+
+<p>The extra method <code>toggle</code> can be used, as the name suggests, to toggle the LED
+state from on to off and vice-versa. In the above example we could then replace
+both <code>led_red.on</code> and <code>led_red.off()</code> by <code>led_red.toggle()</code>. The property
+<code>state</code> is used to get the state of the LED as a Boolean value (<code>True</code> for on
+and <code>False</code> for off), and it can also be used to set it. For instance, something
+like</p>
+<div class="highlight"><pre><span></span><span class="n">led_red</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+
+<p>would turn the LED on, since <code>[1]</code> evaluates to <code>True</code> when converted to a
+Boolean. Analogously, the following line of code</p>
+<div class="highlight"><pre><span></span><span class="n">led_red</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">{}</span>
+</pre></div>
+
+
+<p>would turn the LED off, since <code>bool({}) = False</code> in Python.</p>
+<p>Sweet! We now know how to control our LED with code and all that's left to do is
+build a nice web interface that will execute this code on demand.</p>
+<h2 id="the-wsgi-specification">The WSGI Specification</h2>
+<p>Given that we already have some code in Python to control our LED, it would be
+good if the web interface could use that code directly. Is this possible? The
+(short) answer is <em>yes</em>!</p>
+<p>A more articulated answer to the above question leads us into the realm of the
+Web Server Gateway Interface specification, or WSGI for short. It is a universal
+specification that was born out of the necessity of putting some order among all
+the Python frameworks for developing web applications. Before the specification,
+each of said frameworks would be compatible with just a few web servers.
+Choosing one of them would then restrict your choice of a web server to go with
+it, and vice-versa. To overcome this limitation, the WSGI specification was
+proposed in the <a href="https://www.python.org/dev/peps/pep-0333/">PEP 333</a>, which
+dates back ton 2003. The technical details can be found in the linked page. Here
+we just limit ourself to the essential details of the specification that will
+allow us to write a simple web application to control the LED over the internet.</p>
+<p>In very simple terms, a Python web application consists of a <em>bootstrap
+callable</em> object that is called by the web server. The python code contained in
+the callable is executed, and the web server expects a response consisting of a
+code (200 for OK, 403 for Forbidden, 404 for Not Found etc...) and a stream of
+bytes (usually the HTML code to be rendered by the browser). A callable can be
+any Python object that exposes a <code>__call__</code> function like, e.g., classes and
+functions.</p>
+<p>My favourite web server is Apache2 and it will be the one that I will discuss in
+this post. Its functionalities can be extended with modules, and the
+<a href="https://modwsgi.readthedocs.io/en/develop/">mod_wsgi</a> project provides a
+WSGI-compliant module for Apache. The documentation is very detailed and covers
+all the aspects, from the installation to the configuration and debugging
+techniques.</p>
+<p>Regarding the installation process, this can be carried out in two modes. Either
+on the Apache-side, or on the Python-side. If you are into the IoT, chances are
+you will have your web server running on a Raspberry Pi. For this reason, I will
+discuss how to install the mod_wsgi module for the Apache web server. On
+Raspbian, this can be done with</p>
+<div class="highlight"><pre><span></span>sudo apt install libapache2-mod-wsgi
+</pre></div>
+
+
+<p>After the installation, the module should already be enabled. If this isn't the
+case, you can enable it with</p>
+<div class="highlight"><pre><span></span>sudo a2enmod wsgi
+</pre></div>
+
+
+<h2 id="writing-the-web-application">Writing the Web Application</h2>
+<p>The next steps are to actually write our web application and configure Apache to
+run it when a request comes in. In the configuration process we will specify our
+bootstrap Python script. By default, Apache expects to find a callable object
+inside it with the name <code>application</code>. The simplest thing that we could do is
+then to create a Python script and define a function with such a name. The code
+of our application would then be contained in this function, or called by it, in
+case we decide for a more modular approach.</p>
+<p>In case things would go wrong while we develop our web application, we might
+want to be able to have a look at the Python stack trace to see where the
+problems are. Normally we would have to look in the Apache error log (usually in
+<code>/var/log/apache2/error.log</code>). However, we can make use of a middleware from the
+<a href="https://paste.readthedocs.io/en/latest/">paste</a> Python package, which is
+specifically designed for WSGI applications. Our bootstrap script will then look
+like this.</p>
+<div class="highlight"><pre><span></span><span class="c1"># File: bootstrap.wsgi</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">index</span> <span class="kn">import</span> <span class="n">Index</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;200 OK&#39;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+
+    <span class="n">response_headers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;Content-type&#39;</span>   <span class="p">,</span> <span class="s1">&#39;text/html&#39;</span>     <span class="p">)</span>
+       <span class="p">,(</span><span class="s1">&#39;Content-Length&#39;</span> <span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)))</span>
+    <span class="p">]</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response_headers</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">output</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">paste.exceptions.errormiddleware</span> <span class="kn">import</span> <span class="n">ErrorMiddleware</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">ErrorMiddleware</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The first two lines are necessary if we want to be able to import modules and
+packages that are in the same folder as the bootstrap script.</p>
+<p>We then import the class <code>Index</code> from the <code>index</code> module. This is just a design
+choice. The bootstrap script contains the essential code to get us to the main
+page (by means of the <code>Index</code> class), and returns us the full stack trace in
+case of errors (by means of the <code>ErrorMiddleware</code> class from the paste package).
+To make sense of the rest of the code, have a look at the already referenced
+documentation of the <code>mod_wsgi</code> module for Apache2.</p>
+<p>The core code of our application is contained in the <code>Index</code> class from the
+<code>index</code> module.</p>
+<div class="highlight"><pre><span></span><span class="c1"># File index.py</span>
+<span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="n">templ</span><span class="p">,</span> <span class="n">qs</span>
+<span class="kn">from</span> <span class="nn">led</span>  <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Index</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">qs</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;action&quot;</span> <span class="ow">in</span> <span class="n">params</span> <span class="ow">and</span> <span class="s1">&#39;toggle&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]:</span>
+            <span class="n">led</span><span class="o">.</span><span class="n">toggle</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">templ</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>In fact, this module looks more like a view rather than a controller, as the
+actual code for controlling the LED is buried in the <code>led</code> module that we have
+analysed previously. The <code>util.py</code> module contains some helper functions to
+conveniently deal with HTML templates and query strings. We refrain from showing
+the code in this post, but you can find it in the <a href="https://github.com/P403n1x87/led_app">dedicated GitHub
+repository</a>.</p>
+<p>The HTML template contained in the <code>index.html</code> file is very simple and looks
+like this.</p>
+<div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en-us&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;theme-color&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;#666666&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;led_app/led.css&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;?action=toggle&quot;</span><span class="p">&gt;&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button {state}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>The body is essentially just a link that executes a request with the parameter
+<code>action</code> set to <code>toggle</code>, containing a placeholder <code>div</code> element. The
+look-and-feel of a 3D button is then provided by the classes contained in the
+linked stylesheet, which you can find in the GitHub repository. Note how we use
+the <code>{state}</code> placeholder in the class attribute of the <code>div</code> element. This
+allows us setting the button appearance according to the LED current state. In
+the stylesheet we have two classes, <code>.on</code> and <code>.off</code>, the former giving a bright
+red colour to the button, while the latter giving a darker shade. The value is
+passed by the line</p>
+<div class="highlight"><pre><span></span>        <span class="k">return</span> <span class="n">templ</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>in the static method <code>main</code> of the <code>Index</code> class of <code>index.py</code>.</p>
+<h2 id="configuring-apache">Configuring Apache</h2>
+<p>We are almost ready to start playing with our LED over the internet. The last
+step is to put our application up and running on the Apache web server. To this
+end there is a tiny bit of configuration that we need to do. We can start by
+making a copy of the default web site Apache2 comes with. On Raspbian, this is
+located in <code>/etc/apache2/sites-available</code> and is contained in the
+<code>000-default.conf</code> configuration file. Make a copy of this file in, say,
+<code>led.conf</code> and modify it to look like the following one.</p>
+<div class="highlight"><pre><span></span><span class="c"># File: led.conf</span>
+<span class="nt">&lt;VirtualHost</span> <span class="s">*:80</span><span class="nt">&gt;</span>
+  <span class="nb">ServerAdmin</span> webmaster@localhost
+
+  <span class="c"># Required by static data storage access (e.g. css files)</span>
+  <span class="nb">DocumentRoot</span> <span class="sx">/home/pi/Projects/www</span>
+
+  <span class="nb">ErrorLog</span> ${APACHE_LOG_DIR}/error.log
+  <span class="nb">CustomLog</span> ${APACHE_LOG_DIR}/access.log combined
+
+  <span class="c"># WSGI Configuration</span>
+  <span class="nb">WSGIScriptAlias</span> <span class="sx">/led</span> <span class="sx">/home/pi/Projects/www/led_app/bootstrap.wsgi</span>
+
+  <span class="nt">&lt;Directory</span> <span class="s">/home/pi/Projects/www/led_app</span><span class="nt">&gt;</span>
+    <span class="nb">Require</span> <span class="k">all</span> granted
+  <span class="nt">&lt;/Directory&gt;</span>
+
+<span class="nt">&lt;/VirtualHost&gt;</span>
+</pre></div>
+
+
+<p>Even though we are implementing a WSGI application, the <code>DocumentRoot
+/home/pi/Projects/www</code> is needed because we are importing a css file in
+<code>index.html</code>. The above configuration file assumes that the web application
+resides in the <code>/home/pi/Projects/www/led_app</code> folder. This way, static files
+can be accessed with a relative path referring to the parent folder
+<code>/home/pi/Projects/www</code>. This explains why we are importing the <code>led.css</code> file
+as</p>
+<div class="highlight"><pre><span></span>    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;led_app/led.css&quot;</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>The section below the <code># WSGI Configuration</code> comment is the WSGI part of the
+configuration. The first line of this section tells Apache which script to use
+to bootstrap the web application. This is the script that is assumed to contain
+the callable object named <code>application</code>. The rest of the WSGI configuration
+section is required to set the rights to read the bootstrap and the python
+scripts contained in the web application folder.</p>
+<p>That's it! All we have to do now is deactivate any other website on port 80 with
+<code>a2dissite</code> (this is only required if the web sites are not named), and enable
+<code>led.conf</code> with <code>a2ensite led.conf</code>. Restart the Apache2 web server with</p>
+<div class="highlight"><pre><span></span>sudo service apache2 restart
+</pre></div>
+
+
+<p>and point the browser on any device that is on the same local network as the Pi
+to its local IP address, append '/led' to it to start the web application (e.g.
+<code>http://192.168.0.203/led</code>) and you should now be in the web application, with a
+red button that will now allow you to control the LED state over the LAN.</p>
+<p><img alt="The final look of the web application" class="center-image" src="./images/iot/website.png">
+<em>The final look of the web application. The red button in the middle is used to toggle the LED state.</em></p>
+<p>If you are behind a router, of course you will need to forward the port 80 to
+the Pi's local address before you could be able to access your web application
+from the internet, outside of your local network. In this case you will have to
+use the router's public IP instead of the local IP.</p>
+<h1 id="conclusions">Conclusions</h1>
+<p>We have come to the end of this post on a simple IoT project. Its main purpose,
+like most of the other posts in this blog, is two-fold. On one hand, it is a way
+for me to take notes of new things that I have discovered and that I can later
+come back to if I need to. All the information gathered from the cited sources
+is gathered in a single place, which makes it more convenient than having to go
+through them separately. On the other hand, it is a way to share my experience
+with others, in the hope that it could be useful somehow. Even though the
+project in it self, as I have remarked many times now, is quite simple, the post
+includes references to many topics, e.g. electronics, programming, web servers
+and applications, and it shows you how all these different aspects can be
+organically combined together to create something.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./a-gentle-introduction-to-iot.html";
+  this.page.identifier = "intro-iot"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

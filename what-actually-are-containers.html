@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - What Actually Are Containers?</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="containers" />
+    <meta name="tags" content="linux" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/containers.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-75 bg-black">
+      <h1 class="entry-title">What Actually Are Containers?</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2018-08-04T18:42:00+01:00">
+          &#128197; Sat 04 August 2018
+        </time>
+        <span class="readtime py-1">&#9202; A 26 min read</span>
+        <span id="github">
+          <i class="fa fa-github" aria-hidden="true"></i>
+          <a href="https://github.com/P403n1x87/asm/tree/master/chroot" target="_blank">
+            P403n1x87/asm/chroot
+          </a>
+        </span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/technology.html">Technology</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/containers.html">containers</a>
+            <a class="tag" href="./tag/linux.html">linux</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>Containers are the big thing of the moment. It is quite common to find blog posts and articles that explain what containers are <em>not</em>:  "containers are not virtual machines". Just what <em>are</em> they then? In this post we embark on a journey across some of the features of the Linux kernel to unveil the mystery.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#containers-defined">Containers Defined</a></li>
+<li><a href="#a-note-on-operating-systems">A Note on Operating Systems</a></li>
+</ul>
+</li>
+<li><a href="#creating-jails-with-chroot">Creating Jails With chroot</a><ul>
+<li><a href="#a-minimal-chroot-jail">A Minimal chroot Jail</a></li>
+<li><a href="#a-more-interesting-example">A More Interesting Example</a></li>
+<li><a href="#leaky-containers">Leaky Containers</a></li>
+</ul>
+</li>
+<li><a href="#control-groups">Control Groups</a><ul>
+<li><a href="#a-hierarchy-of-cgroups">A Hierarchy of cgroups</a></li>
+<li><a href="#how-to-work-with-control-groups">How to Work with Control Groups</a></li>
+</ul>
+</li>
+<li><a href="#linux-namespaces">Linux Namespaces</a><ul>
+<li><a href="#some-implementation-details">Some Implementation Details</a></li>
+<li><a href="#how-to-work-with-namespaces">How to Work with Namespaces</a></li>
+</ul>
+</li>
+<li><a href="#putting-it-all-together">Putting It All Together</a><ul>
+<li><a href="#process-containment-for-chroot-jails">Process Containment for chroot Jails</a></li>
+<li><a href="#wall-fortification">Wall Fortification</a></li>
+</ul>
+</li>
+<li><a href="#conclusions">Conclusions</a></li>
+</ul>
+</div>
+<h1 id="introduction">Introduction</h1>
+<p>When I first heard about containers, I turned to my favourite search engine to
+find out more about them and what they are. Most of the resources I have read
+through, though, seemed to put a great emphasis on what containers are <strong>not</strong>.
+Containers are like virtual machines, but are <strong>not</strong> virtual machines.</p>
+<p>So, what actually <strong>are</strong> they? After many unhelpful reads, the first good blog
+post that I've come across and that explains what containers indeed are is <a href="https://jvns.ca/blog/2016/10/10/what-even-is-a-container/">What
+even is a container</a>
+by Julia Evans. If you go and read through that post (and I do recommended that
+you do!), you will immediately learn that a container is like a cauldron where
+you mix in the essential ingredients for a magic potion. Only in this case, the
+ingredients are Linux kernel features.</p>
+<p>If many posts on containers make it sounds like they are some sort of black
+magic (how can you have a <em>lightweight</em> virtual machine?!), the aim of this post
+is to show that the idea behind them is quite simple and made possible by a few
+Linux kernel features, like <strong>control groups</strong>, <strong>chroot</strong> and <strong>namespaces</strong>. I
+will discuss each of them in turn in this post, but you should also be aware
+that there are other kernel features involved in containers to make them robust
+and secure. These other aspects, however, will be part of a separate post. Here
+we shall just focus on the essential ingredients that can allow you to literally
+handcraft and run something that you may call a container, in the sense that is
+commonly used these days.</p>
+<h2 id="containers-defined">Containers Defined</h2>
+<p>Before we progress any further, I believe that we should take a moment to agree
+on the meaning that we should attach to the word <em>container</em>. Much of the
+confusion, in my opinion, arises from the many different definitions that are
+out there. According to
+<a href="https://en.wikipedia.org/wiki/Operating-system-level_virtualization">Wikipedia</a>,
+<em>containers</em> ...</p>
+<blockquote>
+<p>... may look like real computers from the point of view of programs running in
+them. A computer program running on an ordinary operating system can see all
+resources ... of that computer. However, programs running inside a container
+can only see the container's contents and devices assigned to the container.</p>
+</blockquote>
+<p>My way of paraphrasing this definition is the following: a container is a main
+process that runs in user-space that gives you the impression that you are
+running an operating system with its own view of the file system, processes,
+etc... on top of the operating system that is installed on the machine. In this
+sense, a container <em>contains</em> part of the host resources and hosts its own
+system and user applications.</p>
+<h2 id="a-note-on-operating-systems">A Note on Operating Systems</h2>
+<p>Another cause of confusion, sometimes, is the definition of <em>operating system</em>
+itself, so before moving on, I want to make sure we agree on this too. An
+operating system can be thought as a <em>nut</em>. At its core we have, well, the
+kernel, which is in direct control of the hardware. On its own, the kernel is a
+<em>passive</em> component of an operating system. When an operating system is booted,
+the kernel is the first part that gets loaded into memory and it quietly sits
+there. Its purpose is to provide many "buttons and levers" (the <em>ABI</em>) that just
+wait to be pushed and pulled to operate the hardware and provide services to
+system and user applications. Around the kernel one usually finds, surprise
+surprise, a shell. You might be familiar with Bash, Ksh, Zsh, etc... which allow
+you to manipulate the file system (create, copy, move, delete files from disk),
+launch applications etc ... . Some of these applications are included with the
+operating system and build on top of the kernel services to provide basic
+functionalities (e.g. most if not all the standard Unix tools). Such
+applications are known as <em>system application</em>. Other software, like text
+editors, games, web browsers and alike are <em>user applications</em>. In some cases,
+it is hard to decide between system and user applications, as the line between
+them is not very clear and open to debate. However, once you decide on what
+works for you in terms of <em>system applications</em>, an operating system becomes the
+combination of them and the kernel. Thus, Linux is just a <em>kernel</em> and not an
+operating system. On the other hand, Ubuntu <em>is</em> an example of a (Linux-based)
+operating system, since a typical Ubuntu installation includes the compiled code
+of the Linux kernel together with system applications.</p>
+<p>How do we tell which operating system we are currently running? Most Linux-based
+operating system have some files in the '/etc' folder that contains information
+about the distribution name and the installed version. For example, on
+Debian-based distributions, this file is typically named <code>os-release</code>. In my
+case, this is what I get if I peek at its content with <code>cat</code>:</p>
+<div class="highlight"><pre><span></span>$ cat /etc/os-release
+NAME=&quot;Ubuntu&quot;
+VERSION=&quot;18.04 LTS (Bionic Beaver)&quot;
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME=&quot;Ubuntu 18.04 LTS&quot;
+VERSION_ID=&quot;18.04&quot;
+HOME_URL=&quot;https://www.ubuntu.com/&quot;
+SUPPORT_URL=&quot;https://help.ubuntu.com/&quot;
+BUG_REPORT_URL=&quot;https://bugs.launchpad.net/ubuntu/&quot;
+PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&quot;
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic
+</pre></div>
+
+
+<h1 id="creating-jails-with-chroot">Creating Jails With <code>chroot</code></h1>
+<p>One of the earliest examples of "containers" was provided by the use of
+<code>chroot</code>. This is a system call that was introduced in the BSD in 1982 and all
+it does is to change the apparent root directory for the process it is called
+from, and all its descendant processes.</p>
+<p>How can we use such a feature to create a container? Suppose that you have the
+root file system of a Linux-based operating system in a sub-folder in your file
+system. For example, the new version of your favourite distribution came out and
+you want to try the applications it comes with. You can use the <code>chroot</code> wrapper
+application that ships with most if not all Unix-based operating systems these
+days to launch the default shell with the apparent root set to
+<code>~/myfavedistro-latest</code>. Assuming that your favourite distribution comes with
+most of the standard Unix tools, you will now be able to launch applications
+from its latest version, using the services provided by the Linux kernel of the
+host machine. Effectively, you are now running an instance of a different
+operating system that is using the kernel loaded at boot time from the host
+operating system (some sort of Frankenstein OS if you want).</p>
+<p>Does what we have just described fit into the above definition of <em>container</em>?
+Surely the default shell has its own view of the file system, which is a proper
+restriction of the full file system of the host system. As for other resources,
+like peripherals etc..., they happen to coincide with the host system, but at
+least something is different. If we now look at the content of the <code>os-release</code>
+file in the <code>/etc</code> folder (or the equivalent for the distribution of your
+choice), you will quite likely see something different from before, so indeed we
+have a running instance of a different operating system.</p>
+<p>The term that is usually associated to <code>chroot</code> is <em>jail</em> rather than
+<em>container</em> though. Indeed, a process that is running within a new apparent root
+file system cannot see the content of the parent folders and therefore it is
+confined in a corner of the full, actual file system on the physical host. The
+modified environment that we see from a shell started with chroot is sometimes
+referred to as a <em>chroot jail</em>. But perhaps another reason why the term <em>jail</em>
+is being used is that, without the due precautions, it is relatively easy to
+break out of one (well, OK, maybe that's not an official reason).</p>
+<p>If the above discussion sounds a bit too abstract to you then don't worry
+because we are about to get hour hands dirty with <code>chroot</code>.</p>
+<h2 id="a-minimal-chroot-jail">A Minimal <code>chroot</code> Jail</h2>
+<p>Since a <code>chroot</code> jail is pretty much like a <em>Bring Your Own System Application</em>
+party, with the kernel kindly offered by the host, a minimal <code>chroot</code> jail can
+be obtained with just the binary of a shell, and just a few other binary files.
+Let's try and create one with just <code>bash</code> in it then. Under the assumption
+that you have it installed on your Linux system, we can determine all the
+shared object the <code>bash</code> shell depends on with <code>ldd</code></p>
+<div class="highlight"><pre><span></span>$ ldd `which bash`
+        linux-vdso.so.1 =&gt;  (0x00007ffca3bca000)
+        libtinfo.so.5 =&gt; /lib/x86_64-linux-gnu/libtinfo.so.5 (0x00007f9605411000)
+        libdl.so.2 =&gt; /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f960520d000)
+        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9604e2d000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f960563a000)
+</pre></div>
+
+
+<p>So let's create a folder that will serve as the new root file system, e.g.
+<code>~/minimal</code>, and copy the bash executable in it, together with all its
+dependencies. Copy the <code>bash</code> executable inside <code>~/minimal/bin</code>, the libraries
+from <code>/lib</code> into <code>~/minimal/lib</code> and those from <code>/lib64</code>into <code>~/minimal/lib64</code>.
+Then start the <code>chroot</code> jail with</p>
+<div class="highlight"><pre><span></span>chroot ~/minimal
+</pre></div>
+
+
+<p>You should now have a running bash session with a vanilla prompt format that
+looks like this</p>
+<div class="highlight"><pre><span></span>bash-4.4#
+</pre></div>
+
+
+<p>Note that <code>chroot</code> is being executed as the <code>root</code> user. This is because, under normal
+circumstances, only <code>root</code> has the POSIX <em>capability</em> of calling the
+<code>SYS_CHROOT</code> system call.</p>
+<blockquote>
+<p>To see the current capabilities of a user one can use the <code>capsh --print</code>
+  command. The <code>Bounding set</code> line shows the capabilities that have been
+  inherited and that can be granted to a process from the current user.
+  Capabilities represent another feature that is relevant for containers. They
+  will be discussed in a separate post.</p>
+</blockquote>
+<p>If you now play around a bit with this bash session, you will realise pretty
+quickly that there isn't much that you can do. Most of the standard Unix tools
+are not available, not even <code>ls</code>. This container that we created as a <code>chroot</code>
+jail is indeed minimal.</p>
+<h2 id="a-more-interesting-example">A More Interesting Example</h2>
+<p>Ubuntu has released base images of the operating system since version 12.04.
+These are just root file system images in the format of a compressed tarball.
+Suppose that a new stable version has come out and you want to give it a try
+before you upgrade your system. One thing you can do is to go to the <a href="http://cdimage.ubuntu.com/ubuntu-latest/releases/">Ubuntu
+Base releases</a> page and
+download the image that you want to test. Extract the content of the tarball
+somewhere, e.g. <code>~/ubuntu-latest</code> and "run" it with <code>chroot</code></p>
+<div class="highlight"><pre><span></span>chroot ~/ubuntu-latest
+</pre></div>
+
+
+<p>We are now running an instance of a new version of Ubuntu. To check that this is
+indeed the case, look at the output of <code>cat /etc/os-release</code>. Furthermore, we
+now have access to all the basic tools that make up the Ubuntu operating system.
+For instance you could use aptitude to download and install new packages, which
+could be useful to test the latest version of an application.</p>
+<p>If you intend to do some serious work with these kinds of <code>chroot</code> jails, keep
+in mind that some of the pseudo-file systems won't be available from within the
+jail. That's why you would have to mount them manually with</p>
+<div class="highlight"><pre><span></span>mount -t proc proc proc/
+mount -t sysfs sys sys/
+mount -o <span class="nb">bind</span> /dev dev/
+</pre></div>
+
+
+<p>This way you will be able to use, e.g., <code>ps</code> to look at the currently running
+processes.</p>
+<h2 id="leaky-containers">Leaky Containers</h2>
+<p>With the simplicity of <code>chroot</code> jails comes many issues that make these kind of
+"containers" <em>leaky</em>. What do I mean by this? Suppose that you want to
+<em>containerise</em> two resource-intensive applications into two different <code>chroot</code>
+jails (for example, the two applications, for some reasons, require different
+Linux-based operating systems). A typical example these days is that of
+microservices that we would like to run on the same host machine. When the first
+microservice fires up, it starts taking all the system resources (like CPU time
+for instance), leaving no resources for the second microservice. The same can
+happen for network bandwidth utilisation or disk I/O rates.</p>
+<p>Unfortunately, this issue cannot be addressed within <code>chroot</code> jails, and their
+usefulness is somewhat restricted. Whilst we can use it to create some sort of
+"ancestral" containers, this is not the solution we would turn to in the long
+run.</p>
+<p>Another serious issue with a poorly implemented <code>chroot</code> jail is the dreaded
+S-word: <em>security</em>. If nothing is done to prevent the user of the jail from
+calling certain system calls (e.g. <code>chroot</code> itself), it is relatively
+straightforward to <em>break out</em> of it. Recall how the <code>chroot</code> wrapper utility
+requires <code>root</code> privileges to be executed. When we launched a bash session
+within the Ubuntu Base root file system, we were logged in as the root user.
+Without any further configuration, nothing will prevent us from coding a simple
+application that performs the following steps from within the jail:</p>
+<ol>
+<li>Create a folder with the <code>mkdir</code> system call or Unix wrapper tool.</li>
+<li>Call the <code>chroot</code> system call to change the apparent root to the newly
+created folder.</li>
+<li>Attempt to navigate sufficiently many levels up to hit the actual file system
+root.</li>
+<li>Launch a shell.</li>
+</ol>
+<p>Why does this work? A simple call to the <code>chroot</code> system call only changes the
+apparent root file system, but doesn't actually change the current working
+directory. The Unix <code>chroot</code> wrapper tool performs a combination of <code>chdir</code>
+<em>followed</em> by <code>chroot</code> to actually put the calling process inside the jail.</p>
+<blockquote>
+<p>A minimal version of the <code>chroot(2)</code> utility written in x86-64 assembly code
+  can be found in the
+  <a href="https://github.com/P403n1x87/asm/blob/master/chroot/minichroot.asm"><code>minichroot.asm</code></a>
+  source file within the GitHub repository linked to this post.</p>
+</blockquote>
+<p>A call to <code>chroot</code> which is not preceded by a call to <code>chdir</code> moves the jail
+boundary <em>over</em> the current location down another level, so that we are
+effectively out of the jail. This means that we can <code>chdir</code> up many times now to
+try and hit the actual root of the host file system. Now run a shell session and
+bang! We have full control of the host file system under the root user! Scary,
+isn't it?</p>
+<blockquote>
+<p>If you want to give this method a try, have a look at the
+  <a href="https://github.com/P403n1x87/asm/blob/master/chroot/jailbreak.asm"><code>jailbreak.asm</code></a>
+  source file within the GitHub repository linked to this post.</p>
+</blockquote>
+<p>A less serious matter, but still something that you might want to address, is
+that, after we have mounted the <code>proc</code> file system within the jail, the view of
+the running processes from within the jail is the same as the one from the host
+system. Again, if we do nothing to strip down capabilities from the <code>chroot</code>
+jail user, any process on the host machine can easily be killed (in the best
+hypothesis) by the jail user. Indeed, <code>chroot</code> containers really require a lot
+of care to prevent unwanted information from leaking. That is why present days
+containers make use of a different approach to guarantee "airtight" walls, as we
+shall soon see.</p>
+<h1 id="control-groups">Control Groups</h1>
+<p>As we have argued above, when we make use of containers we might want to run
+multiple instances of them on the same machine. The problem that we face is
+physical resource sharing among the containers. How can we make sure that a
+running instance of a containerised process doesn't eat up all the available
+resources from the host machine?</p>
+<p>The answer is provided by a feature of the Linux kernel known as <strong>control
+groups</strong>. Usually abbreviated as <code>cgroups</code>, control groups  were initially
+released in 2007, based on earlier work of Google engineers, and originally
+named <em>process containers</em>.</p>
+<p>Roughly speaking, <em>cgroups</em> allow you to limit, account for and isolate system
+resources usage among running processes. As a simple example, consider the
+scenario where one of your applications has a bug and starts leaking memory in
+an infinite loop. Slowly but inevitably, your process ends up using all the
+physical memory available on the machine it is running on, causing some of the
+other processes to be killed at random by the OOM (Out of Memory) killer or, in
+the worst case, crashing the entire system. If only you could assign a slice of
+memory to the process that you want to test, then OOM killer would get rid of
+only your faulty process, thus preventing your entire system from collapsing and
+allowing the other applications to run smoothly without consequences. Well, this
+is exactly one of the problems that <em>cgroups</em> allow you to solve.</p>
+<p>But physical memory is only one of the aspects (or <em>subsystem</em>, in the language
+of <em>cgroups</em>; another term that is used interchangeably is <em>controller</em>) that
+can be limited with the use of control groups. CPU cycles, network bandwidth,
+disk I/O rate are other examples of resources that can be accounted for with
+control groups. This way you can have two or more CPU-bound applications running
+happily on the same machine, just by splitting the physical computing power
+among them.</p>
+<h2 id="a-hierarchy-of-cgroups">A Hierarchy of cgroups</h2>
+<p>Linux processes are organised in a hierarchical structure. At boot, the <code>init</code>
+process, with PID 1, is spawned, and every other process originates from it as a
+child process. This hierarchical structure is visible from the virtual file
+system mounted at <code>/proc</code>.</p>
+<p>Cgroups have a similar hierarchical structure but, contrary to processes (also
+known as <em>tasks</em> in <em>cgroup</em>-speak), there may be <em>many</em> of such hierarchies of
+cgroups. This is the case for cgroups v1, but starting with version 2,
+introduced in 2015, cgroups follow a unified hierarchic structure. It is
+possible to use the two at the same time, thus having a hybrid cgroups resource
+management, even though this is discouraged.</p>
+<p>Every cgroups inherits features from the parent cgroups and in general they can
+get more restrictive the further you move down the hierarchy, without the
+possibility of having overrides. Processes are then spawned or moved/assigned to
+cgroups so that each process is in exactly one cgroup at any given time.</p>
+<p>This is, in a nutshell, what cgroups and cgroups2 are. A full treatment of
+cgroups would require a post on its own and it would take us off-topic. If you
+are curious to find out more about their history and their technical details,
+you can have a look at the official documentation
+<a href="https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt">here</a> and
+<a href="https://www.kernel.org/doc/Documentation/cgroup-v2.txt">here</a>.</p>
+<h2 id="how-to-work-with-control-groups">How to Work with Control Groups</h2>
+<p>Let's have a look at how to use cgroups to limit the total amount of physical
+(or resident) memory that a process is allowed to use. The example is based on
+cgroups v1 since they are still in use today even though cgroups v2 are
+replacing them and there currently is an on-going effort of migrating from v1 to
+v2.</p>
+<p>Since the introduction of cgroups in the Linux kernel, <em>every</em> process belongs
+to one and only one cgroup at any given time. By default, there is only one
+cgroup, the <em>root</em> cgroup, and every other process, together with its children,
+is in it.</p>
+<p>Control groups are manipulated with the use of file system operations on the
+cgroup mount-point (usually <code>/sys/fs/cgroup</code>). For example, a new cgroup can be
+created with the <code>mkdir</code> command. Values can be set by writing on the files that
+the kernel will create in the subfolder, and the simplest way is to just use
+<code>echo</code>. When a cgroup is no longer needed, it can be removed with <code>rmdir</code> (<code>rm
+-r</code> should not be used as an alternative!). This will effectively deactive the
+cgroup only when the last process in it has terminated, or if it only contains
+zombie processes.</p>
+<p>As an example, let's see how to create a cgroup that restricts the amount of
+total physical memory processes can use.</p>
+<div class="highlight"><pre><span></span>mkdir /sys/fs/cgroup/memory/mem_cg
+<span class="nb">echo</span> 100m &gt; /sys/fs/cgroup/memory/mem_cg/memory.limit_in_bytes
+<span class="nb">echo</span> 100m &gt; /sys/fs/cgroup/memory/mem_cg/memory.memsw.limit_in_bytes
+</pre></div>
+
+
+<blockquote>
+<p>If <code>memory.memsw.*</code> is not present in <code>/sys/fs/cgroup/memory</code>, you might need
+  to enable it on the kernel by adding the parameters <code>cgroup_enable=memory
+  swapaccount=1</code> to, e.g., GRUB's <em>kernel line</em>. To do so, open
+  <code>/etc/default/grub</code> and append these parameters to
+  <code>GRUB_CMDLINE_LINUX_DEFAULT</code>.</p>
+</blockquote>
+<p>Any process running in the <code>mem_cg</code> cgroup will be constrained to a total amount
+(that is, physical plus swap) of memory equal to 100 MB. When a process gets
+above the limit, the OOM killer will get rid of it. To add a process to the
+<code>mem_cg</code> cgroup we have to write its PID to the <code>tasks</code> file, e.g. with</p>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$$</span> &gt; /sys/fs/cgroup/memory/mem_cg/tasks
+</pre></div>
+
+
+<p>This will put the currently running shell into the <code>mem_cg</code> cgroup. When we want
+to remove the cgroup, we can just delete its folder with</p>
+<div class="highlight"><pre><span></span>rmdir /sys/fs/cgroup/memory/mem_cg
+</pre></div>
+
+
+<p>Note that, even if fully removed from the virtual file system, any removed
+cgroups remain active until all the associated processes have terminated or have
+become zombies.</p>
+<p>Alternatively, one can work with cgroups by using the tools provided by
+<code>libcgroup</code> (Red Hat), or <code>cgroup-tools</code> (Debian). Once installed with the
+corresponding package managers, the above commands can be replaced with the
+following, perhaps more intuitive ones:</p>
+<div class="highlight"><pre><span></span>cgcreate -g memory:mem_cg
+cgset -r memory.limit_in_bytes<span class="o">=</span>100m
+cgset -r memory.memsw.limit_in_bytes<span class="o">=</span>100m
+cgclassify -g memory:mem_cg <span class="nv">$$</span>
+cgdelete memory:mem_cg
+</pre></div>
+
+
+<p>One can use <code>cgexec</code> as an alternative to start a new process directly within a
+cgroup:</p>
+<div class="highlight"><pre><span></span>cgroup -g memory:mem_cg /bin/bash
+</pre></div>
+
+
+<p>We can test that the memory cgroup we have created works with the following
+simple C program</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;stdlib.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;stdio.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;string.h&quot;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span>    <span class="n">a</span>      <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="o">*</span> <span class="n">buffer</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+  <span class="k">while</span> <span class="p">(</span><span class="o">++</span><span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">buffer</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Allocation #%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+      <span class="n">memset</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>We have created an infinite loop in which we allocate chunks of 1 MB of memory
+at each iteration. The call to <code>memset</code> is a trick to force the Linux kernel to
+actually allocate the requested memory under the copy-on-write strategy.</p>
+<p>Once compiled, we can run it into the <code>mem_cg</code> cgroup with</p>
+<div class="highlight"><pre><span></span>cgexec -g mem_cg ./a.out
+</pre></div>
+
+
+<p>We expect to see about 100 successful allocations and after that the OOM killer
+intervenes to stop our processes, since it would have reached the allocated
+memory quota by then.</p>
+<p>Imagine now launching a <code>chroot</code> jail inside a memory cgroup like the one we
+created above. Every application that we launch from within it is automatically
+created inside the same cgroup. This way we can run, e.g., a microservice and we
+can be assured that it won't eat up all the available memory from the host
+machine. With a similar approach, we could also make sure that it won't reserve
+all the CPU and its cores to itself, thus allowing other processes (perhaps in
+different jails/containers) to run simultaneously and smoothly on the same
+physical machine.</p>
+<h1 id="linux-namespaces">Linux Namespaces</h1>
+<p>The description of Linux namespaces given by the dedicated manpage sums up the
+concept pretty well:</p>
+<blockquote>
+<p>A namespace wraps a global system resource in an abstraction that
+  makes it appear to the processes within the namespace that they have
+  their own isolated instance of the global resource.  Changes to the
+  global resource are visible to other processes that are members of
+  the namespace, but are invisible to other processes.  One use of
+  namespaces is to implement containers.</p>
+</blockquote>
+<p>So no questions asked about why Linux namespaces were introduced in the first
+place. As the description says, they are used to allow processes to have their
+own copy of a certain physical resource. For example, the most recent versions
+of the Linux kernel allow us to define a namespace of the <strong>network</strong> kind, and
+every application that we run under it will have its own copy of the full
+network stack. We have pretty much a rather lightweight way of virtualising an
+entire network!</p>
+<p>Linux namespaces represent a relatively new feature that made its first
+appearance in 2002 with the <strong>mount</strong> kind. Since there were no plans to have
+different kinds of namespaces, at that time the term <em>namespace</em> was synonym of
+<em>mount</em> namespace. Beginning in 2006, more kinds were added and, presently,
+there are plans for new kinds to be developed and included in future releases of
+the Linux kernel.</p>
+<p>If you really want to identify a single feature that makes modern Linux
+container possible, namespaces is arguably the candidate. Let's try to see why.</p>
+<h2 id="some-implementation-details">Some Implementation Details</h2>
+<p>In order to introduce namespaces in Linux, a new system call, <code>unshare</code>, has
+been added to the kernel. Its use is "to allow a process to control its shared
+execution context without creating a new process." (quoted verbatim from the
+manpage of <code>unshare(2)</code>). What does this mean? Suppose that, at a certain point,
+you want the current process to be moved to a new network namespace so that it
+has its own "private" network stack. All you have to do is make a call to the
+<code>unshare</code> system call with the appropriate flag set.</p>
+<p>What if we do want to spawn a new process in a new namespace instead? With the
+introduction of namespaces, the existing <code>clone</code> system call has been extended
+with new flags. When <code>clone</code> is called with some of these flags set, new
+namespaces of the corresponding kinds are created and the new process is
+automatically made a member of them.</p>
+<p>The namespace information of the currently running processes is stored in the
+<code>proc</code> file system, under the new <code>ns</code> subfolder of every PID folder (i.e.
+<code>/proc/[pid]/ns/</code>). This as well as other details of how namespaces are
+implemented can be found in the
+<a href="http://man7.org/linux/man-pages/man7/namespaces.7.html"><code>namespaces(7)</code></a>
+manpage.</p>
+<h2 id="how-to-work-with-namespaces">How to Work with Namespaces</h2>
+<p>As with cgroups, an in-depth description of namespaces would require a post on
+its own. So we will have a look at just one simple example. Since networks are
+ubiquitous these days, let's try to launch a process that has its own
+virtualised network stack and that is capable of communicating with the host
+system via a network link.</p>
+<p>This is the plan:</p>
+<ol>
+<li>Create a linked pair of virtual ethernet devices, e.g. <code>veth0</code> and <code>veth1</code>.</li>
+<li>Move <code>veth1</code> to a new network namespace</li>
+<li>Assign IP addresses to the virtual NICs and bring them up.</li>
+<li>Test that the can transfer data between them.</li>
+</ol>
+<p>Here is a simple bash script that does exactly this. Note that the creation of a
+network namespace requires a capability that normal Unix user don't usually
+have, so this is why you will need to run them as, e.g., root.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Create a new network namespace</span>
+ip netns add <span class="nb">test</span>
+
+<span class="c1"># Create a pair of virtual ethernet interfaces</span>
+ip link add veth0 <span class="nb">type</span> veth peer name veth1
+
+<span class="c1"># Configure the host virtual interface</span>
+ip addr add <span class="m">10</span>.0.0.1/24 dev veth0
+ip link <span class="nb">set</span> veth0 up
+
+<span class="c1"># Move the guest virtual interface to the test namespace</span>
+ip link <span class="nb">set</span> veth1 netns <span class="nb">test</span>
+
+<span class="c1"># Configure the guest virtual interface in the test namespace</span>
+ip netns <span class="nb">exec</span> <span class="nb">test</span> bash
+ip addr add <span class="m">10</span>.0.0.2/24 dev veth1
+ip link <span class="nb">set</span> veth1 up
+
+<span class="c1"># Start listening for TCP packets on port 2000</span>
+nc -l <span class="m">2000</span>
+</pre></div>
+</td></tr></table>
+
+<p>On line 2 we use the extended, namespace-capable version of <code>ip</code> to create a new
+namespace of the network kind, called <code>test</code>. We then create the pair of virtual
+ethernet devices with the command on line 5. On line 12 we move the <code>veth1</code>
+device to the <code>test</code> namespace and, in order to configure it, we launch a bash
+session inside <code>test</code> with the command on line 15. Once in the new namespace we
+can see the <code>veth1</code> device again, which has now disappeared from the default
+(also known as <em>global</em>) namespace. You can check that by opening a new terminal
+and typing <code>ip link list</code>. The <code>veth1</code> device should have disappeared after the
+execution of the command on line 12.</p>
+<p>We can then use <code>netcat</code> to listen to TCP packets being sent on port 2000 from
+within the new namespace (line 20). On a new bash session in the default
+namespaces, we can start <code>netcat</code> with</p>
+<p _="%" endterminal>{% terminal $ %}
+nc 10.0.0.2 2000</p>
+<p>to start sending packets to the new namespace <code>test</code> via the link between
+<code>veth0</code> and <code>veth1</code>. Everything that you type should now be echoed by the bash
+session in the <code>test</code> namespace after you press Enter.</p>
+<h1 id="putting-it-all-together">Putting It All Together</h1>
+<p>Now let's see how to put all the stuff we have discussed thus far together to
+handcraft some more (better) containers.</p>
+<h2 id="process-containment-for-chroot-jails">Process Containment for <code>chroot</code> Jails</h2>
+<p>With our first attempt at manually crafting a container with <code>chroot</code>, we
+discovered a few weaknesses of different nature that made the result quite
+leaky. Let's try to address some of those issues, for instance the fact that all
+the processes running on the host system are visible from within the container.
+To this end, we shall make use of the Ubuntu Base image that we used in the
+<code>chroot</code> section. We then combine <code>chroot</code> with namespaces in the following way.
+Assuming that you have created the <code>test</code> network namespace as described in the
+previous section, run</p>
+<div class="highlight"><pre><span></span>unshare --fork -p -u ip netns <span class="nb">exec</span> <span class="nb">test</span> chroot ubuntu-latest
+</pre></div>
+
+
+<p>The <code>--fork</code> switch is required by the <code>-p</code> switch because we want to spawn a
+new bash session with PID 1, rather than within the calling process. The <code>-u</code>
+switch will give us a new hostname that we are then free to change without that
+affecting the host system. We then use the <code>ip</code> new capability of creating
+namespaces of the network kind to create the Ubuntu Base <code>chroot</code> jail.</p>
+<p>The first improvement is now evident. From inside the <code>chroot</code> jail, mount the
+<code>proc</code> file system with, e.g.</p>
+<div class="highlight"><pre><span></span>mount -t proc proc /proc
+</pre></div>
+
+
+<p>and then look at the output of <code>ps aux</code>:</p>
+<div class="highlight"><pre><span></span># ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 11:54 ?        00:00:00 /bin/bash -i
+root         8     1  0 11:56 ?        00:00:00 ps -ef
+</pre></div>
+
+
+<p>The bash session that we started inside the <code>chroot</code> jail has PID 1 and the <code>ps</code>
+tool from the Ubuntu Base distribution has PID 8 and parent PID 1, i.e. the
+<code>chroot</code> jail. That's all the processes that we can see from here! If we try to
+identify this bash shell from the global namespace we find something like this</p>
+<div class="highlight"><pre><span></span>$ ps -ef | grep unshare | grep -v grep
+root      5829  4957  0 12:54 pts/1    00:00:00 sudo unshare --fork -p -u ip netns exec test chroot ubuntu-latest
+root      5830  5829  0 12:54 pts/1    00:00:00 unshare --fork -p -u ip netns exec test chroot ubuntu-latest
+</pre></div>
+
+
+<p>PIDs in your case will quite likely be different, but the point here is that,
+with namespaces, we have broken the assumption that a process has a <em>unique</em>
+process ID.</p>
+<h2 id="wall-fortification">Wall Fortification</h2>
+<p>Whilst the process view problem has been solved (we can no longer kill the host
+processes since we cannot see them), the fact that the <code>chroot</code> jail runs as
+root still leaves us with the <em>jailbreak</em> issue. To fix this we just use
+namespaces again the way they where meant to be used originally. Recall that,
+when they were introduced, namespaces were of just one kind: mount. In fact,
+back then, namespaces was a synonym of <em>mount</em> namespace.</p>
+<p>The other ingredient that is needed to actually secure against jail breaking is
+the <code>pivot_root</code> system call. At first sight it might look like <code>chroot</code>, but it
+is quite different. It allows you to put the old root to a new location and use
+a new mount point as the new root for the calling process.</p>
+<p>The key here is the combination of <code>pivot_root</code> and the namespace of the kind
+mount that allows us to specify a new root and manipulate the mount points that
+are visible inside the container that we want to create, without messing about
+with the host mount points. So here is the general idea and the steps required:</p>
+<ol>
+<li>Start a shell session from a shell executable inside the root file system in
+a mount namespace.</li>
+<li>Unmount all the current mount points, including that of type <code>proc</code>.</li>
+<li>Turn the Ubuntu Base root file system into a (bind) mount point</li>
+<li>Use <code>pivot_root</code> and `chroot to swap the new root with the old one</li>
+<li>Unmount the new location of the old root to conceal the full host file
+system.</li>
+</ol>
+<p>The above steps can be performed with the following initialisation script.</p>
+<div class="highlight"><pre><span></span>umount -a
+umount /proc
+mount --bind ubuntu-latest/ ubuntu-latest/
+<span class="nb">cd</span> ubuntu-latest/
+<span class="nb">test</span> -d old-root <span class="o">||</span> mkdir old-root
+pivot_root . old-root/
+<span class="nb">exec</span> chroot . /bin/bash --init-file &lt;<span class="o">(</span>mount -t proc proc /proc <span class="o">&amp;&amp;</span> umount -l /old-root<span class="o">)</span>
+</pre></div>
+
+
+<p>Copy and paste these lines in a file, e.g. <code>cnt-init.sh</code> and then run</p>
+<div class="highlight"><pre><span></span>sudo unshare --fork -p -u -m ubuntu-latest/bin/bash --init-file cnt-init.sh
+</pre></div>
+
+
+<p>You can now check that the <code>/old-root</code> folder is empty, meaning that we now have
+no ways of accessing the full host file system, but only the corner that
+corresponds to the content of the new root, i.e. the content of the
+<code>ubuntu-latest</code> folder. Furthermore, you can go on and check that our recipe for
+breaking out of a vanilla <code>chroot</code> jail does not work in this case, because the
+jail itself is now an effective, rather than apparent, root!</p>
+<h1 id="conclusions">Conclusions</h1>
+<p>We have come to the end of this journey across the features of the Linux kernel
+that make containers possible. I hope this has given you a better understanding
+of what many people mean when they say that containers are like virtual
+machines, but are <em>not</em> virtual machine.</p>
+<p>Whilst spinning containers by hand could be fun, and quite likely an interesting
+educational experience for many, to actually produce something that is robust
+and secure enough requires some effort. Even in our last examples there are many
+things that need to be improved, starting from the fact that we would want to
+avoid giving control of our containers to users as root. Despite all our effort
+to improve containment of resources, an user logged in as root can still do some
+nasty things (open lower-numbered ports and all such kind of businesses...). The
+point here is that, if you need containers for production environments, you
+should turn to well tested and established technologies, like LXC, Docker etc...
+.</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./what-actually-are-containers.html";
+  this.page.identifier = "containers"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

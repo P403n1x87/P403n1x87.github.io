@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - Extending Python with Assembly</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="assembly" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(theme/images/default_art.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-75 bg-black">
+      <h1 class="entry-title">Extending Python with Assembly</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2018-03-24T00:32:00+01:00">
+          &#128197; Sat 24 March 2018
+        </time>
+        <span class="readtime py-1">&#9202; A 17 min read</span>
+        <span id="github">
+          <i class="fa fa-github" aria-hidden="true"></i>
+          <a href="https://github.com/P403n1x87/asm/tree/master/python" target="_blank">
+            P403n1x87/asm/python
+          </a>
+        </span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/assembly.html">assembly</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>What's a better way to fill an empty evening if not by reading about how to extend Python with Assembly? I bet you don't even know where to start to answer this question :P. But if you're curious to know how you can use another language to extend Python, and if you happen to like Assembly programming, you might end up actually enjoying this post (I hope!).</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-code">The Code</a><ul>
+<li><a href="#shared-object">Shared Object</a></li>
+<li><a href="#the-cpython-headers">The CPython Headers</a></li>
+<li><a href="#exporting-global-symbols">Exporting Global Symbols</a></li>
+<li><a href="#immutable-strings">Immutable Strings</a></li>
+<li><a href="#cpython-data-structures">CPython Data Structures</a></li>
+<li><a href="#local-and-global-functions">Local and Global Functions</a></li>
+</ul>
+</li>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#assembling-and-linking">Assembling and Linking</a></li>
+<li><a href="#how-to-test-the-module">How to Test the Module</a></li>
+<li><a href="#distributing-the-module">Distributing the Module</a></li>
+</ul>
+</li>
+<li><a href="#conclusions">Conclusions</a></li>
+</ul>
+</div>
+<h1 id="introduction">Introduction</h1>
+<p>If you have landed on this page, you must have had one between two only possible
+reactions to the title of this post, either "Hmm, this sounds interesting" or
+"Just, why?". The straight answer is, well, "just, because". And perhaps a bit
+more articulated answer is: because the people in the first category probably
+enjoy this kind of things :).</p>
+<p>Reactions aside, the subject of this post is the coding of an extension for
+Python written in pure Assembly for the Intel x86-64 architecture on a
+Linux-based operating system. If you are familiar with general assembly but have
+never coded for the architecture that we are targeting, it is perhaps worth
+reading through my previous post "<a href="./getting-started-with-x86-64-assembly-on-linux.html">Getting Started with x86-64 Assembly on
+Linux</a>".</p>
+<p>I will also assume that you are somewhat familiar with extending Python with C.
+If not, then it probably is a good idea to go through the <a href="https://docs.python.org/3/extending/extending.html">official
+documentation</a> before
+reading on, or some things might not make too much sense. The approach of this
+post is by example and builds on knowledge about C to transition to Assembly. My
+favourite assembler on Linux is NASM, since it supports the Intel syntax, the
+one that I am more comfortable with. Therefore the only dependencies for
+following along are the NASM assembler and the GNU linker <code>ld</code>. Optionally, we
+can make use of a <code>Makefile</code> to assemble and link our code, and perhaps <code>docker</code>
+to test it in a clean environment. You will find all the relevant files in the
+linked <a href="https://github.com/P403n1x87/asm/tree/master/python">GitHub repository</a>.</p>
+<p>Now it's time to jump straight into the code.</p>
+<h1 id="the-code">The Code</h1>
+<p>There isn't much more to say before we can see the code really, so here it is.
+This is the content of my <code>asm.asm</code> source file.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">DEFAULT</span>                 <span class="nv">rel</span>
+
+<span class="cp">%include                &quot;asm/python.inc&quot;</span>
+
+<span class="k">GLOBAL                  </span><span class="nv">PyInit_asm</span><span class="p">:</span><span class="nv">function</span>
+
+
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION                 </span><span class="nv">.rodata</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nf">l_sayit_name</span>            <span class="nv">db</span> <span class="s">&quot;sayit&quot;</span><span class="p">,</span> <span class="mi">0</span>
+<span class="nf">l_sayit_doc</span>             <span class="nv">db</span> <span class="s">&quot;This method has something important to say.&quot;</span><span class="p">,</span> <span class="mi">0</span>
+<span class="nf">l_sayit_msg</span>             <span class="nv">db</span> <span class="s">&quot;Assembly is great fun! :)&quot;</span><span class="p">,</span> <span class="mi">10</span>
+<span class="no">l_sayit_msg_len</span><span class="kd">         equ</span> <span class="kc">$</span> <span class="o">-</span> <span class="nv">l_sayit_msg</span>
+
+<span class="nf">l_module_name</span>           <span class="nv">db</span> <span class="s">&quot;asm&quot;</span><span class="p">,</span> <span class="mi">0</span>
+
+
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION                 </span><span class="nv">.data</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nl">l_asm_methods:</span>              <span class="c1">;; struct PyMethodDef[] *</span>
+<span class="nf">ISTRUC</span> <span class="nv">PyMethodDef</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_name</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_sayit_name</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_meth</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="nv">asm_sayit</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_flags</span>   <span class="p">,</span> <span class="nv">dq</span> <span class="nv">METH_NOARGS</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_doc</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_sayit_doc</span>
+<span class="nf">IEND</span>
+<span class="nf">NullMethodDef</span>
+
+<span class="nl">l_asm_module:</span>                <span class="c1">;; struct PyModuleDef *</span>
+<span class="nf">ISTRUC</span> <span class="nv">PyModuleDef</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_base</span>     <span class="p">,</span> <span class="nv">PyModuleDef_HEAD_INIT</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_name</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_module_name</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_doc</span>      <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_size</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="o">-</span><span class="mi">1</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_methods</span>  <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_asm_methods</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_slots</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_traverse</span> <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_clear</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="mi">0</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_free</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+<span class="nf">IEND</span>
+
+
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION                 </span><span class="nv">.text</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nl">asm_sayit:</span> <span class="c1">;; ----------------------------------------------------------------</span>
+                        <span class="nf">push</span>  <span class="nb">rbp</span>
+                        <span class="nf">mov</span>   <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+                        <span class="nf">mov</span>   <span class="nb">rax</span><span class="p">,</span> <span class="mi">1</span>                  <span class="c1">; SYS_WRITE</span>
+                        <span class="nf">mov</span>   <span class="nb">rdi</span><span class="p">,</span> <span class="mi">1</span>                  <span class="c1">; STDOUT</span>
+                        <span class="nf">mov</span>   <span class="nb">rsi</span><span class="p">,</span> <span class="nv">l_sayit_msg</span>
+                        <span class="nf">mov</span>   <span class="nb">rdx</span><span class="p">,</span> <span class="nv">l_sayit_msg_len</span>
+                        <span class="nf">syscall</span>
+
+                        <span class="nf">mov</span>   <span class="nb">rax</span><span class="p">,</span> <span class="nv">Py_None</span>
+                        <span class="nf">inc</span>   <span class="kt">QWORD</span> <span class="p">[</span><span class="nb">rax</span> <span class="o">+</span> <span class="nv">PyObject.ob_refcnt</span><span class="p">]</span>
+
+                        <span class="nf">pop</span>   <span class="nb">rbp</span>
+                        <span class="nf">ret</span>
+<span class="c1">;; end asm_sayit</span>
+
+
+<span class="nl">PyInit_asm:</span> <span class="c1">;; --------------------------------------------------------------</span>
+                        <span class="nf">push</span>  <span class="nb">rbp</span>
+                        <span class="nf">mov</span>   <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+                        <span class="nf">mov</span>   <span class="nb">rsi</span><span class="p">,</span> <span class="nv">PYTHON_API_VERSION</span>
+                        <span class="nf">mov</span>   <span class="nb">rdi</span><span class="p">,</span> <span class="nv">l_asm_module</span>
+                        <span class="nf">call</span>  <span class="nv">PyModule_Create2</span> <span class="ow">WRT</span> <span class="nv">..plt</span>
+
+                        <span class="nf">pop</span>   <span class="nb">rbp</span>
+                        <span class="nf">ret</span>
+<span class="c1">;; end PyInit_asm</span>
+</pre></div>
+</td></tr></table>
+
+<p>If you have never written a C extension for Python before, this might look a bit
+mysterious to you, although the general structure, at least, should be quite
+clear after you've glimpsed through the official Python documentation on
+extending Python with C.</p>
+<p>We shall now analyse every single part of the above code sample in details to
+see what each block of code does.</p>
+<h2 id="shared-object">Shared Object</h2>
+<p>On the very first line of the source we see the line</p>
+<div class="highlight"><pre><span></span><span class="nf">DEFAULT</span>                 <span class="nv">rel</span>
+</pre></div>
+
+
+<p>Our goal is to assemble and link our code into an ELF64 <em>shared object</em> file.
+Contrary to ordinary program code, shared object files are dynamically loaded
+into random memory addresses. It is therefore important that all our code is
+<em>position-independent</em>. One way of doing this is to make sure that any memory
+reference is not absolute, but relative to the value of the <code>RIP</code> register,
+which points to the current instruction being executed. This guarantees that, no
+matter where the shared object is loaded into memory, references to local
+variables are correct. In 64-bit mode, NASM defaults to absolute addresses,
+therefore the above line is necessary to switch to <code>RIP</code>-relative addresses.</p>
+<h2 id="the-cpython-headers">The CPython Headers</h2>
+<p>On line 3 we include a file to our main Assembly source. Given the simplicity of
+this example, we could have included the content of the <code>python.inc</code> file within
+<code>asm.asm</code> itself. However, for larger projects it is perhaps good practice to
+separate declarations and actual code, like it is usually done in C, with <code>.h</code>
+and <code>.c</code> files. In fact, the <code>python.inc</code> file includes the equivalent of
+structures and macros as declared in the CPython header files. As far as I'm
+aware, there are no assembly-specific include files provided by the maintainers
+of CPython, so we have to go through the extra effort of typing them ourselves.
+We will get back to the content of this file later on.</p>
+<h2 id="exporting-global-symbols">Exporting Global Symbols</h2>
+<p>Line 5 is an important one. It exports the symbol <code>PyInit_asm</code>, of type
+<code>function</code>, and makes it available for external programs. This is the function
+that CPython calls the moment we load the <code>asm</code> module with <code>import asm</code> from
+the Python interpreter. If we do not export this symbol, then CPython won't be
+able to find the code necessary to initialise the module. In analogy with C,
+this is equivalent to declaring a non-static function.</p>
+<h2 id="immutable-strings">Immutable Strings</h2>
+<p>Next we have the read-only data section</p>
+<div class="highlight"><pre><span></span><span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION                 </span><span class="nv">.rodata</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nf">l_sayit_name</span>            <span class="nv">db</span> <span class="s">&quot;sayit&quot;</span><span class="p">,</span> <span class="mi">0</span>
+<span class="nf">l_sayit_doc</span>             <span class="nv">db</span> <span class="s">&quot;This method has something important to say.&quot;</span><span class="p">,</span> <span class="mi">0</span>
+<span class="nf">l_sayit_msg</span>             <span class="nv">db</span> <span class="s">&quot;Assembly is great fun! :)&quot;</span><span class="p">,</span> <span class="mi">10</span>
+<span class="no">l_sayit_msg_len</span><span class="kd">         equ</span> <span class="kc">$</span> <span class="o">-</span> <span class="nv">l_sayit_msg</span>
+
+<span class="nf">l_module_name</span>           <span class="nv">db</span> <span class="s">&quot;asm&quot;</span><span class="p">,</span> <span class="mi">0</span>
+</pre></div>
+
+
+<p>Here we initialise the strings that we will need later on. As they won't change
+during the course of the code execution, we put them in a read-only section of
+the shared object. The GNU C compiler does just the same thing with every
+literal string that you use in C code. You will notice references to their
+address in the following section, that of (read-write) initialised data.</p>
+<h2 id="cpython-data-structures">CPython Data Structures</h2>
+<p>Next is the section of initialised data.</p>
+<div class="highlight"><pre><span></span><span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION                 </span><span class="nv">.data</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nl">l_asm_methods:</span>              <span class="c1">;; struct PyMethodDef[] *</span>
+<span class="nf">ISTRUC</span> <span class="nv">PyMethodDef</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_name</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_sayit_name</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_meth</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="nv">asm_sayit</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_flags</span>   <span class="p">,</span> <span class="nv">dq</span> <span class="nv">METH_NOARGS</span>
+  <span class="nf">at</span> <span class="nv">PyMethodDef.ml_doc</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_sayit_doc</span>
+<span class="nf">IEND</span>
+<span class="nf">NullMethodDef</span>
+
+<span class="nl">l_asm_module:</span>               <span class="c1">;; struct PyModuleDef *</span>
+<span class="nf">ISTRUC</span> <span class="nv">PyModuleDef</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_base</span>     <span class="p">,</span> <span class="nv">PyModuleDef_HEAD_INIT</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_name</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_module_name</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_doc</span>      <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_size</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="o">-</span><span class="mi">1</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_methods</span>  <span class="p">,</span> <span class="nv">dq</span> <span class="nv">l_asm_methods</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_slots</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_traverse</span> <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_clear</span>    <span class="p">,</span> <span class="nv">dq</span> <span class="mi">0</span>
+  <span class="nf">at</span> <span class="nv">PyModuleDef.m_free</span>     <span class="p">,</span> <span class="nv">dq</span> <span class="nv">NULL</span>
+<span class="nf">IEND</span>
+</pre></div>
+
+
+<p>Here is where things start to get interesting, and the content of the
+<code>python.inc</code> file comes into play. The first two labels point to the beginning
+of CPython-specific structures. The first is an array of <code>PyMethodDef</code>
+structures. As the name suggests, each instance of this structure is used to
+hold information about a method that should be made available to the Python
+interpreter from within our module. To find out in which header file it is
+defined, we can use the command</p>
+<div class="highlight"><pre><span></span>grep -nr /usr/include/python3.6 -e <span class="s2">&quot;struct PyMethodDef&quot;</span>
+</pre></div>
+
+
+<p>In my case, I get that the structure is defined in
+<code>/usr/include/python3.6/methodobject.h</code>, starting from line 54. Inside the
+<code>python.inc</code> we then have the equivalent structure declaration</p>
+<div class="highlight"><pre><span></span><span class="k">STRUC </span><span class="nv">PyMethodDef</span>
+  <span class="nf">.ml_name</span>              <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; const char *</span>
+  <span class="nf">.ml_meth</span>              <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; PyCFunction</span>
+  <span class="nf">.ml_flags</span>             <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; int</span>
+  <span class="nf">.ml_doc</span>               <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; const char *</span>
+<span class="k">ENDSTRUC</span>
+</pre></div>
+
+
+<p>The <code>NullMethodDef</code> is a NASM macro that conveniently defines the <em>sentinel</em>
+<code>PyMethodDef</code> structure, which is used to mark the end of the <code>PyMethodDef</code>
+array pointed by <code>l_asm_methods</code>. Its definition is also in the <code>python.inc</code>
+file and, as you can see, simply initialises a new instance of the structure
+with all the fields set to <code>NULL</code> or 0, depending on their semantics, i.e.
+whether they are memory pointers or general integers.</p>
+<div class="highlight"><pre><span></span><span class="cp">%define NullMethodDef         dq NULL, NULL, 0, NULL</span>
+</pre></div>
+
+
+<blockquote>
+<p>Note that <code>NULL</code> is not a native NASM value. To align the coding conventions
+with C, I have defined NULL as a constant in <code>python.inc</code> and assigned the
+value of 0 to it. The idea is that, like in C, it makes the intent of the code
+clearer, since any occurrence of <code>NULL</code> indicates a null pointer rather than
+just the literal value 0.</p>
+</blockquote>
+<p>The next label, <code>l_asm_module</code>, points to an instance of the <code>PyModuleDef</code>
+structure, which is pretty much the core data structure of our Python module. It
+contains all the relevant metadata that is then passed to CPython for correct
+initialisation and use of the module. Its definition is in the <code>moduleobject.h</code>
+header file and, at first sight, looks a bit complicated, with some references
+to other structures and C macros.</p>
+<div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">PyModuleDef</span><span class="p">{</span>
+  <span class="n">PyModuleDef_Base</span> <span class="n">m_base</span><span class="p">;</span>
+  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">m_name</span><span class="p">;</span>
+  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">m_doc</span><span class="p">;</span>
+  <span class="n">Py_ssize_t</span> <span class="n">m_size</span><span class="p">;</span>
+  <span class="n">PyMethodDef</span> <span class="o">*</span><span class="n">m_methods</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="nc">PyModuleDef_Slot</span><span class="o">*</span> <span class="n">m_slots</span><span class="p">;</span>
+  <span class="n">traverseproc</span> <span class="n">m_traverse</span><span class="p">;</span>
+  <span class="n">inquiry</span> <span class="n">m_clear</span><span class="p">;</span>
+  <span class="n">freefunc</span> <span class="n">m_free</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">PyModuleDef</span><span class="p">;</span>
+</pre></div>
+
+
+<p>So lets take our time to figure out what its byte content looks like. The first
+field is an instance of the <code>PyModuleDef_Base</code> structure, which is defined in
+the same header file, just a few lines above. The non-trivial bit in this new
+structure is the first part, <code>PyObject_HEAD</code>, which looks like a C macro. As the
+name suggest, its definition is quite likely to be found in <code>object.h</code>. Indeed,
+there we find</p>
+<div class="highlight"><pre><span></span><span class="cp">#define PyObject_HEAD                   PyObject ob_base;</span>
+</pre></div>
+
+
+<p>so our chase continues. The definition of the <code>PyObject</code> structure can be found
+a few lines below. Again, all the fields are quite simple, i.e. just integers
+value or memory pointers, except for the macro <code>_PyObject_HEAD_EXTRA</code>. We then
+have to jump back up a few lines, to find that this macro is conditionally
+defined as either nothing or <code>0, 0</code>. By default, the macro <code>Py_TRACE_REFS</code> is
+not defined, so in our case <code>_PyObject_HEAD_EXTRA</code> evaluates to nothing.
+Backtracking from our macro chase in CPython headers, we see that we can define
+the following structures in <code>python.inc</code></p>
+<div class="highlight"><pre><span></span><span class="k">STRUC </span><span class="nv">PyObject</span>
+  <span class="nf">.ob_refcnt</span>            <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; Py_ssize_t</span>
+  <span class="nf">.ob_type</span>              <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; struct _typeobject *</span>
+<span class="k">ENDSTRUC</span>
+
+<span class="nv">STRUC</span> <span class="nv">PyModuleDef_Base</span>
+  <span class="nf">.ob_base</span>              <span class="nv">resb</span> <span class="nv">PyObject_size</span>
+  <span class="nf">.m_init</span>               <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; PyObject *</span>
+  <span class="nf">.m_index</span>              <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; Py_ssize_t</span>
+  <span class="nf">.m_copy</span>               <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; PyObject *</span>
+<span class="k">ENDSTRUC</span>
+
+<span class="nv">STRUC</span> <span class="nv">PyModuleDef</span>
+  <span class="nf">.m_base</span>               <span class="nv">resb</span> <span class="nv">PyModuleDef_Base_size</span>
+  <span class="nf">.m_name</span>               <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; const char *</span>
+  <span class="nf">.m_doc</span>                <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; const char *</span>
+  <span class="nf">.m_size</span>               <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; Py_ssize_t</span>
+  <span class="nf">.m_methods</span>            <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; PyMethodDef *</span>
+  <span class="nf">.m_slots</span>              <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; struct PyModuleDef_Slot *</span>
+  <span class="nf">.m_traverse</span>           <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; traverseproc</span>
+  <span class="nf">.m_clear</span>              <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; inquiry</span>
+  <span class="nf">.m_free</span>               <span class="nv">resq</span> <span class="mi">1</span>    <span class="c1">; freefunc</span>
+<span class="k">ENDSTRUC</span>
+</pre></div>
+
+
+<p>As you can easily guess, NASM generates the constants <code>PyObject_size</code> etc...
+automatically so that they can be used to reserve enough memory to hold the
+entire structure in the definition of other structures. This makes nesting quite
+easy to implement in NASM.</p>
+<h2 id="local-and-global-functions">Local and Global Functions</h2>
+<p>Finally we get to the actual code that will get executed by CPython when our
+module is loaded and initialised, and when the methods that it provides are
+called.</p>
+<div class="highlight"><pre><span></span><span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION                 </span><span class="nv">.text</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nl">asm_sayit:</span> <span class="c1">;; ----------------------------------------------------------------</span>
+                        <span class="nf">push</span>  <span class="nb">rbp</span>
+                        <span class="nf">mov</span>   <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+                        <span class="nf">mov</span>   <span class="nb">rax</span><span class="p">,</span> <span class="mi">1</span>                  <span class="c1">; SYS_WRITE</span>
+                        <span class="nf">mov</span>   <span class="nb">rdi</span><span class="p">,</span> <span class="mi">1</span>                  <span class="c1">; STDOUT</span>
+                        <span class="nf">mov</span>   <span class="nb">rsi</span><span class="p">,</span> <span class="nv">l_sayit_msg</span>
+                        <span class="nf">mov</span>   <span class="nb">rdx</span><span class="p">,</span> <span class="nv">l_sayit_msg_len</span>
+                        <span class="nf">syscall</span>
+
+                        <span class="nf">mov</span>   <span class="nb">rax</span><span class="p">,</span> <span class="nv">Py_None</span>
+                        <span class="nf">inc</span>   <span class="kt">QWORD</span> <span class="p">[</span><span class="nb">rax</span> <span class="o">+</span> <span class="nv">PyObject.ob_refcnt</span><span class="p">]</span>
+
+                        <span class="nf">pop</span>   <span class="nb">rbp</span>
+                        <span class="nf">ret</span>
+<span class="c1">;; end asm_sayit</span>
+
+
+<span class="nl">PyInit_asm:</span> <span class="c1">;; --------------------------------------------------------------</span>
+                        <span class="nf">push</span>  <span class="nb">rbp</span>
+                        <span class="nf">mov</span>   <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+                        <span class="nf">mov</span>   <span class="nb">rsi</span><span class="p">,</span> <span class="nv">PYTHON_API_VERSION</span>
+                        <span class="nf">mov</span>   <span class="nb">rdi</span><span class="p">,</span> <span class="nv">l_asm_module</span>
+                        <span class="nf">call</span>  <span class="nv">PyModule_Create2</span> <span class="ow">WRT</span> <span class="nv">..plt</span>
+
+                        <span class="nf">pop</span>   <span class="nb">rbp</span>
+                        <span class="nf">ret</span>
+<span class="c1">;; end PyInit_asm</span>
+</pre></div>
+
+
+<p>In fact, we have a total of two functions, one local and one global. The first
+one, <code>asm_sayit</code>, is the only method contained in our module. All it does is to
+write a string, <code>l_sayit_msg</code>, to standard output by invoking the <code>SYS_WRITE</code>
+system call. Perhaps the most interesting bit of this function is the code on
+lines 61-62. This is the idiom for any function that wishes to return <code>None</code> in
+Python. Recall that, in Python, <code>None</code> is an object instantiated by CPython. As
+such, our shared library needs to import it as an external symbol. This is why
+you will find the macro <code>PyNone</code> defined as</p>
+<div class="highlight"><pre><span></span><span class="cp">%define Py_None               _Py_NoneStruct</span>
+</pre></div>
+
+
+<p>together with the line</p>
+<div class="highlight"><pre><span></span><span class="k">EXTERN    </span><span class="nv">_Py_NoneStruct</span>
+</pre></div>
+
+
+<p>in the <code>python.inc</code> file. This is equivalent to the two lines</p>
+<div class="highlight"><pre><span></span><span class="n">PyAPI_DATA</span><span class="p">(</span><span class="n">PyObject</span><span class="p">)</span> <span class="n">_Py_NoneStruct</span><span class="p">;</span> <span class="cm">/* Don&#39;t use this directly */</span>
+<span class="cp">#define Py_None (&amp;_Py_NoneStruct)</span>
+</pre></div>
+
+
+<p>in the <code>object.h</code> header file, where the <code>None</code> object is defined. All of this
+explains line 61, but what about line 62? This has to do with <a href="https://docs.python.org/3/c-api/refcounting.html">Reference
+Counting</a>. In a nutshell,
+every object created in Python comes with a counter that keeps track of all the
+references attached to it. When the counter gets down to 0, the object can be
+de-allocated from memory and resources freed for other objects to use. This is
+how Python, which heavily relies on <code>malloc</code>, can keep memory leaks at bait. It
+is therefore very important to properly maintain reference counts in Python
+extensions. As <code>None</code> is a Python object like any others, when we return a
+reference to it, we have to bump its reference count. In C, this is conveniently
+done with the <code>Py_INCREF</code> macro. Its definition is in the <code>object.h</code> and, as it
+is easy to guess, it just increases the <code>ob_refcnt</code> field of the <code>PyObject</code>
+structure. This is precisely what we do on line 62.</p>
+<blockquote>
+<p><strong>Stack Frames Matter!</strong> You might be wondering why we are taking care of
+creating a stack frame on function entry, and cleaning up after ourself on
+leave. The reason is a pretty obvious one: we don't know what code will call
+ours, so it is safe to make sure that stack alignment is preserved across
+calls by doing what every function is expected to do. When I was lying down
+the code for this post, I was getting a SIGSEGV exception, and the debugger
+revealed that the instruction <code>movaps</code> was trying to store the value of the
+<code>xmm0</code> register on a memory location that was not a multiple of 16. The
+problem was solved by the extra 8 bytes from <code>push rbp</code>.</p>
+</blockquote>
+<p>The second and last function is our global exported symbol <code>PyInit_asm</code>. It gets
+called by CPython as soon as we <code>import</code> the module with <code>import asm</code>. In this
+simple case, we don't have to do much here. In fact, all we have to do is call a
+standard CPython function and pass it the instance of <code>PyModuleDef</code> allocated at
+<code>l_asm_module</code>. As we have briefly seen, this contains all the information about
+our module, from the documentation to the list of methods.</p>
+<p>Now, if you have read through the official documentation on how to extend Python
+with C, you might be wondering why we are calling <code>PyModule_Create2</code> instead of
+<code>PyModule_Create</code> (is there a typo?), and why we are passing it two arguments
+instead of one. If you are starting to smell a C macro, then you are correct!
+Long story short, <code>PyModule_Create</code> is a macro defined as</p>
+<div class="highlight"><pre><span></span><span class="cp">#define PyModule_Create(module) PyModule_Create2(module, PYTHON_API_VERSION)</span>
+</pre></div>
+
+
+<p>with <code>PYTHON_API_VERSION</code> defined as the literal 1013. So the actual function to
+call is indeed <code>PyModule_Create2</code>, and it takes two arguments.</p>
+<blockquote>
+<p>Did you notice that weird <code>WRT ..plt</code>? Remember the discussion about ensuring
+position-independent code? Since we have no clue of where the
+<code>PyModule_Create2</code> function resides in memory, we have to rely on some sort of
+indirection. This is provided by the so-called <em>Procedure Linkage Table</em>, or
+<em>PLT</em> for short, which is some code that is part of our shared library. When
+we call <code>PyModule_Create2 WRT ..plt</code>, we are jumping to the PLT section of our
+object file in memory, which contains the necessary code to make the actual
+jump to the function that we want to call.</p>
+</blockquote>
+<h1 id="installation">Installation</h1>
+<p>Once our assembly code is ready, it needs to be assembled and linked into a
+shared object file. We will now see how to perform these steps, and how to test
+and install our Python extension.</p>
+<h2 id="assembling-and-linking">Assembling and Linking</h2>
+<p>Once the code is ready, it needs to be assembled and linked into the final
+shared object file. The NASM assembler is invoked with minimal arguments as</p>
+<div class="highlight"><pre><span></span>nasm -f elf64 -o asm/asm.o asm/asm.asm
+</pre></div>
+
+
+<p>This creates an intermediate object file <code>asm.o</code>. To create the final shared
+object file, we use the GNU linker with the following arguments</p>
+<div class="highlight"><pre><span></span>ld -shared -o asm/asm.so asm/asm.o -I/lib64/ld-linux-x86-64.so.2
+</pre></div>
+
+
+<p>Note the use of the <code>-shared</code> switch, which instructs the linker to create a
+shared object file.</p>
+<h2 id="how-to-test-the-module">How to Test the Module</h2>
+<p>The first thing that you might want to do is to manually test that the shared
+object file works fine with Python. For CPython to be able to find the module,
+we need to ensure that its location is included in the search path. One way is
+to add it to the <code>PYTHONPATH</code> environment variable. For example, from within the
+project folder, we can launch Python with</p>
+<div class="highlight"><pre><span></span><span class="nv">PYTHONPATH</span><span class="o">=</span>./asm python3
+</pre></div>
+
+
+<p>and from the interactive session we should be able to import the module with</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">asm</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+
+
+<p>Alternatively, we can add the search path to <code>sys.path</code> with these few lines of
+Python code</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./asm&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">asm</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+
+
+<p>Once we have successfully imported our module in Python, we can test that its
+method <code>sayit</code> works as expected</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="o">.</span><span class="vm">__doc__</span>
+<span class="s1">&#39;This method has something important to say.&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="p">()</span>
+<span class="n">Assembly</span> <span class="ow">is</span> <span class="n">great</span> <span class="n">fun</span><span class="err">!</span> <span class="p">:)</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+
+
+<p>I hope that you would agree :).</p>
+<h2 id="distributing-the-module">Distributing the Module</h2>
+<p>The simplicity of our sample module wouldn't justify the use of <code>setuptools</code> for
+distribution. In this case, a simple, old-fashioned Makefile is the simplest
+solution to go for. Even for larger projects, you would probably still delegate
+the build job of your code to a Makefile anyway, which would then get called
+from your <code>setup.py</code> at some phase, perhaps during <code>build</code>. However, the
+recommended standard is that you build <em>wheels</em> instead of <em>eggs</em>, and the
+requirement is that you provide pre-built binaries with your package.</p>
+<p>This being said, let's see how to distribute the module. As we have seen in the
+previous section, the shared object needs to resides in one of the Python search
+paths. The easiest way to find out what these paths are on the platform that you
+are targeting is to launch the Python interpreter and print the value of
+<code>sys.path</code>. On my platform, I get the following output</p>
+<div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">3</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span>  <span class="mi">3</span> <span class="mi">2017</span><span class="p">,</span> <span class="mi">21</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mi">48</span><span class="p">)</span>
+<span class="p">[</span><span class="n">GCC</span> <span class="mf">7.2</span><span class="o">.</span><span class="mi">0</span><span class="p">]</span> <span class="n">on</span> <span class="n">linux</span>
+<span class="n">Type</span> <span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python36.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3.6&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3.6/lib-dynload&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python3.6/dist-packages&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3/dist-packages&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3.6/dist-packages&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+
+
+<p>The Makefile could then contain the following line inside the <code>install</code> rule:</p>
+<div class="highlight"><pre><span></span>install: default
+    cp asm/asm.so /usr/lib/python<span class="si">${</span><span class="nv">PYTHON_TARGET</span><span class="si">}</span>/asm.so
+</pre></div>
+
+
+<p>with the environment variable <code>PYTHON_TARGET</code> set to <code>3.6</code>.</p>
+<p>To automate the building and testing process of the module, we could use Docker
+to build an image out of the target platform and trigger a build, and perhaps
+execute some unit tests too. A simple Dockerfile that does the minimum work to
+build and test would look something like the following</p>
+<div class="highlight"><pre><span></span><span class="k">FROM</span>  <span class="s">ubuntu:latest</span>
+<span class="k">USER</span><span class="s">  root</span>
+<span class="k">ADD</span>   . asm
+<span class="k">RUN</span>   apt-get update              <span class="o">&amp;&amp;</span><span class="se">\</span>
+      apt-get install -y            <span class="se">\</span>
+        nasm                        <span class="se">\</span>
+        python3-pytest              <span class="se">\</span>
+        build-essential
+<span class="k">ENV</span>   <span class="nv">PYTHON_TARGET</span><span class="o">=</span><span class="m">3</span>.5
+<span class="k">RUN</span>   <span class="nb">cd</span> asm                      <span class="o">&amp;&amp;</span><span class="se">\</span>
+      make                        <span class="o">&amp;&amp;</span><span class="se">\</span>
+      make install                <span class="o">&amp;&amp;</span><span class="se">\</span>
+      python3 -m pytest -s
+</pre></div>
+
+
+<p>As you can see, we are targeting the latest stable version of Ubuntu, which
+comes with <code>python3.5</code>. We make sure we install all the required dependencies,
+the assembler and the standard build tools, along with <code>python3-pytest</code> to
+perform unit testing once our module builds successfully.</p>
+<p>The bare minimum that we can test is that the import of the module works fine
+and that we can call its method. So a possible <code>test_asm.py</code> test script would
+look like</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asm</span>
+
+
+<span class="k">def</span> <span class="nf">test_asm</span><span class="p">():</span>
+    <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="p">()</span>
+</pre></div>
+
+
+<h1 id="conclusions">Conclusions</h1>
+<p>Whilst I appreciate that the cases where you'd want to seriously consider
+extending Python with Assembly code are rare, it is undoubtedly the case that,
+if you enjoy experimenting with code, this could be a fun and instructing
+experience. In my case, this has forced me to go look into the CPython header
+files, which I probably wouldn't have if I were using C. I now know more about
+the internal workings of Python and a clearer idea of how CPython is structured.</p>
+<p>As always, I hope you have enjoyed the read. Happy Assembly coding! :)</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./extending-python-with-assembly.html";
+  this.page.identifier = "asm_python"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

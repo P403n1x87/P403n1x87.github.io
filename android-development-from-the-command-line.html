@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - Android Development from the Command Line</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="android" />
+    <meta name="tags" content="gradle" />
+    <meta name="tags" content="java" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(theme/images/default_art.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-75 bg-black">
+      <h1 class="entry-title">Android Development from the Command Line</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2017-10-14T22:42:00+01:00">
+          &#128197; Sat 14 October 2017
+        </time>
+        <span class="readtime py-1">&#9202; A 25 min read</span>
+        <span id="github">
+          <i class="fa fa-github" aria-hidden="true"></i>
+          <a href="https://github.com/P403n1x87/androtest" target="_blank">
+            P403n1x87/androtest
+          </a>
+        </span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/android.html">android</a>
+            <a class="tag" href="./tag/gradle.html">gradle</a>
+            <a class="tag" href="./tag/java.html">java</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>Do you like your development tools to be as simple as a text editor to write the code and a bunch of CLI application to build your projects? Do you feel like you are in a cage when you use an IDE? Or perhaps your PC or laptop is a bit dated and all the cores spin like crazy when you fire up Android Studio? Then read on to learn how you can develop Android application with just the text editor of your choice and the standard Android SDK CLI tools.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#pre-requisites">Pre-requisites</a><ul>
+<li><a href="#android-sdk-tools">Android SDK Tools</a></li>
+<li><a href="#android-sdk-platform-tools">Android SDK Platform Tools</a></li>
+<li><a href="#android-sdk-platforms">Android SDK Platforms</a></li>
+<li><a href="#android-sdk-build-tools">Android SDK Build Tools</a></li>
+<li><a href="#android-emulator">Android Emulator</a></li>
+<li><a href="#gradle">Gradle</a></li>
+</ul>
+</li>
+<li><a href="#creating-the-gradle-project">Creating the Gradle Project</a></li>
+<li><a href="#writing-the-application">Writing the Application</a><ul>
+<li><a href="#the-application-manifest">The Application Manifest</a></li>
+<li><a href="#the-main-activity">The Main Activity</a></li>
+<li><a href="#the-layout-resource">The Layout Resource</a></li>
+</ul>
+</li>
+<li><a href="#running-the-application">Running the Application</a><ul>
+<li><a href="#building-with-gradle">Building with Gradle</a></li>
+<li><a href="#creating-a-virtual-device">Creating a Virtual Device</a></li>
+<li><a href="#installing-the-apk">Installing the APK</a></li>
+<li><a href="#the-lint-tasks">The lint tasks</a></li>
+</ul>
+</li>
+<li><a href="#conclusions">Conclusions</a></li>
+</ul>
+</div>
+<h1 id="introduction">Introduction</h1>
+<p>Yes you guessed it right, I'm not a huge fan of IDEs. Don't get me wrong though,
+I am fully aware of how powerful modern IDEs are, and all the magic that they
+can do for you to assist you while you are coding your application. But this is
+also why I don't like them, especially when I'm picking up something new.</p>
+<p>To the date of writing, I am not an experienced Android developer. When I
+started developing applications (there was a time when I believed that no matter
+how big a project could be, you could always find the time to code it in
+assembly language), a plain old text editor was my friend, together with some
+command line tools, like assemblers, linkers, compilers, debuggers etc.... With
+no support at all, you had to know exactly what you were doing, you had to know
+the syntax, the APIs and where they were located. You also needed a minimum
+knowledge of what a linker is for and when and why you need one.</p>
+<p>Whenever I tried an IDE, e.g. Android Studio, I always felt like I didn't really
+need to know much about the frameworks I was using, as all the built-in tools
+would come to my rescue. As a consequence, I started feeling like I wasn't
+really mastering anything and put the project I was working on aside for future
+me to one day resume working on it. Rather than me using the IDE, it kind of was
+the other way around: the IDE was using me to magically generate code.</p>
+<p>IDEs also tend to hide all the machinery involved in the build process from the
+developer as well. In most cases, everything goes well, but what would you do if
+you suddenly come across a problem and you have no clue at which stage of the
+build process it is happening?</p>
+<p>Surely, if you work on a big company project, it would be crazy to renounce
+entirely to IDEs, as your life might be a bit harder in everyday maintenance of
+your code, but for smaller projects this argument is somewhat weak, and opting
+for a plain text editor might have its many advantages. For once, you are in
+total control of the code that is going into your final product. And then again,
+there is also the educational aspect, which can give you the right amount of
+experience to tackle unexpected issues that could pop up during any stage of the
+development life-cycle.</p>
+<p>All this being said, in this post we shall see how to develop an Android
+application by only relying on a text editor of your choice and the standard CLI
+tool provided by the Android SDK. The focus is on the steps required to install
+the Android SDK command line tools and how to organise your source code, rather
+than on the details of the application itself.</p>
+<p>As with a standard Android project created with Android Studio, we are going to
+rely on Gradle and the Android Gradle plugin for the build process. You may
+rightfully think that this somehow partly defeats the point of this post, but,
+hey, in the end Gradle is just a command line tool, and quite a standard way to
+build and deploy Java projects these days.</p>
+<p>This post is targeted to Linux users, but there is a good chance that the steps
+that we will go through have an equivalent on other platforms, like Windows. I'm
+afraid this is something that you will have to find out on your own.</p>
+<p>Code very similar to the one presented in this post can be found in the GitHub
+repository <a href="https://github.com/P403n1x87/androtest">androtest</a>.</p>
+<h1 id="pre-requisites">Pre-requisites</h1>
+<p>Before embarking on an adventure, it is wise to check that we are taking all
+that we need along the way with us. As we are trying to keep things as simple as
+possible, we won't need much, but there are a few preliminary steps that we need
+to perform in order to set up our development environment.</p>
+<p>The first few steps couldn't be simpler: pick your favourite text editor (my
+laptop can still handle an application like Atom) and terminal application, and
+we already have almost half of what we need! The rest of the tools is provided
+by the Java Development Kit, the Android SDK Tools and Gradle. More details in
+due time.</p>
+<p>The JDK is usually available from your distro's repositories. On Ubuntu, it can
+be installed with, e.g.</p>
+<div class="highlight"><pre><span></span>sudo apt install openjdk-9-jdk
+</pre></div>
+
+
+<p>The Android SDK might not be available from the official repositories. In
+principle the could be installed along with Android Studio, but if you are not
+going to use Google's official IDE then it is a bit of waste of space. The
+<em>cleaner</em> alternative is to just download the Android SDK Tools from the
+<a href="https://developer.android.com/studio/index.html#command-tools">Android Studio</a>
+download page. For simplicity, I will split the installation process of the
+Android SDK into different steps.</p>
+<h2 id="android-sdk-tools">Android SDK Tools</h2>
+<p>Download the zip archive and extract it somewhere, e.g. <code>~/.android/sdk</code>, then
+update your <code>.bashrc</code> file to define the <code>ANDROID_HOME</code> environment variable and
+include the SDK tools binaries in the <code>PATH</code> variable by adding the following
+lines</p>
+<div class="highlight"><pre><span></span><span class="c1"># Android SDK Tools</span>
+<span class="nb">export</span> <span class="nv">ANDROID_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.android/sdk
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/tools:<span class="nv">$ANDROID_HOME</span>/tools/bin
+</pre></div>
+
+
+<p>Note that most of the tools installed in <code>$ANDROID_HOME/tools</code> are deprecated
+and one should use the dedicated ones provided in the <code>$ANDROID_HOME/tools/bin</code>
+folder. These include the fundamental
+<a href="https://developer.android.com/studio/command-line/sdkmanager.html"><code>sdkmanager</code></a>
+and the
+<a href="https://developer.android.com/studio/command-line/avdmanager.html"><code>avdmanager</code></a>
+tools for respectively creating and managing different SDK versions (and other
+packages too) and virtual devices (the emulators).</p>
+<h2 id="android-sdk-platform-tools">Android SDK Platform Tools</h2>
+<p>Throughout the Android development life-cycle, you are likely to need to
+interface with the Android platform for testing your progress. In concrete terms
+this means that you might want to compile your project as you develop it for
+testing on an actual Android device. In order to connect to the device and look
+at the log you will need the Android Debug Bridge, which is provided with the
+Android Platform Tools. To install them we can use the <code>sdkmanager</code> CLI tool to
+pull the latest released version with the following command</p>
+<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;platform-tools&quot;</span>
+</pre></div>
+
+
+<p>This will install the Platform Tools into the <code>$ANDROID_HOME/platform-tools</code>
+folder. We can then add it to the <code>PATH</code> variable for easy invocation by simply
+adding the following lines to <code>.bashrc</code></p>
+<div class="highlight"><pre><span></span><span class="c1"># Android Platform Tools</span>
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/platform-tools
+</pre></div>
+
+
+<h2 id="android-sdk-platforms">Android SDK Platforms</h2>
+<p>In order to compile a project we need a certain API revision to be installed.
+This provides all the functionalities that our application can use and are
+provided in the form of Java packages and classes and other useful components.
+For example, if our project targets Marshmallow, then we need to install the
+Android SDK Platform API Level 23. You can find out more at <a href="https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels">this
+page</a>.
+To find out about all the packages available to download we can use the command</p>
+<div class="highlight"><pre><span></span>sdkmanager --list --verbose
+</pre></div>
+
+
+<p>At the moment we are interested in Android platforms, i.e. those packages that
+are prefixed with <code>platforms;</code>, so we can filter the output of the above command
+as follows</p>
+<div class="highlight"><pre><span></span>sdkmanager --list --verbose <span class="p">|</span> grep -A <span class="m">3</span> platforms<span class="se">\;</span>
+</pre></div>
+
+
+<p>Among the matching results, you should see something similar to the following</p>
+<div class="highlight"><pre><span></span>platforms;android-23
+    Description:        Android SDK Platform 23
+    Version:            3
+</pre></div>
+
+
+<p>We can then proceed to installing the Android SDK Platform API Level 23 with the
+command</p>
+<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;platforms;android-23&quot;</span>
+</pre></div>
+
+
+<blockquote>
+<p>When you use the <code>sdkmanager</code> tool, you might see the following warning message</p>
+<p><code>Warning: File /home/user/.android/repositories.cfg could not be loaded.</code></p>
+<p>In order to get rid of it you can simply create this file with no content.</p>
+</blockquote>
+<h2 id="android-sdk-build-tools">Android SDK Build Tools</h2>
+<p>Now that we have the API to compile against, we need the tools to actually be
+able to build a project: the build tools. They provide utilities like
+<code>apksigner</code>, Jack and Jill etc..., but for the moment we don't have to worry
+about the details of this package, as they will be invoked behind the scenes by
+Gradle.</p>
+<p>The <a href="https://developer.android.com/studio/releases/build-tools.html">Android Studio User
+Guide</a>
+recommends that you keep the build tools updated to the latest version. To find
+out all the versions available for download, run the following command</p>
+<div class="highlight"><pre><span></span>sdkmanager --list --verbose <span class="p">|</span> grep -A <span class="m">3</span> build-tools<span class="se">\;</span>
+</pre></div>
+
+
+<p>and locate the latest version. At the moment of writing this is 26.0.1, so the
+command to use in this case is</p>
+<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;build-tools;26.0.1&quot;</span>
+</pre></div>
+
+
+<h2 id="android-emulator">Android Emulator</h2>
+<p>The installation of the Android Emulator package is not mandatory, as you can
+decide to test your application on an actual Android device. However, there are
+many reasons why you might want to use an emulator: you probably don't own a
+huge variety of Android devices, differing not only in physical size, but also
+in the API version (Kit Kat, Lollipop, Marshmallow, just to name a few of the
+most recent code-names). The package can be installed through the <code>sdkmanger</code>
+with the command</p>
+<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;emulator&quot;</span>
+</pre></div>
+
+
+<p>Again, we can add the emulator folder to the <code>PATH</code> variable for easy access.
+However, the Android SDK Tools provides a deprecated set of tools, <code>emulator</code>
+and <code>emulator-check</code>, that would collide with the ones we have just installed.
+To solve this problem we can rename the deprecated executables with</p>
+<div class="highlight"><pre><span></span>chmod -x <span class="nv">$ANDROID_HOME</span>/tools/emulator
+chmod -x <span class="nv">$ANDROID_HOME</span>/tools/emulator-check
+mv <span class="nv">$ANDROID_HOME</span>/tools/emulator <span class="nv">$ANDROID_HOME</span>/tools/emulator.dep
+mv <span class="nv">$ANDROID_HOME</span>/tools/emulator-check <span class="nv">$ANDROID_HOME</span>/tools/emulator-check.dep
+</pre></div>
+
+
+<p>and then add the others to the <code>PATH</code> variables by appending the following lines
+to the <code>~/.bashrc</code> file</p>
+<div class="highlight"><pre><span></span><span class="c1"># Android Emulator</span>
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/emulator
+</pre></div>
+
+
+<h2 id="gradle">Gradle</h2>
+<p>Let's now proceed to the installation of Gradle, a build automation system that
+is also the default in Android Studio. Google has developed a dedicated Android
+plugin to assist with the most common tasks. The ones that I personally tend to
+run more frequently are collected in the following table</p>
+<table>
+<thead>
+<tr>
+<th><strong>Task</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compileDebugJavaWithJavac</code></td>
+<td>Compiles the debug version of the java sources. Useful to check for syntax errors while coding</td>
+</tr>
+<tr>
+<td><code>installDebug</code></td>
+<td>Compiles and installs the debug version on all the devices discovered by the ADB.</td>
+</tr>
+<tr>
+<td><code>lint</code></td>
+<td>Runs a lint on the sources, producing a report in <code>build/reports</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Gradle is quite popular so it should be available from your distro's official
+repositories. On Ubuntu 17.04 though, a quite old version of Gradle is available
+from them, so I would recommend that you add <a href="https://launchpad.net/~cwchien/+archive/ubuntu/gradle">Cheng-Wei Chien's
+PPA</a> to your software
+sources and install Gradle from there</p>
+<div class="highlight"><pre><span></span>sudo add-apt-repository ppa:cwchien/gradle
+sudo apt update <span class="o">&amp;&amp;</span> sudo apt install gradle
+</pre></div>
+
+
+<p>Gradle is quite a powerful tool, but you might find that it has a rather steep
+learning curve to master all of its features, especially if you are not familiar
+with Groovy. In this post we shall only scratch the very surface and look at
+only the closures that we need for this project, as a discussion on Gradle
+surely deserves a dedicated post on its own.</p>
+<p>Getting back on business, the installation of Gradle was the last step that we
+needed to perform in order to set up the development environment, and we can now
+move on to creating an Android project from scratch.</p>
+<h1 id="creating-the-gradle-project">Creating the Gradle Project</h1>
+<p>The first thing to do is to create a Gradle project of Java type. This involves
+setting up a directory structure in the project's parent folder and creating the
+Gradle build script <code>build.gradle</code>. With Gradle installed, these steps can be
+automated with the
+<a href="https://docs.gradle.org/current/userguide/build_init_plugin.html"><code>init</code></a> task</p>
+<div class="highlight"><pre><span></span>gradle init --type java-library
+</pre></div>
+
+
+<p>If you are contributing to a project that is the work of many hands, it will
+probably be the case that everybody is using the same build tools. As everybody
+can have a different version of Gradle on their local machine, the Gradle
+project recommends that one uses a
+<a href="https://docs.gradle.org/current/userguide/gradle_wrapper.html">wrapper</a> to
+build a project, rather than invoke the local installation of Gradle directly.
+By sharing the wrapper along with your project, every other developer working on
+the same project will be able to use the same version of Gradle as everybody
+else, thus getting rid of problems caused by switching between different
+versions. Even though this is a sample project, we will nonetheless create and
+use a Gradle wrapper to build our project. The previous command should have
+created a <code>gradlew</code> shell script in the project's folder. If not, run the
+following command</p>
+<div class="highlight"><pre><span></span>gradle wrapper
+</pre></div>
+
+
+<p>You should also have a folder <code>src/</code> containing all the sub-folders where Gradle
+expects the sources and the resources that make up your project. But, most
+importantly, you should also have the <code>build.gradle</code> and <code>settings.gradle</code> files
+containing some sample build settings. This structure is slightly different from
+the one generated by Android Studio, and documented on the <a href="https://developer.android.com/studio/build/index.html">developer
+portal</a>, where you can
+notice a nested Gradle project, with the topmost one used to import the actual
+project as a module, and configure the global build settings. For the case at
+hand, we could to without this nested structure and only define a single build
+script, since our project is made up of only one module.</p>
+<p>The following is the content of the <code>build.gradle</code> file.</p>
+<div class="highlight"><pre><span></span><span class="n">buildscript</span> <span class="o">{</span>
+    <span class="n">repositories</span> <span class="o">{</span>
+        <span class="n">jcenter</span><span class="o">()</span>
+    <span class="o">}</span>
+    <span class="n">dependencies</span> <span class="o">{</span>
+        <span class="n">classpath</span> <span class="s1">&#39;com.android.tools.build:gradle:2.3.3&#39;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;com.android.application&#39;</span>
+
+<span class="n">android</span> <span class="o">{</span>
+    <span class="n">compileSdkVersion</span> <span class="mi">23</span>
+    <span class="n">buildToolsVersion</span> <span class="s1">&#39;26.0.1&#39;</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>You can find a detailed explanation of the meaning of each closure in the
+<a href="https://developer.android.com/studio/build/index.html#top-level">Configure Your
+Build</a> page of
+the Android Developer portal. Briefly, the <code>buildscript</code> closure is used to
+configure Gradle itself so that it knows where to find the Android-specific
+Gradle tools that we want to use. We can then import the Android Gradle plugin
+and use the extensions to the DSL that it provides to configure the
+Android-specific build process. In this case we specify that the compilation SDK
+version that we want to use is Level 23 (Marshmallow), and that we want to use
+the version <code>26.0.1</code> of the build tools.</p>
+<p>The <code>gradle.properties</code> file is used to configure the project-wide Gradle
+settings, such as the Gradle daemon's maximum heap size. In fact, this is all we
+will use it for in our case. Open it with your text editor and put the following
+content in it</p>
+<div class="highlight"><pre><span></span><span class="n">org</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">jvmargs</span><span class="o">=-</span><span class="n">Xmx1536m</span>
+</pre></div>
+
+
+<p>This is our Gradle project created and configured! All the magic of the building
+process is hidden from us by the Android Gradle plugin so that we don't have to
+worry about anything else and just focus on our application code.</p>
+<h1 id="writing-the-application">Writing the Application</h1>
+<p>Two essential ingredients for an Android application are the <strong>Main Activity</strong>
+and the <a href="https://developer.android.com/guide/topics/manifest/manifest-intro.html"><strong>App
+Manifest</strong></a>.
+Let's start with the latter first.</p>
+<h2 id="the-application-manifest">The Application Manifest</h2>
+<p>The Android Application Manifest is an XML manifest file that is used to provide
+the Android system with essential information of an application, like the name
+of the Java package, the activities provided, the permissions required, the
+minimum SDK version supported etc... . Within a Gradle project, this file must
+be located in the <code>src/main</code> folder and named rigorously <code>AndroidManifest.xml</code>.
+In our case, this is what such manifest file would look like</p>
+<div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="p">&lt;</span><span class="nt">manifest</span> <span class="na">xmlns:android</span><span class="o">=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+  <span class="na">package</span><span class="o">=</span><span class="s">&quot;com.p403n1x87.androtest&quot;</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">uses-sdk</span>
+    <span class="na">android:minSdkVersion</span><span class="o">=</span><span class="s">&quot;21&quot;</span>
+    <span class="na">android:targetSdkVersion</span><span class="o">=</span><span class="s">&quot;23&quot;</span> <span class="p">/&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">application</span>
+    <span class="na">android:label</span><span class="o">=</span><span class="s">&quot;AndroTest&quot;</span>
+    <span class="na">android:theme</span><span class="o">=</span><span class="s">&quot;@android:style/Theme.Material&quot;</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">activity</span> <span class="na">android:name</span><span class="o">=</span><span class="s">&quot;MainActivity&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">intent-filter</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">action</span> <span class="na">android:name</span><span class="o">=</span><span class="s">&quot;android.intent.action.MAIN&quot;</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">category</span> <span class="na">android:name</span><span class="o">=</span><span class="s">&quot;android.intent.category.LAUNCHER&quot;</span> <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">intent-filter</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">activity</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">application</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">manifest</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>The structure of the Android Application Manifest file is described <a href="https://developer.android.com/guide/topics/manifest/manifest-intro.html#filestruct">on the
+developer
+portal</a>
+in the form of a skeleton, as it is not based on any XML schema like DTD or XSD.</p>
+<p>The root element is <code>manifest</code>, which accepts the <code>package</code> attribute. Here we
+specify the name of the Java package of our application. We also specify our
+target API level to 23. The minimum level supported is set to 21 for reasons
+that relate to the output of the <code>lint</code> Android Gradle task that we will look at
+later on. It is recommended that you set this attribute to a reasonable value.
+For example, if you do not set it, Android will automatically add the legacy
+overflow <em>three-dot</em> button, even though there are no actions to show. Starting
+from level 11, Android does not add this button by default.</p>
+<p>The <code>manifest</code> element must contain a unique <code>application</code> element that
+describes our application in may aspects, from the theme to use, to the activity
+content. In this case we set the application name to <code>AndroTest</code> and the theme
+to <code>Material</code> and we expose only one activity, i.e. the <code>MainActivity</code>, which is
+the entry point of our application, and the one that would be fired up when we
+launch it.</p>
+<h2 id="the-main-activity">The Main Activity</h2>
+<p>This takes us now to the main activity, i.e. the Java class that contains the
+code to be executed when our application is launched. Within a Gradle project,
+the main Java code should reside in the <code>src/main/java</code> folder. Since the
+package name is <code>com.p403n1x87.androtest</code>, the <code>MainActivity.java</code> source file
+should be created within the <code>src/main/java/com/p403n1x87/androtest</code> folder.
+Here is the code</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">com.p403n1x87.androtest</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">android.content.Context</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">android.hardware.Sensor</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">android.hardware.SensorEvent</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">android.hardware.SensorEventListener</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">android.hardware.SensorManager</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">android.view.ViewGroup.LayoutParams</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">android.widget.TextView</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">android.widget.LinearLayout</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="p">;</span>
+
+<span class="kn">import static</span> <span class="nn">java.lang.Math.sqrt</span><span class="p">;</span>
+
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span>
+<span class="p">{</span>
+  <span class="kd">private</span> <span class="n">SensorManager</span> <span class="n">mSensorManager</span><span class="p">;</span>
+  <span class="kd">private</span> <span class="n">Sensor</span>        <span class="n">mSensor</span><span class="p">;</span>
+
+  <span class="kd">private</span> <span class="n">TextView</span>      <span class="n">text</span>       <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="kd">private</span> <span class="n">LinearLayout</span>  <span class="n">layoutMain</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">);</span>
+
+    <span class="c1">// UI</span>
+    <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">layout</span><span class="p">.</span><span class="na">main_layout</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">text</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span>       <span class="n">text</span>       <span class="o">=</span> <span class="p">(</span><span class="n">TextView</span><span class="p">)</span>     <span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">text</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">layoutMain</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="n">layoutMain</span> <span class="o">=</span> <span class="p">(</span><span class="n">LinearLayout</span><span class="p">)</span> <span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">layout_main</span><span class="p">);</span>
+
+    <span class="c1">// Sensors</span>
+    <span class="n">mSensorManager</span> <span class="o">=</span> <span class="p">(</span><span class="n">SensorManager</span><span class="p">)</span> <span class="n">getSystemService</span><span class="p">(</span><span class="n">Context</span><span class="p">.</span><span class="na">SENSOR_SERVICE</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mSensorManager</span><span class="p">.</span><span class="na">getDefaultSensor</span><span class="p">(</span><span class="n">Sensor</span><span class="p">.</span><span class="na">TYPE_GRAVITY</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">){</span>
+      <span class="n">List</span><span class="o">&lt;</span><span class="n">Sensor</span><span class="o">&gt;</span> <span class="n">gravSensors</span> <span class="o">=</span> <span class="n">mSensorManager</span><span class="p">.</span><span class="na">getSensorList</span><span class="p">(</span><span class="n">Sensor</span><span class="p">.</span><span class="na">TYPE_GRAVITY</span><span class="p">);</span>
+      <span class="kt">int</span> <span class="n">nSensors</span> <span class="o">=</span> <span class="n">gravSensors</span><span class="p">.</span><span class="na">size</span><span class="p">();</span>
+      <span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Detected gravity sensors: &quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">nSensors</span><span class="p">));</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nSensors</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">final</span> <span class="n">TextView</span> <span class="n">tvSensor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextView</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="kd">final</span> <span class="kt">int</span>      <span class="n">j</span>        <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="n">tvSensor</span><span class="p">.</span><span class="na">setLayoutParams</span><span class="p">(</span><span class="k">new</span> <span class="n">LayoutParams</span><span class="p">(</span><span class="n">LayoutParams</span><span class="p">.</span><span class="na">WRAP_CONTENT</span><span class="p">,</span> <span class="n">LayoutParams</span><span class="p">.</span><span class="na">WRAP_CONTENT</span><span class="p">));</span>
+
+        <span class="n">mSensor</span> <span class="o">=</span> <span class="n">gravSensors</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">mSensorManager</span><span class="p">.</span><span class="na">registerListener</span><span class="p">(</span><span class="k">new</span> <span class="n">SensorEventListener</span><span class="p">()</span> <span class="p">{</span>
+          <span class="nd">@Override</span>
+          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSensorChanged</span><span class="p">(</span><span class="kd">final</span> <span class="n">SensorEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
+                <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+                <span class="kt">float</span> <span class="n">z</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
+                <span class="kt">float</span> <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">);</span>
+
+            <span class="n">tvSensor</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="n">String</span><span class="p">.</span><span class="na">format</span><span class="p">(</span><span class="s">&quot;Sensor %d: %f m/s^2&quot;</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">g</span><span class="p">));</span>
+          <span class="p">}</span>
+
+          <span class="nd">@Override</span>
+          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onAccuracyChanged</span><span class="p">(</span><span class="n">Sensor</span> <span class="n">sensor</span><span class="p">,</span> <span class="kt">int</span> <span class="n">a</span><span class="p">)</span> <span class="p">{}</span>
+        <span class="p">},</span> <span class="n">mSensor</span><span class="p">,</span> <span class="n">SensorManager</span><span class="p">.</span><span class="na">SENSOR_DELAY_NORMAL</span><span class="p">);</span>
+
+        <span class="n">layoutMain</span><span class="p">.</span><span class="na">addView</span><span class="p">(</span><span class="n">tvSensor</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+      <span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;We DO NOT have gravity! :(&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</td></tr></table>
+
+<p>The code is fairly simple and quite self-explanatory. We override the <code>onCreate</code>
+method of the <code>Activity</code> class, from which <code>MainActivity</code> inherits, to set up
+the UI. We use a layout resource as a basis, which we then dynamically extend
+with extra <code>TextView</code> widgets to hold the value of each gravity sensor that gets
+discovered at run-time.</p>
+<h2 id="the-layout-resource">The Layout Resource</h2>
+<p>In this project we have a mixture of static layout resources and dynamic
+creation of <code>TextView</code> elements. This offers us the chance to see how to make
+resources available to the Java code, i.e. by placing them in the place where
+Gradle, and the Android Gradle plugin, would expect them. Files placed in the
+<code>src/main/res</code> folder are treated as resources and can be referenced in the way
+described at the Android Developer portal. In the previous code block, on line
+36 we have</p>
+<div class="highlight"><pre><span></span>    <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">layout</span><span class="p">.</span><span class="na">main_layout</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The expression <code>R.layout.main_layout</code> refers to the resource <code>main_layout.xml</code>
+located in the <code>layout</code> sub-folder of <code>src/main/res</code>. The various grouping of
+resources is detailed at the page <a href="https://developer.android.com/guide/topics/resources/providing-resources.html">Providing
+Resources</a>.</p>
+<p>Later on, in dealing with the output of the <code>lint</code> task, we will have the chance
+to look at the <code>strings.xml</code> resources in the <code>values</code> sub-folder. For the time
+being, let's have a look at what the <code>main_layout.xml</code> looks like in this case:</p>
+<div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="p">&lt;</span><span class="nt">LinearLayout</span> <span class="na">xmlns:android</span><span class="o">=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+              <span class="na">android:id</span><span class="o">=</span><span class="s">&quot;@+id/layout_main&quot;</span>
+              <span class="na">android:layout_width</span><span class="o">=</span><span class="s">&quot;match_parent&quot;</span>
+              <span class="na">android:layout_height</span><span class="o">=</span><span class="s">&quot;match_parent&quot;</span>
+              <span class="na">android:padding</span><span class="o">=</span><span class="s">&quot;32px&quot;</span>
+              <span class="na">android:gravity</span><span class="o">=</span><span class="s">&quot;center&quot;</span>
+              <span class="na">android:orientation</span><span class="o">=</span><span class="s">&quot;vertical&quot;</span> <span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">TextView</span> <span class="na">android:id</span><span class="o">=</span><span class="s">&quot;@+id/text&quot;</span>
+            <span class="na">android:layout_width</span><span class="o">=</span><span class="s">&quot;wrap_content&quot;</span>
+            <span class="na">android:layout_height</span><span class="o">=</span><span class="s">&quot;wrap_content&quot;</span>
+            <span class="na">android:paddingBottom</span><span class="o">=</span><span class="s">&quot;12px&quot;</span>
+            <span class="na">android:text</span><span class="o">=</span><span class="s">&quot;Gravity sensors&quot;</span> <span class="p">/&gt;</span>
+
+  <span class="c">&lt;!--</span>
+<span class="c">  A new TextView element will be added programmatically for each on-board</span>
+<span class="c">  gravity sensor detected.</span>
+<span class="c">  --&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">LinearLayout</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>This is a rather simple layout. We create a vertical <code>LinearLayout</code> container to
+display a vertical stack of <code>TextView</code> elements. The first one, statically
+included in the XML resource file, will hold the counter of the discovered
+gravity sensors. More <code>TextView</code> elements are added at run-time, one for each of
+the sensors, to display their updated value.</p>
+<h1 id="running-the-application">Running the Application</h1>
+<p>Now that we have set up the Gradle project and coded our application, it is time
+to build it and install it on an Android device to run it. In this section we
+shall see how to invoke the Gradle <code>build</code> task to generate the APK (the Android
+Package Kit) package, and how to install it on our devices, being them either
+virtual or physical, in two different ways. Finally, we will give a final touch
+to our sample application by fixing a few of the issue reported by the <code>lint</code>
+task.</p>
+<h2 id="building-with-gradle">Building with Gradle</h2>
+<p>The process of building an Android application involves many steps and tools. If
+we rely on a Gradle project, as we have done in this case, and as it would be if
+you were using Android Studio, all of the details of this process are hidden to
+us. In a post where we are trying to make use of only simple tools, you may
+think that Gradle would defeat the point. Whilst I'd agree with you, I also
+believe that we will have to draw a line at some point, and Gradle feels like
+the right place. If, at any point, you feel the need to manually build your
+project, you can refer to these two references for more details:</p>
+<ul>
+<li><a href="https://spin.atomicobject.com/2011/08/22/building-android-application-bundles-apks-by-hand/">Building Android Application Bundles (APKs) by Hand</a></li>
+<li><a href="http://czak.pl/2016/05/31/handbuilt-android-project.html">Jack, Jill &amp; building Android apps by hand</a></li>
+</ul>
+<p>This being said, let's see how to build our sample project with Gradle. We can
+list all the available tasks with</p>
+<div class="highlight"><pre><span></span>./gradlew tasks --all
+</pre></div>
+
+
+<p>Among all the tasks listed by the previous command, we should see the following
+ones</p>
+<div class="highlight"><pre><span></span><span class="gh">Build tasks</span>
+<span class="gh">-----------</span>
+assemble - Assembles all variants of all applications and secondary packages.
+assembleAndroidTest - Assembles all the Test applications.
+assembleDebug - Assembles all Debug builds.
+assembleRelease - Assembles all Release builds.
+build - Assembles and tests this project.
+buildDependents - Assembles and tests this project and all projects that depend on it.
+buildNeeded - Assembles and tests this project and all projects it depends on.
+clean - Deletes the build directory.
+cleanBuildCache - Deletes the build cache directory.
+compileDebugAndroidTestSources
+compileDebugSources
+compileDebugUnitTestSources
+compileReleaseSources
+compileReleaseUnitTestSources
+mockableAndroidJar - Creates a version of android.jar that&#39;s suitable for unit tests.
+</pre></div>
+
+
+<p>We could decide to <code>assemble</code> our project, or <code>build</code> it in case we also wrote
+tests and want them built too. As it doesn't make much of a difference in our
+case, we can run the <code>build</code> task with</p>
+<div class="highlight"><pre><span></span>./gradlew build
+</pre></div>
+
+
+<blockquote>
+<p>The <code>build</code> task actually does a bit more than assemble and execute tests. It
+also runs the <code>lint</code> task. More on this later.</p>
+</blockquote>
+<p>If the build task was successful, you should now have the <code>androtest-debug.apk</code>
+into the <code>build/outputs/apk</code> folder, ready to be deployed on an Android device.</p>
+<h2 id="creating-a-virtual-device">Creating a Virtual Device</h2>
+<p>In case you want to install the application on a physical device, you can skip
+this section and go straight to the next one. Under some circumstances, you
+might want to test your application on diverse hardware settings, and the best
+way is probably to make use of a <em>virtual device</em>. If you have installed the
+<code>emulator</code> package as previously described, you can create a virtual machine
+with the following commands. But first we need to install a <em>system image</em>, for
+example the <strong>Intel x86 Atom_64 System Image</strong>. Since our application doesn't
+make use of the Google APIs we can opt for the default image:</p>
+<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;system-images;android-23;default;x86_64&quot;</span>
+</pre></div>
+
+
+<p>The download and installation might take some time, so just wait for
+<code>sdkmanager</code> to complete. You can then proceed to creating a virtual device with</p>
+<div class="highlight"><pre><span></span>avdmanager create avd -n <span class="nb">test</span> -k <span class="s2">&quot;system-images;android-23;default;x86_64&quot;</span> -d <span class="m">8</span>
+</pre></div>
+
+
+<p>This will create a virtual device named <code>test</code> with the system image that we
+have just downloaded. The <code>-d</code> switch specifies which device we want to emulate.
+In this case the value 8 represents a "Nexus 5" device. A complete list of the
+devices that can be emulated may be found with</p>
+<div class="highlight"><pre><span></span>avdmanager list device
+</pre></div>
+
+
+<p>Finally, to run the newly created virtual device we use the <code>emulator</code> tool,
+just like this:</p>
+<div class="highlight"><pre><span></span>emulator @test -skin 768x1280
+</pre></div>
+
+
+<p>where <code>@test</code> specified the name of the virtual device we want to run, and the
+<code>-skin</code> switch defines the resolution we want to run the emulator at. Note that
+a bug in the <code>emulator</code> tools prevents you from running this command from any
+working directory. Instead, you need to navigate to <code>$ANDROID_HOME/emulator</code> in
+order to start it without errors.</p>
+<p>For more details on how to manage virtual devices, have a look at the
+<a href="https://developer.android.com/studio/command-line/avdmanager.html#global_options"><code>avdmanager</code></a>
+documentation page.</p>
+<h2 id="installing-the-apk">Installing the APK</h2>
+<p>There are at least to ways of installing the APK to an Android device. One is
+via a Gradle task, and the other is more manual and involves the Android Debug
+Bridge tool <code>adb</code>. Let's have a look at both.</p>
+<p>From the previous run of the <code>./gradlew tasks --all</code>, you should have seen the
+following tasks</p>
+<div class="highlight"><pre><span></span><span class="gh">Install tasks</span>
+<span class="gh">-------------</span>
+installDebug - Installs the Debug build.
+installDebugAndroidTest - Installs the android (on device) tests for the Debug build.
+uninstallAll - Uninstall all applications.
+uninstallDebug - Uninstalls the Debug build.
+uninstallDebugAndroidTest - Uninstalls the android (on device) tests for the Debug build.
+uninstallRelease - Uninstalls the Release build.
+</pre></div>
+
+
+<p>The <code>installDebug</code> task will look for all the Android devices in debugging mode
+connected to your machine and attempt to install the APK on <em>all</em> of them. For
+instance, if you have a physical device in debug mode connected to your
+PC/laptop while also running a virtual device, this Gradle task will install the
+APK on both of them.</p>
+<p>If you want to install the APK on only one of the currently connected devices,
+you can do so with the <code>adb</code> tool. First of all, determine the identifier of
+each of the connected devices with</p>
+<div class="highlight"><pre><span></span>$ adb devices
+List of devices attached
+* daemon not running. starting it now at tcp:5037 *
+* daemon started successfully *
+05426e2409d30434    device
+emulator-5554   device
+</pre></div>
+
+
+<p>The device with ID <code>05426e2409d30434</code> is a physical Nexus 5 in debug mode
+connected via USB to my laptop, while <code>emulator-5554</code>, as the name indicates, is
+a running instance of the <code>test</code> virtual device we created before. We can
+install the APK on e.g. the emulator with</p>
+<div class="highlight"><pre><span></span>adb -s <span class="s2">&quot;emulator-5554&quot;</span> install build/outputs/apk/androtest-debug.apk
+</pre></div>
+
+
+<p>which will now be ready to be executed on the virtual device.</p>
+<h2 id="the-lint-tasks">The lint tasks</h2>
+<p>If you have ever used Android Studio you might wonder if there is the chance to
+get all the useful code analysis and hints that the IDE brings up while you code
+your application. While this feature is probably not supported by the text
+editor of your choice, we can remedy by using the lint tool provided by the
+Android SDK. A convenient way to invoke it is through a dedicated Gradle task.
+From the output of <code>./gradlew tasks --all</code> you should also see the following
+tasks</p>
+<div class="highlight"><pre><span></span><span class="gh">Verification tasks</span>
+<span class="gh">------------------</span>
+check - Runs all checks.
+connectedAndroidTest - Installs and runs instrumentation tests for all flavors on connected devices.
+connectedCheck - Runs all device checks on currently connected devices.
+connectedDebugAndroidTest - Installs and runs the tests for debug on connected devices.
+deviceAndroidTest - Installs and runs instrumentation tests using all Device Providers.
+deviceCheck - Runs all device checks using Device Providers and Test Servers.
+lint - Runs lint on all variants.
+lintDebug - Runs lint on the Debug build.
+lintRelease - Runs lint on the Release build.
+test - Run unit tests for all variants.
+testDebugUnitTest - Run unit tests for the debug build.
+testReleaseUnitTest - Run unit tests for the release build.
+</pre></div>
+
+
+<p>Notice how we can invoke the lint tool in multiple ways. As we saw before, the
+<code>build</code> task, as opposed to <code>assemble</code>, will also run the lint tool. But we can
+also choose to run it as part of a full check with the <code>check</code> task, or just on
+its own, on every variant of our project or simply on the debug build. As an
+example, let's run the <code>lint</code> task with</p>
+<div class="highlight"><pre><span></span>./gradlew lint
+</pre></div>
+
+
+<p>The output should contain something that looks like the following</p>
+<div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="o">&gt;</span> <span class="n">Task</span> <span class="p">:</span><span class="n">lint</span>
+<span class="n">Ran</span> <span class="n">lint</span> <span class="n">on</span> <span class="n">variant</span> <span class="n">debug</span><span class="p">:</span> <span class="mi">13</span> <span class="n">issues</span> <span class="n">found</span>
+<span class="n">Ran</span> <span class="n">lint</span> <span class="n">on</span> <span class="n">variant</span> <span class="n">release</span><span class="p">:</span> <span class="mi">13</span> <span class="n">issues</span> <span class="n">found</span>
+<span class="n">Wrote</span> <span class="n">HTML</span> <span class="n">report</span> <span class="n">to</span> <span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">html</span>
+<span class="n">Wrote</span> <span class="n">XML</span> <span class="n">report</span> <span class="n">to</span> <span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">xml</span>
+
+
+<span class="n">BUILD</span> <span class="n">SUCCESSFUL</span> <span class="ow">in</span> <span class="mi">1</span><span class="n">s</span>
+<span class="mi">25</span> <span class="n">actionable</span> <span class="n">tasks</span><span class="p">:</span> <span class="mi">7</span> <span class="n">executed</span><span class="p">,</span> <span class="mi">18</span> <span class="n">up</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">date</span>
+</pre></div>
+
+
+<p>This tells us that the lint tool has found 13 issues on both the debug and the
+release build of our project, and that a report is available as both an HTML and
+an XML file in <code>build/reports</code>.</p>
+<p>Let's open the HTML report and have a look at the reported issues. As
+predictable, the largest number of issues is about <em>internationalisation</em>, as we
+have used many hard-coded strings in our source code. So let's try to fix some
+of these, starting from the <code>HardcodedText</code> one. By clicking on it, we get sent
+to a more detailed part of the page that suggests us to use a <code>@string</code> resource
+instead of the hard-coded string <code>Gravity sensors</code>. Since our code will change
+the string at run-time in any case, the simplest solution is to replace it with
+an empty string. If we now run the lint task again, we should see only 12
+issues. Good! :).</p>
+<p>Let's now tackle a couple of <em>TextView Internationalization</em> issues. The first
+one is about the string <code>"Detected gravity sensors: " +
+Integer.toString(nSensors)</code> that we have used in the <code>MainActivity.java</code> source
+file. The problem here is two-fold. We should use a resource string and favour
+placeholders rather than concatenation. So let's create a <a href="https://developer.android.com/guide/topics/resources/string-resource.html">string
+resource</a>
+file. Recall from before that this should go in an XML file, say <code>strings.xml</code>,
+within the <code>src/main/res/values</code> folder.</p>
+<div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="p">&lt;</span><span class="nt">resources</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">string</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;sensors_no&quot;</span><span class="p">&gt;</span>Detected gravity sensors: %d<span class="p">&lt;/</span><span class="nt">string</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">resources</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>We can now replace line 44 in <code>MainActivity.java</code> with</p>
+<div class="highlight"><pre><span></span>      <span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="n">getString</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">string</span><span class="p">.</span><span class="na">sensors_no</span><span class="p">,</span> <span class="n">nSensors</span><span class="p">));</span>
+</pre></div>
+
+
+<p>Run the lint task again, and the count should now be down to only 9 issues. This
+should give you the idea of how to continue fixing the remaining findings.</p>
+<h1 id="conclusions">Conclusions</h1>
+<p>In this post we saw that, if we want to develop Android applications by simply
+relying on a text editor and some command line tools, the initial set up of the
+development environment requires a few preliminary steps, some of which are
+performed when you install Android Studio. However, some of the other steps need
+to be performed regardless, with the only difference that, in Android Studio,
+you would have a GUI to assist you. The bonus of going IDE-free, however, is in
+the fact that we now know what operations are being performed by the IDE when,
+e.g., we install an Android SDK that targets a certain API level.</p>
+<p>Creating a Gradle project is quite easy, and in this we are assisted by Gradle
+itself. The Android Gradle plugin takes care of invoking the right tools to
+perform the most common tasks, like building our project, or even installing it
+on an Android device. One handy feature that we might miss out with a plain text
+editor is the live linting of our code. However, at any stage of the
+development, we can run the <code>lint</code> Gradle task to generate a report with all the
+issues that have been discovered within the whole project.</p>
+<p>This post should have also showed you that, whilst Android Studio is a very
+useful tool, there is practically nothing that we would miss out by using the
+command line tools of the SDK instead. Development might at first be less
+smooth, and the learning curve steeper, but surely has its positives too.</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./android-development-from-the-command-line.html";
+  this.page.identifier = "android-dev"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

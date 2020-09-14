@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - Prime Numbers, Algorithms and Computer Architectures</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="c++" />
+    <meta name="tags" content="number theory" />
+    <meta name="tags" content="optimisation" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(theme/images/default_art.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-75 bg-black">
+      <h1 class="entry-title">Prime Numbers, Algorithms and Computer Architectures</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2017-03-07T00:15:00+01:00">
+          &#128197; Tue 07 March 2017
+        </time>
+        <span class="readtime py-1">&#9202; A 9 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/c.html">c++</a>
+            <a class="tag" href="./tag/number-theory.html">number theory</a>
+            <a class="tag" href="./tag/optimisation.html">optimisation</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>What does the principle of locality of reference have to do with prime numbers? This is what we will discover in this post. We will use the segmented version of the Sieve of Eratosthenes to see how hardware specifications can (read <em>should</em>) be used to fix design parameters for our routines.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#counting-primes">Counting Primes</a></li>
+<li><a href="#segmented-sieve">Segmented Sieve</a></li>
+</ul>
+</div>
+<p>A natural number <span class="math">\(p\in\mathbb N\)</span> is said to be <em>prime</em> if its only divisors are 1 and <span class="math">\(p\)</span> itself. Any other number that does not have this property is sometimes called <em>composite</em>. The discovery that there are infinitely many prime numbers dates back to c. 300 BC and is due to Euclid. His argument by contradiction is very simple: suppose that, indeed, there are only finitely many primes, say <span class="math">\(p_1,\ldots,p_n\)</span>. The natural number</p>
+<div class="math">$$m=p_1p_2\cdots p_n + 1$$</div>
+<p>is larger than and evidently not divisible by any of the primes by construction, and therefore <span class="math">\(m\)</span> must be prime. However, being larger than any of the <span class="math">\(p_k\)</span>s, <span class="math">\(m\)</span> cannot be one of the finitely many primes, thus reaching to a contradiction.</p>
+<p>Prime numbers play a fundamental role in <em>Number Theory</em>, a branch of Mathematics that deals with the properties of the natural numbers. Everybody gets to know about the prime factorisation of the natural numbers, a result so important that has been given the name of <em>Fundamental Theorem of Arithmetic</em>.</p>
+<h1 id="counting-primes">Counting Primes</h1>
+<p>Even though we saw that prime numbers are infinite, one might still want to know how many prime numbers are there within a certain upper bound. As numbers become bigger, the help of a calculator becomes crucial to tackle this problem and therefore it makes sense to think of algorithms that would get us to the answer efficiently.</p>
+<p>The fastest way to count all the primes less than a given upper bound <span class="math">\(n\)</span> is by means of an ancient algorithm known as the <em>Sieve of Eratosthenes</em>. The idea is to start with the sequence of all the numbers from 0 up to <span class="math">\(n\)</span> and discard/mark the composite numbers as they are discovered. By definition, 0 and 1 are not prime, so they are removed. The number 2 is prime, but all its multiples are not, so we proceed by removing all the multiples of 2. We keep the first number that remains after 2, 3 in this case, and proceed to remove its multiples (starting from its square, since smaller multiples have already been removed at the previous steps). The process is repeated until it is no longer possible to proceed beyond the assigned bound <span class="math">\(n\)</span>. It is clear that it is enough to get up to at most <span class="math">\(\lceil\sqrt n\rceil\)</span>.</p>
+<p>The following is a simple implementation in C++.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cassert&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Sieve</span> <span class="p">{</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">sieve</span><span class="p">;</span>
+  <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span>  <span class="o">*</span> <span class="n">primes</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">Sieve</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="o">:</span> <span class="n">primes</span><span class="p">(</span><span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">sieve</span> <span class="o">=</span> <span class="k">new</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+    <span class="p">(</span><span class="o">*</span><span class="n">sieve</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">sieve</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">));</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">sieve</span><span class="p">)[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">sieve</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span> <span class="o">+=</span> <span class="n">i</span><span class="p">)</span>
+          <span class="p">(</span><span class="o">*</span><span class="n">sieve</span><span class="p">)[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="o">~</span><span class="n">Sieve</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">delete</span> <span class="n">sieve</span> <span class="p">;</span>
+    <span class="k">delete</span> <span class="n">primes</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">get_primes</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">primes</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">primes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">();</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sieve</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">sieve</span><span class="p">)[</span><span class="n">i</span><span class="p">])</span> <span class="n">primes</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">primes</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">int</span> <span class="n">get</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">());</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">primes</span><span class="p">)[</span><span class="n">i</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="kt">int</span> <span class="n">count</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">primes</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="n">get_primes</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="n">primes</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+  <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">;</span>
+
+  <span class="n">Sieve</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Sieve</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;There are &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">s</span><span class="p">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; primes between 0 and &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">n</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="cp">#ifdef VERBOSE</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">.</span><span class="n">count</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">s</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="cp">#endif</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<blockquote>
+<p>A vector of booleans is implemented in C++ by an arry of bits instead of single bytes. Apart from turning all the possible complier optimisations, at the hardware level, this more compact data structure is more cache-friendly. Here is a first link between a software implementation of a prime search and the computer architecture the code runs on.</p>
+</blockquote>
+<p>With an input of the order of <span class="math">\(10^6\)</span> the sieve is still quite fast. However the memory requirements are substantial: up to <span class="math">\(10^9\)</span> we are able to still use integers, but the memory consumption is of the order of the GB. The amount of memory on the system then can pose a serious limitation to the input parameter.</p>
+<h1 id="segmented-sieve">Segmented Sieve</h1>
+<p>If we want to list and/or count all the primes between two given (and possibly quite large) integers, we need a <em>Segmented Sieve</em>. If we are interested in all the primes between <span class="math">\(a\)</span> and <span class="math">\(b\)</span> we could, in principle, use the sieve of Eratosthenes to find all the primes up to <span class="math">\(b\)</span> and then list/count all the primes larger than <span class="math">\(a\)</span>. But with <span class="math">\(b\)</span> of the order, say, <span class="math">\(10^{15}\)</span>, a lot of memory is required to hold the result. Instead we can split the interval <span class="math">\([a,b]\)</span> into chunks and process them separately.</p>
+<p>The two main questions that we need to answer are: how do we adapt the sieve algorithm to start from <span class="math">\(a\)</span> rather than 0, and how do we fix the chunk size. Let us deal with the latter question first. The reason why we need a segmented sieve in the first place is because of memory limitations. So an upper bound for the chunck size is given by the available memory. However, for large values of the inputs, the sieve might need to jump to memory location which are further apart. But how do we quantify this "further apart"? The answer, again, is in the system architecture, which quite likely include a system of cache memory. In order not to violate the locality principle we should choose a chunk size which is comparable to the cache size. Assuming this to be of the order of the MB, and recalling that <code>vector&lt;bool&gt;</code> is an array of bits, a possible chunk size is of the order of <span class="math">\(10^7\)</span>.</p>
+<p>Coming to the question of how to implemente a segmented sieve, all we need to do is mark/remove all the composite number in range. Of course we would need to start by removing all the even numbers, then all the multiples of 3, then of 5 and so on. Therefore we still need the knowledge of the primes starting from 2 and going above. But how much above? Since our upper limit is <span class="math">\(b\)</span>, we need all the prime numbers up to <span class="math">\(\lceil\sqrt b\rceil\)</span>, which can be obtained with the standard sieve discussed earlier. These prime numbers can then be used to discover all the primes in the range <span class="math">\([a,b]\)</span>. We start by removing the first even number greater than or equal to <span class="math">\(a\)</span>, together with all the numbers obtained by repeatedly adding 2 to it until we are out of bound. More generally, to find the first multiple of the prime <span class="math">\(p\)</span> in <span class="math">\([a,b]\)</span> we use the formula</p>
+<div class="math">$$s = \left\lceil\frac ap\right\rceil\cdot p$$</div>
+<p>However, recall that, for the standard sieve we really have to start from <span class="math">\(p^2\)</span>, since lower multiples of <span class="math">\(p\)</span> have already been removed at the previous iteration. Therefore, as our starting point we pick the <em>maximum</em> between <span class="math">\(s\)</span> and <span class="math">\(p^2\)</span> (actually between <span class="math">\(\lceil a/p\rceil\)</span> and <span class="math">\(p\)</span>).</p>
+<p>The following is a simple implementation of the Segmented Sieve in C++.</p>
+<div class="highlight"><pre><span></span><span class="cp">#define CHUNK 10000000 </span><span class="c1">// 10e7</span>
+
+<span class="k">class</span> <span class="nc">SSieve</span> <span class="p">{</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">Sieve</span>        <span class="o">*</span> <span class="n">sieve</span><span class="p">;</span>   <span class="c1">// Sieve</span>
+  <span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">ssieve</span><span class="p">;</span>  <span class="c1">// Segmented Sieve</span>
+  <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span>  <span class="o">*</span> <span class="n">seg_c</span><span class="p">;</span>   <span class="c1">// primes in each segment</span>
+  <span class="kt">long</span> <span class="kt">long</span>      <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>    <span class="c1">// Bounds</span>
+  <span class="kt">int</span>            <span class="n">c</span><span class="p">;</span>       <span class="c1">// Cached primes count</span>
+  <span class="kt">int</span>            <span class="n">seg</span><span class="p">;</span>     <span class="c1">// Current segment</span>
+  <span class="kt">long</span> <span class="kt">long</span>      <span class="n">size</span><span class="p">;</span>    <span class="c1">// Total numbers in interval</span>
+  <span class="kt">int</span>            <span class="n">max_seg</span><span class="p">;</span> <span class="c1">// Total number of segments</span>
+
+  <span class="kt">void</span> <span class="nf">do_segment</span><span class="p">(</span><span class="kt">int</span> <span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">seg</span> <span class="o">==</span> <span class="n">s</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span> <span class="c1">// Do not regenerate the current segment</span>
+
+    <span class="n">assert</span><span class="p">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="n">max_seg</span><span class="p">);</span>
+
+    <span class="n">seg</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
+
+    <span class="c1">// Determine segment bounds</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">CHUNK</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="n">min</span><span class="p">(</span><span class="n">CHUNK</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">size</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">CHUNK</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1">// Allocate the new segmented sieve</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ssieve</span><span class="p">)</span> <span class="k">delete</span> <span class="n">ssieve</span><span class="p">;</span>
+    <span class="n">ssieve</span> <span class="o">=</span> <span class="k">new</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+    <span class="c1">// Remove composite numbers in segment</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="nl">p</span> <span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">sieve</span><span class="o">-&gt;</span><span class="n">get_primes</span><span class="p">()))</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="n">h</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">max</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">l</span><span class="o">/</span><span class="n">p</span> <span class="o">+</span> <span class="p">(</span><span class="n">l</span> <span class="o">%</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="p">),</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span> <span class="o">-</span> <span class="n">l</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ssieve</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">p</span><span class="p">)</span> <span class="c1">//{</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">ssieve</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">SSieve</span><span class="p">(</span><span class="kt">long</span> <span class="kt">long</span> <span class="n">low</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">high</span><span class="p">)</span> <span class="o">:</span> <span class="n">c</span><span class="p">(</span><span class="mi">-1</span><span class="p">),</span> <span class="n">ssieve</span><span class="p">(</span><span class="nb">NULL</span><span class="p">),</span> <span class="n">seg</span><span class="p">(</span><span class="mi">-1</span><span class="p">),</span> <span class="n">seg_c</span><span class="p">(</span><span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">);</span>
+
+    <span class="n">seg_c</span>   <span class="o">=</span> <span class="k">new</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">high</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">low</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="n">low</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="n">a</span>       <span class="o">=</span> <span class="n">low</span><span class="p">;</span>
+    <span class="n">b</span>       <span class="o">=</span> <span class="n">high</span><span class="p">;</span>
+    <span class="n">size</span>    <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">sieve</span>   <span class="o">=</span> <span class="k">new</span> <span class="n">Sieve</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">b</span><span class="p">)));</span> <span class="c1">// The standard sieve</span>
+    <span class="n">max_seg</span> <span class="o">=</span> <span class="n">size</span> <span class="o">/</span> <span class="n">CHUNK</span> <span class="o">+</span> <span class="p">(</span><span class="n">size</span> <span class="o">%</span> <span class="n">CHUNK</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="o">~</span><span class="n">SSieve</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">delete</span> <span class="n">sieve</span><span class="p">;</span>
+    <span class="k">delete</span> <span class="n">ssieve</span><span class="p">;</span>
+    <span class="k">delete</span> <span class="n">seg_c</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_seg</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">do_segment</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">bool</span> <span class="nl">p</span> <span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">ssieve</span><span class="p">))</span> <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="n">c</span><span class="o">++</span><span class="p">;</span>
+        <span class="c1">// Keep track of the number of primes in segments</span>
+        <span class="c1">// This is used by SSieve::get to retrieve the primes</span>
+        <span class="n">seg_c</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">long</span> <span class="kt">long</span> <span class="n">get</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">());</span>
+
+    <span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// Determine which segment the requested prime belongs to</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">s</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">seg_c</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">s</span><span class="o">++</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">seg_c</span><span class="p">)[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+
+    <span class="c1">// Reconstruct the segmented sieve if necessary</span>
+    <span class="n">do_segment</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+
+    <span class="c1">// Translate into the actual prime</span>
+    <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="p">(</span><span class="o">*</span><span class="n">seg_c</span><span class="p">)[</span><span class="n">s</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">ssieve</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">ssieve</span><span class="p">)[</span><span class="n">k</span><span class="p">])</span> <span class="n">n</span><span class="o">++</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="n">j</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">k</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="n">CHUNK</span> <span class="o">+</span> <span class="n">a</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>This can be tested with a slightly modified <code>main</code> procedure, for example</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">long</span> <span class="kt">long</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">;</span>
+
+  <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="n">m</span><span class="p">;</span>
+
+  <span class="n">SSieve</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">SSieve</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;There are &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">ss</span><span class="p">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; primes between &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">n</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; and &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+  <span class="cp">#ifdef VERBOSE</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ss</span><span class="p">.</span><span class="n">count</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ss</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="cp">#endif</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./prime-numbers-algorithms-and-computer-architectures.html";
+  this.page.identifier = "['primes-principle-of-locality', 'primes']"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>
