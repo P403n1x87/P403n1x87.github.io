@@ -1,5 +1,408 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"></link><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"></link><id>https://p403n1x87.github.io/</id><updated>2019-05-05T17:35:00+01:00</updated><entry><title>Deterministic and Statistical Python Profiling</title><link href="https://p403n1x87.github.io/deterministic-and-statistical-python-profiling.html" rel="alternate"></link><published>2019-05-05T17:35:00+01:00</published><updated>2019-05-05T17:35:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2019-05-05:/deterministic-and-statistical-python-profiling.html</id><summary type="html">&lt;p&gt;If you want to be sure that your applications are working optimally, then sooner or later you will end up turning to profiling techniques to identify and correct potential issues with your code. In this post, I discuss some of the current profiling tools and techniques for Python. The official documentation has a &lt;a href="https://docs.python.org/3/library/profile.html"&gt;whole section&lt;/a&gt; on the subject, but we shall go beyond that and have a look at some alternative solutions, especially in the area of sampling profilers.&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"></link><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"></link><id>https://p403n1x87.github.io/</id><updated>2020-09-17T16:18:00+01:00</updated><entry><title>An Overview of Monads in Haskell</title><link href="https://p403n1x87.github.io/an-overview-of-monads-in-haskell.html" rel="alternate"></link><published>2020-09-17T16:18:00+01:00</published><updated>2020-09-17T16:18:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2020-09-17:/an-overview-of-monads-in-haskell.html</id><summary type="html">&lt;p&gt;Monads are arguably one of the most important concepts in functional programming. In this post we pave the street to understanding how this purely category theoretical object finds its place in a language like Haskell.&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#introduction"&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#functors"&gt;Functors&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#applicative-functors"&gt;Applicative Functors&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#monads"&gt;Monads&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h1 id="introduction"&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;If you are learning a functional programming language like Haskell, sooner or
+later you will find yourself dealing with the concept of &lt;strong&gt;monad&lt;/strong&gt;. You probably
+knew already that there is a fair bit of category theory embedded in the
+language, and this comes as no surprise at all. Indeed, functional programming
+languages were developed with the goal of making lambda calculus practical and,
+as it turns out, type theory has many relations to category theory.&lt;/p&gt;
+&lt;p&gt;In this post we make our way to the concept of monads in Haskell starting from
+the notion of functor. The ultimate goal is to motivate the use of the term
+monad by showing that we indeed have a monadic structure, but also give a
+somewhat rigurous justification of the fact that "all told, monads are just
+monoids in the category of endofunctors".&lt;/p&gt;
+&lt;h1 id="functors"&gt;Functors&lt;/h1&gt;
+&lt;p&gt;A typical pattern of functional programming is that of applying a function to a
+list element-wise. There are many ways of doing this, but the most general one
+is that of using the &lt;code&gt;map&lt;/code&gt; function&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;map&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That is, &lt;code&gt;map&lt;/code&gt; takes a function &lt;code&gt;a -&amp;gt; b&lt;/code&gt; and a list of type &lt;code&gt;[a]&lt;/code&gt; to produce a
+list of type &lt;code&gt;[b]&lt;/code&gt; by simply applying the function to each entry of the first
+list. Two important properties of the function &lt;code&gt;map&lt;/code&gt; follow from this
+definition. The first involves its interaction with the identity function &lt;code&gt;id ::
+a -&amp;gt; a&lt;/code&gt; which simply evaluates to its sole argument. Indeed,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;map&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;in the sense that both sides represent the same function. Now, if we have two
+functions, &lt;code&gt;f :: a -&amp;gt; b&lt;/code&gt; and &lt;code&gt;g :: b -&amp;gt; c&lt;/code&gt;, it doesn't matter whether we first
+compute the composition &lt;code&gt;g . f&lt;/code&gt; and apply it to &lt;code&gt;map&lt;/code&gt;, or compose &lt;code&gt;map g&lt;/code&gt; with
+&lt;code&gt;map f&lt;/code&gt;. The net result is that we obtain a function that takes a list of type
+&lt;code&gt;[a]&lt;/code&gt; that is sent to a list of type &lt;code&gt;[c]&lt;/code&gt; whose elements are precisely given by
+the image of each element of the initial list through the composition &lt;code&gt;g . f&lt;/code&gt;.
+We can express this fact with the identity&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;map&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;map&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;map&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Let's look back at what we have here. In more abstract terms, we can think of
+the operation of putting square brackets around a type as some sort of map on
+the set of Haskell types into itself, namely &lt;span class="math"&gt;\([\ \cdot\ ] : a \mapsto [a]\)&lt;/span&gt;, for
+any Haskell type &lt;span class="math"&gt;\(a\)&lt;/span&gt;. Observe further that the type of the function &lt;code&gt;map&lt;/code&gt; is
+indeed &lt;code&gt;map :: (a -&amp;gt; b) -&amp;gt; ([a] -&amp;gt; [b])&lt;/code&gt;. That is to say that &lt;code&gt;map&lt;/code&gt; sends a
+function &lt;code&gt;a -&amp;gt; b&lt;/code&gt; to a function &lt;code&gt;[a] -&amp;gt; [b]&lt;/code&gt;, together with the two properties
+above.&lt;/p&gt;
+&lt;p&gt;We may be tempted, at this point, to introduce the Haskell category
+&lt;span class="math"&gt;\(\mathsf{Hask}\)&lt;/span&gt;, whose objects are the Haskell types, and whose arrows are the
+Haskell functions, i.e. those types that can be put into the form &lt;code&gt;a -&amp;gt; b&lt;/code&gt; for
+some Haskell types &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt;. If we do so, we then recognise that the pair
+(&lt;code&gt;[]&lt;/code&gt;, &lt;code&gt;map&lt;/code&gt;) defines a functor from &lt;span class="math"&gt;\(\mathsf{Hask}\)&lt;/span&gt; into itself. That's because
+&lt;code&gt;[]&lt;/code&gt; maps objects to objects (lists) and &lt;code&gt;map&lt;/code&gt; maps functions to functions
+(between lists). That these mappings are functorial follows immediately from the
+two properties that we have observed earlier.&lt;/p&gt;
+&lt;p&gt;The next abstraction step is in realising that there is nothing special in the
+(&lt;code&gt;[]&lt;/code&gt;, &lt;code&gt;map&lt;/code&gt;) pair. For if all we want are endofunctors on &lt;span class="math"&gt;\(\mathsf{Hask}\)&lt;/span&gt;, all
+we really need is a &lt;em&gt;parametrised&lt;/em&gt; type &lt;code&gt;T&lt;/code&gt; and a map &lt;code&gt;fmap :: (a -&amp;gt; b) -&amp;gt; T a
+-&amp;gt; T b&lt;/code&gt; that &lt;em&gt;plays nicely&lt;/em&gt; with &lt;code&gt;T&lt;/code&gt;, in the sense that it satisfies the
+functoriality properties&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;fmap&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;for any functions &lt;code&gt;f&lt;/code&gt; and &lt;code&gt;g&lt;/code&gt;. We then see that the list example we have
+analyised above is just the special case where &lt;code&gt;T a = [a]&lt;/code&gt; and &lt;code&gt;fmap = map&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To get a feel of what functors mean in Haskell (or more generally in functional
+programming), we should regard the parametrised type &lt;code&gt;T&lt;/code&gt; as a sort of
+&lt;em&gt;container&lt;/em&gt; type. A list, of course, is an example of a container, as it
+contains multiple instances of a certan type in an ordered fashon. But &lt;code&gt;T&lt;/code&gt; can
+also be, e.g., a rooted tree with values of type &lt;code&gt;a&lt;/code&gt; on each of its nodes. So,
+generally, &lt;code&gt;T&lt;/code&gt; is some sort of container structure that accomodates for multiple
+values of the parameter type &lt;code&gt;a&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Notice now how the definition of &lt;code&gt;fmap&lt;/code&gt; depends on the parametrised type &lt;code&gt;T&lt;/code&gt;.
+This means that the first step in defining an endofunctor over &lt;span class="math"&gt;\(\mathsf{Hask}\)&lt;/span&gt;
+is to produce one such parametrised type &lt;code&gt;T&lt;/code&gt;. But once we have one, can we find
+an &lt;code&gt;fmap&lt;/code&gt; such that (&lt;code&gt;T&lt;/code&gt;, &lt;code&gt;fmap&lt;/code&gt;) is a functor? The answer to this question very
+much depends on the nature of &lt;code&gt;T&lt;/code&gt;, but what we can be certain of is that once we
+have found one such &lt;code&gt;fmap&lt;/code&gt;, then it is &lt;strong&gt;unique&lt;/strong&gt;. Why? This is a consequence of
+the so-called &lt;code&gt;parametricity&lt;/code&gt; result, which derives from parametric
+polymorphism. The function &lt;code&gt;fmap :: (a -&amp;gt; b) -&amp;gt; T a -&amp;gt; T b&lt;/code&gt; implies universal
+quantifiers for the types &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt;. That is to say, for any types &lt;code&gt;a&lt;/code&gt; and
+&lt;code&gt;b&lt;/code&gt;, &lt;code&gt;fmap&lt;/code&gt; sends a function &lt;code&gt;a -&amp;gt; b&lt;/code&gt; to a function &lt;code&gt;T a -&amp;gt; T b&lt;/code&gt;. The key
+observation is that, because of this parametric dependency on the types &lt;code&gt;a&lt;/code&gt; and
+&lt;code&gt;b&lt;/code&gt;, the function &lt;code&gt;fmap&lt;/code&gt; cannot act in a way that depends on a particular choice
+of the types, but can depend at most on the container structure described by the
+parametrised type &lt;code&gt;T&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In order to understand this concept, let's take a step back and consider again
+the special case of lists. Suppose that we have another candidate &lt;code&gt;fmap'&lt;/code&gt; for an
+&lt;code&gt;fmap&lt;/code&gt; other than &lt;code&gt;map&lt;/code&gt;. Since the types are arbitrary, such new candidate can
+only interact with the list structure, i.e. apply the first argument, that is,
+the function &lt;code&gt;f :: a -&amp;gt; b&lt;/code&gt; to each element of the list of type &lt;code&gt;[a]&lt;/code&gt; to produce
+&lt;code&gt;[b]&lt;/code&gt;, and perhaps do a reshuffling. Now, if we apply this new candidate to the
+identity &lt;code&gt;id :: a -&amp;gt; a&lt;/code&gt;, we get precisely the reshuffling bit &lt;code&gt;s = fmap' id&lt;/code&gt;. On
+the other hand, &lt;code&gt;fmap'&lt;/code&gt; must satisfy the functor properties, and in particular
+&lt;code&gt;fmap' id = id&lt;/code&gt;, whence &lt;code&gt;s = id&lt;/code&gt;. That is to say that &lt;code&gt;fmap'&lt;/code&gt; cannot actually do
+any reshuffling, so it must coincide with &lt;code&gt;map&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The general argument works in the same way, we only need to replace the list
+structure with a general one &lt;code&gt;T&lt;/code&gt; and argue that by the functor properties &lt;code&gt;fmap&lt;/code&gt;
+can only map a function to each element of type &lt;code&gt;a&lt;/code&gt; inside &lt;code&gt;T a&lt;/code&gt; while
+preserving the container structure described by &lt;code&gt;T&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;More elegantly, this result could have been obtained using the &lt;em&gt;free theorem&lt;/em&gt;
+associated to the type &lt;code&gt;(a -&amp;gt; b) -&amp;gt; (T a -&amp;gt; T b)&lt;/code&gt;; see &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.38.9875&amp;amp;rep=rep1&amp;amp;type=pdf"&gt;(Wadler,
+1989)&lt;/a&gt;
+for the details.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="applicative-functors"&gt;Applicative Functors&lt;/h1&gt;
+&lt;p&gt;We have seen that functors are a generalisation of the common pattern of mapping
+a function over the elements of a list. Can we generalise to mapping of
+functions with more than one argument? That is to say, given that (&lt;code&gt;T&lt;/code&gt;, &lt;code&gt;fmap&lt;/code&gt;)
+describes a functor, can we find, e.g., &lt;code&gt;fmap2 :: (a -&amp;gt; b -&amp;gt; c) -&amp;gt; (T a -&amp;gt; T b
+-&amp;gt; T c)&lt;/code&gt;, that satisfies some reasonable coherence properties? A first
+observation is that the type &lt;code&gt;a -&amp;gt; b -&amp;gt; c&lt;/code&gt; is identical to &lt;code&gt;a -&amp;gt; (b -&amp;gt; c)&lt;/code&gt;, just
+by definition. If we apply &lt;code&gt;fmap&lt;/code&gt; to any instances of this type we would get
+something of type &lt;code&gt;T a -&amp;gt; T (b -&amp;gt; c)&lt;/code&gt;, which isn't quite what we want. &lt;em&gt;But&lt;/em&gt;, if
+we had a function &lt;code&gt;&amp;lt;*&amp;gt; :: T (a -&amp;gt; b) -&amp;gt; (T a -&amp;gt; T b)&lt;/code&gt; we would get closer, but
+not quite there yet. Indeed, we could now define &lt;code&gt;fmap2&lt;/code&gt; like so&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;fmap2&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;T&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;T&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;T&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nf"&gt;fmap2&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;that is, we curry the result of &lt;code&gt;fmap f&lt;/code&gt; with the first argument &lt;code&gt;x&lt;/code&gt; and then
+apply &lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt; to the result to obtain a function that we can compute on &lt;code&gt;y&lt;/code&gt; to get
+a result of type &lt;code&gt;T c&lt;/code&gt;. Of course, we can now repeat these steps to define
+&lt;code&gt;fmap3 :: (a -&amp;gt; b -&amp;gt; c -&amp;gt; d) -&amp;gt; (T a -&amp;gt; T b -&amp;gt; T c -&amp;gt; Td)&lt;/code&gt; by using &lt;code&gt;fmap2&lt;/code&gt; as a
+starting point, that is&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;fmap3&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fmap2&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and carry on, to get a whole family of maps &lt;code&gt;fmapn&lt;/code&gt;. Using infix notation for
+&lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt; and assuming associativity to the left, we could then write the general
+case as&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;fmapn&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a1&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;T&lt;/span&gt; &lt;span class="n"&gt;a1&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;T&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nf"&gt;fmapn&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x1&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="n"&gt;xn&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x1&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;xn&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This is now starting to look just like function application, except that we are
+not making that very explicit with the first argument &lt;code&gt;x1&lt;/code&gt; of type &lt;code&gt;T a1&lt;/code&gt;. If we
+wanted to fix that, we would have to find, e.g., a function &lt;code&gt;p&lt;/code&gt; such that &lt;code&gt;fmap
+f x1 = (p f) &amp;lt;*&amp;gt; x&lt;/code&gt;. What's the type of &lt;code&gt;p&lt;/code&gt;? We see that &lt;code&gt;p :: a -&amp;gt; T a&lt;/code&gt; would
+work well here, so if we could find such a function we could push the base of
+the recursion back and define &lt;code&gt;fmap&lt;/code&gt; itself in terms of &lt;code&gt;p&lt;/code&gt; and &lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt;. Then we
+could easily generalise functors to functions of an arbitrary number of
+arguments by simply mapping it through &lt;code&gt;p&lt;/code&gt; and applying arguments with &lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In Haskell, it is customary to call the function &lt;code&gt;p&lt;/code&gt; with the name &lt;code&gt;pure&lt;/code&gt;; any
+functor for which one can define both &lt;code&gt;pure&lt;/code&gt; and &lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt; is then called an
+&lt;em&gt;applicative&lt;/em&gt; functor. The importance of these special objects does not come
+solely from the fact that they generalise the notion of mapping to functions of
+more than one argument. Indeed, they represent an important step toward
+&lt;em&gt;effectful&lt;/em&gt; programming inside a purely functional programming language. Perhaps
+we can appreciate this better with a concrete example based on the functor
+&lt;code&gt;Maybe&lt;/code&gt;. Its values can be used to represent the success or failure of an
+operation. For exmaple, when an operation failed, we can simply return
+&lt;code&gt;Nothing&lt;/code&gt;, else we return &lt;code&gt;Just x&lt;/code&gt;, where &lt;code&gt;x&lt;/code&gt; is the valid result of the
+operation. Haskell makes &lt;code&gt;Maybe&lt;/code&gt; into an applicative functor by default by
+defining&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;pure&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;Just&lt;/span&gt;
+
+&lt;span class="kt"&gt;Nothing&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="kr"&gt;_&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;Nothing&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;Just&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;mx&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;mx&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We see from the above definitions and the recursive nature of applicative
+functors that the propagation of the occurrence of an invalid value like
+&lt;code&gt;Nothing&lt;/code&gt; during the computation is automatically propagated to the end result,
+with no need to put checks in place for each argument of the function &lt;code&gt;f&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Before moving on, we should spend some more time looking back at the identity
+&lt;code&gt;(pure f) &amp;lt;*&amp;gt; x = fmap f x&lt;/code&gt; and recalling that &lt;code&gt;fmap&lt;/code&gt; must satisfy some
+coherence properties that make it part of the description of a functor. As we
+have said earlier, we expect &lt;code&gt;pure&lt;/code&gt; and &lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt; to satisfy some coherence
+properties themselves if they are to work as they are supposed to, and we see
+why that is. One of such properties comes for free, viz.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pure&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;since &lt;code&gt;fmap id x = x&lt;/code&gt;. The other properties that are required of &lt;code&gt;pure&lt;/code&gt; and
+&lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt; are&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;pure&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pure&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pure&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="nf"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pure&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pure&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="nf"&gt;pure&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and all ensure that &lt;code&gt;pure&lt;/code&gt; pretty much delivers what it promises. For example,
+the first of the above three properties is just a way of ensuring that &lt;code&gt;pure&lt;/code&gt;
+embeds ordinary function application into the effectful programming realm in an
+unsurprising way.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Deeper ties with Category Theory are presented in details in the original
+paper &lt;a href="http://www.staff.city.ac.uk/~ross/papers/Applicative.html"&gt;(McBride &amp;amp; Paterson,
+2008)&lt;/a&gt;. There it is
+shown how one can give a symmetric definition of &lt;code&gt;&amp;lt;*&amp;gt;&lt;/code&gt; and show that an
+applicative functor is just a &lt;em&gt;lax monoidal functor&lt;/em&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="monads"&gt;Monads&lt;/h1&gt;
+&lt;p&gt;Monads have been introduced to crystallise yet another common pattern in
+effectful programming that is not quite captured by both the Functor and the
+Applicative "patterns".&lt;/p&gt;
+&lt;p&gt;Consider the case of a program that consists of a series of steps that need to
+be executed in order, and such that the output of one is used as input for the
+next one. A classical example is a function &lt;code&gt;f&lt;/code&gt; that requires the result of a
+division &lt;code&gt;g x y = x / y&lt;/code&gt;. It is clear that if &lt;code&gt;g&lt;/code&gt; receives a &lt;code&gt;0&lt;/code&gt; as second
+argument during the execution of the program, we are in an exceptional situation
+that somehow we need to handle. But we can hardly do so if &lt;code&gt;g&lt;/code&gt; is of type, say,
+&lt;code&gt;g :: Int -&amp;gt; Int -&amp;gt; Int&lt;/code&gt;. Lacking support for catching and reacting to
+exceptions, we need a way to &lt;em&gt;signal&lt;/em&gt; that something went wrong and propagate
+that to the end.&lt;/p&gt;
+&lt;p&gt;The first obvious thing to do is to rewrite &lt;code&gt;g&lt;/code&gt; in such a way that its type is
+&lt;code&gt;g :: Int -&amp;gt; Int -&amp;gt; Maybe Int&lt;/code&gt;, so that &lt;code&gt;g _ 0 = Nothing&lt;/code&gt; and &lt;code&gt;g x y = Just (x /
+y)&lt;/code&gt;. Then, for every function &lt;code&gt;f&lt;/code&gt; that receives the output of &lt;code&gt;g&lt;/code&gt; as input, we
+would have to go through the tedious process of checking whether the value it
+received is valid or not. If those functions have been coded already, then we
+have a problem that is not much fun to solve.&lt;/p&gt;
+&lt;p&gt;How about we check the arguments we are passing to a function that is coming
+from another function, detecting any failures to propagate, else continue with
+the normal execution? With this approach, all we need is a &lt;em&gt;binding&lt;/em&gt; function
+&lt;code&gt;&amp;gt;&amp;gt;= :: Maybe a -&amp;gt; (a -&amp;gt; Maybe b) -&amp;gt; Maybe b&lt;/code&gt; that checks the first argument,
+and only apply it to the second argument if it makes sense to do so, propagating
+any "bad" value otherwise. It is clear, just by looking at the involved types,
+that applicative functors are of no much use in this case, since a function like
+&lt;code&gt;g&lt;/code&gt; is not &lt;em&gt;pure&lt;/em&gt;, given that it can produce a side effect like &lt;code&gt;Nothing&lt;/code&gt;.
+Hence, what we have here is a different pattern: the &lt;strong&gt;monad&lt;/strong&gt; pattern.&lt;/p&gt;
+&lt;p&gt;The notion of &lt;em&gt;monad&lt;/em&gt; comes from category theory and arises from adjunction. But
+before we can make contact with the Haskell notion of monads that was given
+above we need to replace the bind operator &lt;code&gt;&amp;gt;&amp;gt;= :: M a -&amp;gt; (a -&amp;gt; M b) -&amp;gt; M b&lt;/code&gt;
+(here &lt;code&gt;M&lt;/code&gt; is a parametrised type that we want to turn into a monad; hence &lt;code&gt;M&lt;/code&gt; is
+a functor) with the function &lt;code&gt;join :: M (Μ a) -&amp;gt; M a&lt;/code&gt;. Together with &lt;code&gt;pure&lt;/code&gt; (or
+&lt;code&gt;return&lt;/code&gt; we should say), it provides the structure that makes the endofunctor
+&lt;code&gt;M&lt;/code&gt; a monad. In a nutshell, what we want to do is prove that &lt;code&gt;(M, pure, join)&lt;/code&gt;
+has the monad structure. And we shall also see in what sense a monad can be
+defined as a "monoid in the category of endofunctors", as Mac Lane put it.&lt;/p&gt;
+&lt;p&gt;First things first, let's see how the &lt;code&gt;join&lt;/code&gt; function relates to the bind
+operator &lt;code&gt;&amp;gt;&amp;gt;=&lt;/code&gt;. You can convince yourself that the definition&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;has the correct type. As to what this is good for from a practical point of
+view, recall the example of the function &lt;code&gt;g :: Int -&amp;gt; Int -&amp;gt; Maybe Int&lt;/code&gt; that we
+saw before. We argued that we couldn't apply the applicative pattern because &lt;code&gt;g&lt;/code&gt;
+is not a pure function and that the issue boiled down to &lt;code&gt;g&lt;/code&gt; having the "wrong"
+type. For if we used &lt;code&gt;fmap2 :: (a -&amp;gt; b -&amp;gt; c) -&amp;gt; (Maybe a -&amp;gt; Maybe b -&amp;gt; Maybe
+c)&lt;/code&gt;, we would end up with &lt;code&gt;fmap2 g :: Maybe Int -&amp;gt; Maybe Int -&amp;gt; Maybe (Maybe
+Int)&lt;/code&gt;. But now, if we curry and apply &lt;code&gt;join&lt;/code&gt; we can &lt;em&gt;cure&lt;/em&gt; that double boxing
+&lt;code&gt;Maybe (Maybe Int)&lt;/code&gt; to get back a &lt;code&gt;Maybe Int&lt;/code&gt; instead.&lt;/p&gt;
+&lt;p&gt;Let's now look at the coherence properties that must be satisfied by &lt;code&gt;join&lt;/code&gt;. The
+first one we note is its interaction with itself&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;join&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;join&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;which is quite easily understood if we look at the case of lists. Here the
+&lt;code&gt;join&lt;/code&gt; function does what we would expect, considering its name: it flattens the
+list of lists &lt;code&gt;[[a]]&lt;/code&gt; into a single list &lt;code&gt;[a]&lt;/code&gt; obtained by concatenation. The
+second coherence property that we look at involves the interaction between
+&lt;code&gt;join&lt;/code&gt; and &lt;code&gt;pure&lt;/code&gt; (or &lt;code&gt;return&lt;/code&gt;), viz.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;pure&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;join&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fmap&lt;/span&gt; &lt;span class="n"&gt;pure&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;which can be understood as saying that when we embed a value of type &lt;code&gt;M a&lt;/code&gt; into
+the "pure" part of &lt;code&gt;M (M a)&lt;/code&gt;, then &lt;code&gt;join&lt;/code&gt; "unboxes" the structure and gives us
+the initial value back.&lt;/p&gt;
+&lt;p&gt;Now, thanks to the two above properties, we can easily recognise a monad
+structure for the triplet &lt;code&gt;(M, pure, join)&lt;/code&gt;, with &lt;code&gt;T&lt;/code&gt; the endofunctor and &lt;code&gt;pure&lt;/code&gt;
+and &lt;code&gt;join&lt;/code&gt; representing the required natural transformations.&lt;/p&gt;
+&lt;p&gt;In what sense can we regard a monad as a monoid? The general qualitative answer
+is that the map &lt;code&gt;pure&lt;/code&gt; is akin to a unit and &lt;code&gt;join&lt;/code&gt; is akin to the binary
+operation on a monoid. But if we look at the type of &lt;code&gt;join&lt;/code&gt;, which is &lt;code&gt;M (M a)
+-&amp;gt; M a&lt;/code&gt;, we don't see any sign of a Cartesian product. Instead, we have some
+sort of composition of functors, whence the second part of the qualitative
+answer, i.e. that the Cartesian product should be replaced with "composition".
+But what kind of composition? Let's clarify these points a bit.&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;Let'sabandon Haskell functors for now, since it is pretty clear that the last&lt;/dt&gt;
+&lt;dt&gt;"pattern" that we have described has all the rights to be called a &lt;em&gt;monad&lt;/em&gt;, and&lt;/dt&gt;
+&lt;dt&gt;look at the matter from the perspective of category theory. Given functors $F, G&lt;/dt&gt;
+&lt;dd&gt;C \to D&lt;span class="math"&gt;\(, $J, K : D \to E\)&lt;/span&gt; and natural transformations &lt;span class="math"&gt;\(\alpha : F \Rightarrow
+G\)&lt;/span&gt; and &lt;span class="math"&gt;\(\beta : J \Rightarrow K\)&lt;/span&gt;, we can construct a new natural transformation
+&lt;span class="math"&gt;\(\beta \circ \alpha\)&lt;/span&gt; between the functors &lt;span class="math"&gt;\(J \circ F\)&lt;/span&gt; and &lt;span class="math"&gt;\(K \circ G\)&lt;/span&gt; according
+to the following commutative diagram&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;div class="math"&gt;$$\require{AMScd}
+\begin{CD}
+  F(X) @&amp;gt;\alpha_X&amp;gt;&amp;gt; G(X)\\
+  @VJVV @VJVV\\ (J\circ F)(X) @&amp;gt;J(\alpha_X)&amp;gt;&amp;gt;
+(J\circ G)(X) @&amp;gt;\beta_{G(X)}&amp;gt;&amp;gt; (K\circ G)(X)
+\end{CD}$$&lt;/div&gt;
+&lt;p&gt;That is, we define the natural transformation &lt;span class="math"&gt;\(\beta\circ\alpha : J \circ F
+\Rightarrow K \circ G\)&lt;/span&gt; as having components&lt;/p&gt;
+&lt;div class="math"&gt;$$(\beta \circ \alpha)_X = \beta_{G(X)} \circ J(\alpha_X)$$&lt;/div&gt;
+&lt;p&gt;Using &lt;span class="math"&gt;\(\eta\)&lt;/span&gt; and &lt;span class="math"&gt;\(\mu\)&lt;/span&gt; as short-hand notation for the natural transformations
+&lt;code&gt;pure&lt;/code&gt; and &lt;code&gt;join&lt;/code&gt;, we see that the two coherence properties above can be stated
+in the form of commutative diagram&lt;/p&gt;
+&lt;div class="math"&gt;$$\require{AMScd}
+\begin{CD}
+  M \circ M \circ M @&amp;gt;\iota_M\circ \mu&amp;gt;&amp;gt; M \circ M\\
+  @V\mu \circ \iota_MVV @V\mu VV\\
+  M \circ M @&amp;gt;\mu&amp;gt;&amp;gt; M
+\end{CD}$$&lt;/div&gt;
+&lt;p&gt;and&lt;/p&gt;
+&lt;div class="math"&gt;$$\require{AMScd}
+\begin{CD}
+  M \circ I @&amp;gt; \iota_M \circ \eta &amp;gt;&amp;gt; M \circ M @&amp;lt; \eta\circ\iota_M &amp;lt;&amp;lt; I \circ
+    M\\
+  @| @V \mu VV @|\\
+  M @= M @= M
+\end{CD}$$&lt;/div&gt;
+&lt;p&gt;where &lt;span class="math"&gt;\(\iota_M\)&lt;/span&gt; denotes of course the identity natural transformation. Note
+that, in terms of components, the two diagrams are equivalent to the relations&lt;/p&gt;
+&lt;div class="math"&gt;$$\forall X,\ \mu_X(M(\mu_X)) = \mu_X(\mu_{M(X)})$$&lt;/div&gt;
+&lt;p&gt;and&lt;/p&gt;
+&lt;div class="math"&gt;$$\forall X,\ \mu(M(\eta_X)) = \mu(\eta_{M(X)}),$$&lt;/div&gt;
+&lt;p&gt;which we can easily translate back into the original properties for the Haskell
+&lt;code&gt;pure&lt;/code&gt; and &lt;code&gt;join&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The above diagrams should now make more precise the meaning of Mac Lane's sentence&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;All told, a monad in &lt;span class="math"&gt;\(X\)&lt;/span&gt; is just a monoid in the category of endofunctors of
+&lt;span class="math"&gt;\(X\)&lt;/span&gt;, with product &lt;span class="math"&gt;\(\times\)&lt;/span&gt; replaced by composition of endofunctors and unit
+set by the identity endofunctor.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Indeed we see that &lt;span class="math"&gt;\(\mu\)&lt;/span&gt; and &lt;span class="math"&gt;\(\eta\)&lt;/span&gt; have diagrams similar to the analogous
+concepts in monoids, with the difference that functor composition &lt;span class="math"&gt;\(\circ\)&lt;/span&gt; is now
+everywhere we would expect a Cartesian product &lt;span class="math"&gt;\(\times\)&lt;/span&gt;.&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="Programming"></category><category term="haskell"></category><category term="category theory"></category><category term="functional programming"></category></entry><entry><title>Deterministic and Statistical Python Profiling</title><link href="https://p403n1x87.github.io/deterministic-and-statistical-python-profiling.html" rel="alternate"></link><published>2019-05-05T17:35:00+01:00</published><updated>2019-05-05T17:35:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2019-05-05:/deterministic-and-statistical-python-profiling.html</id><summary type="html">&lt;p&gt;If you want to be sure that your applications are working optimally, then sooner or later you will end up turning to profiling techniques to identify and correct potential issues with your code. In this post, I discuss some of the current profiling tools and techniques for Python. The official documentation has a &lt;a href="https://docs.python.org/3/library/profile.html"&gt;whole section&lt;/a&gt; on the subject, but we shall go beyond that and have a look at some alternative solutions, especially in the area of sampling profilers.&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a href="#brief-introduction-to-profiling"&gt;Brief Introduction to Profiling&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="#python-profiling"&gt;Python Profiling&lt;/a&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a href="#standard-python-profiling"&gt;Standard Python Profiling&lt;/a&gt;&lt;/li&gt;

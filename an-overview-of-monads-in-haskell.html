@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - An Overview of Monads in Haskell</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="haskell" />
+    <meta name="tags" content="category theory" />
+    <meta name="tags" content="functional programming" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/leibniz.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-75 bg-black">
+      <h1 class="entry-title">An Overview of Monads in Haskell</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2020-09-17T16:18:00+01:00">
+          &#128197; Thu 17 September 2020
+        </time>
+        <span class="readtime py-1">&#9202; A 16 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/haskell.html">haskell</a>
+            <a class="tag" href="./tag/category-theory.html">category theory</a>
+            <a class="tag" href="./tag/functional-programming.html">functional programming</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>Monads are arguably one of the most important concepts in functional programming. In this post we pave the street to understanding how this purely category theoretical object finds its place in a language like Haskell.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#functors">Functors</a></li>
+<li><a href="#applicative-functors">Applicative Functors</a></li>
+<li><a href="#monads">Monads</a></li>
+</ul>
+</div>
+<h1 id="introduction">Introduction</h1>
+<p>If you are learning a functional programming language like Haskell, sooner or
+later you will find yourself dealing with the concept of <strong>monad</strong>. You probably
+knew already that there is a fair bit of category theory embedded in the
+language, and this comes as no surprise at all. Indeed, functional programming
+languages were developed with the goal of making lambda calculus practical and,
+as it turns out, type theory has many relations to category theory.</p>
+<p>In this post we make our way to the concept of monads in Haskell starting from
+the notion of functor. The ultimate goal is to motivate the use of the term
+monad by showing that we indeed have a monadic structure, but also give a
+somewhat rigurous justification of the fact that "all told, monads are just
+monoids in the category of endofunctors".</p>
+<h1 id="functors">Functors</h1>
+<p>A typical pattern of functional programming is that of applying a function to a
+list element-wise. There are many ways of doing this, but the most general one
+is that of using the <code>map</code> function</p>
+<div class="highlight"><pre><span></span><span class="nf">map</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+</pre></div>
+
+
+<p>That is, <code>map</code> takes a function <code>a -&gt; b</code> and a list of type <code>[a]</code> to produce a
+list of type <code>[b]</code> by simply applying the function to each entry of the first
+list. Two important properties of the function <code>map</code> follow from this
+definition. The first involves its interaction with the identity function <code>id ::
+a -&gt; a</code> which simply evaluates to its sole argument. Indeed,</p>
+<div class="highlight"><pre><span></span><span class="nf">map</span> <span class="n">id</span> <span class="ow">=</span> <span class="n">id</span>
+</pre></div>
+
+
+<p>in the sense that both sides represent the same function. Now, if we have two
+functions, <code>f :: a -&gt; b</code> and <code>g :: b -&gt; c</code>, it doesn't matter whether we first
+compute the composition <code>g . f</code> and apply it to <code>map</code>, or compose <code>map g</code> with
+<code>map f</code>. The net result is that we obtain a function that takes a list of type
+<code>[a]</code> that is sent to a list of type <code>[c]</code> whose elements are precisely given by
+the image of each element of the initial list through the composition <code>g . f</code>.
+We can express this fact with the identity</p>
+<div class="highlight"><pre><span></span><span class="nf">map</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span> <span class="ow">=</span> <span class="n">map</span> <span class="n">f</span> <span class="o">.</span> <span class="n">map</span> <span class="n">g</span>
+</pre></div>
+
+
+<p>Let's look back at what we have here. In more abstract terms, we can think of
+the operation of putting square brackets around a type as some sort of map on
+the set of Haskell types into itself, namely <span class="math">\([\ \cdot\ ] : a \mapsto [a]\)</span>, for
+any Haskell type <span class="math">\(a\)</span>. Observe further that the type of the function <code>map</code> is
+indeed <code>map :: (a -&gt; b) -&gt; ([a] -&gt; [b])</code>. That is to say that <code>map</code> sends a
+function <code>a -&gt; b</code> to a function <code>[a] -&gt; [b]</code>, together with the two properties
+above.</p>
+<p>We may be tempted, at this point, to introduce the Haskell category
+<span class="math">\(\mathsf{Hask}\)</span>, whose objects are the Haskell types, and whose arrows are the
+Haskell functions, i.e. those types that can be put into the form <code>a -&gt; b</code> for
+some Haskell types <code>a</code> and <code>b</code>. If we do so, we then recognise that the pair
+(<code>[]</code>, <code>map</code>) defines a functor from <span class="math">\(\mathsf{Hask}\)</span> into itself. That's because
+<code>[]</code> maps objects to objects (lists) and <code>map</code> maps functions to functions
+(between lists). That these mappings are functorial follows immediately from the
+two properties that we have observed earlier.</p>
+<p>The next abstraction step is in realising that there is nothing special in the
+(<code>[]</code>, <code>map</code>) pair. For if all we want are endofunctors on <span class="math">\(\mathsf{Hask}\)</span>, all
+we really need is a <em>parametrised</em> type <code>T</code> and a map <code>fmap :: (a -&gt; b) -&gt; T a
+-&gt; T b</code> that <em>plays nicely</em> with <code>T</code>, in the sense that it satisfies the
+functoriality properties</p>
+<div class="highlight"><pre><span></span><span class="nf">fmap</span> <span class="n">id</span> <span class="ow">=</span> <span class="n">id</span>
+</pre></div>
+
+
+<p>and</p>
+<div class="highlight"><pre><span></span><span class="nf">fmap</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="n">f</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span>
+</pre></div>
+
+
+<p>for any functions <code>f</code> and <code>g</code>. We then see that the list example we have
+analyised above is just the special case where <code>T a = [a]</code> and <code>fmap = map</code>.</p>
+<p>To get a feel of what functors mean in Haskell (or more generally in functional
+programming), we should regard the parametrised type <code>T</code> as a sort of
+<em>container</em> type. A list, of course, is an example of a container, as it
+contains multiple instances of a certan type in an ordered fashon. But <code>T</code> can
+also be, e.g., a rooted tree with values of type <code>a</code> on each of its nodes. So,
+generally, <code>T</code> is some sort of container structure that accomodates for multiple
+values of the parameter type <code>a</code>.</p>
+<p>Notice now how the definition of <code>fmap</code> depends on the parametrised type <code>T</code>.
+This means that the first step in defining an endofunctor over <span class="math">\(\mathsf{Hask}\)</span>
+is to produce one such parametrised type <code>T</code>. But once we have one, can we find
+an <code>fmap</code> such that (<code>T</code>, <code>fmap</code>) is a functor? The answer to this question very
+much depends on the nature of <code>T</code>, but what we can be certain of is that once we
+have found one such <code>fmap</code>, then it is <strong>unique</strong>. Why? This is a consequence of
+the so-called <code>parametricity</code> result, which derives from parametric
+polymorphism. The function <code>fmap :: (a -&gt; b) -&gt; T a -&gt; T b</code> implies universal
+quantifiers for the types <code>a</code> and <code>b</code>. That is to say, for any types <code>a</code> and
+<code>b</code>, <code>fmap</code> sends a function <code>a -&gt; b</code> to a function <code>T a -&gt; T b</code>. The key
+observation is that, because of this parametric dependency on the types <code>a</code> and
+<code>b</code>, the function <code>fmap</code> cannot act in a way that depends on a particular choice
+of the types, but can depend at most on the container structure described by the
+parametrised type <code>T</code>.</p>
+<p>In order to understand this concept, let's take a step back and consider again
+the special case of lists. Suppose that we have another candidate <code>fmap'</code> for an
+<code>fmap</code> other than <code>map</code>. Since the types are arbitrary, such new candidate can
+only interact with the list structure, i.e. apply the first argument, that is,
+the function <code>f :: a -&gt; b</code> to each element of the list of type <code>[a]</code> to produce
+<code>[b]</code>, and perhaps do a reshuffling. Now, if we apply this new candidate to the
+identity <code>id :: a -&gt; a</code>, we get precisely the reshuffling bit <code>s = fmap' id</code>. On
+the other hand, <code>fmap'</code> must satisfy the functor properties, and in particular
+<code>fmap' id = id</code>, whence <code>s = id</code>. That is to say that <code>fmap'</code> cannot actually do
+any reshuffling, so it must coincide with <code>map</code>.</p>
+<p>The general argument works in the same way, we only need to replace the list
+structure with a general one <code>T</code> and argue that by the functor properties <code>fmap</code>
+can only map a function to each element of type <code>a</code> inside <code>T a</code> while
+preserving the container structure described by <code>T</code>.</p>
+<blockquote>
+<p>More elegantly, this result could have been obtained using the <em>free theorem</em>
+associated to the type <code>(a -&gt; b) -&gt; (T a -&gt; T b)</code>; see <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.38.9875&amp;rep=rep1&amp;type=pdf">(Wadler,
+1989)</a>
+for the details.</p>
+</blockquote>
+<h1 id="applicative-functors">Applicative Functors</h1>
+<p>We have seen that functors are a generalisation of the common pattern of mapping
+a function over the elements of a list. Can we generalise to mapping of
+functions with more than one argument? That is to say, given that (<code>T</code>, <code>fmap</code>)
+describes a functor, can we find, e.g., <code>fmap2 :: (a -&gt; b -&gt; c) -&gt; (T a -&gt; T b
+-&gt; T c)</code>, that satisfies some reasonable coherence properties? A first
+observation is that the type <code>a -&gt; b -&gt; c</code> is identical to <code>a -&gt; (b -&gt; c)</code>, just
+by definition. If we apply <code>fmap</code> to any instances of this type we would get
+something of type <code>T a -&gt; T (b -&gt; c)</code>, which isn't quite what we want. <em>But</em>, if
+we had a function <code>&lt;*&gt; :: T (a -&gt; b) -&gt; (T a -&gt; T b)</code> we would get closer, but
+not quite there yet. Indeed, we could now define <code>fmap2</code> like so</p>
+<div class="highlight"><pre><span></span><span class="nf">fmap2</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">c</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">T</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">T</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">T</span> <span class="n">c</span><span class="p">)</span>
+<span class="nf">fmap2</span> <span class="n">f</span> <span class="n">x</span> <span class="n">y</span> <span class="ow">=</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">f</span> <span class="n">x</span><span class="p">)</span> <span class="n">y</span>
+</pre></div>
+
+
+<p>that is, we curry the result of <code>fmap f</code> with the first argument <code>x</code> and then
+apply <code>&lt;*&gt;</code> to the result to obtain a function that we can compute on <code>y</code> to get
+a result of type <code>T c</code>. Of course, we can now repeat these steps to define
+<code>fmap3 :: (a -&gt; b -&gt; c -&gt; d) -&gt; (T a -&gt; T b -&gt; T c -&gt; Td)</code> by using <code>fmap2</code> as a
+starting point, that is</p>
+<div class="highlight"><pre><span></span><span class="nf">fmap3</span> <span class="n">f</span> <span class="n">x</span> <span class="n">y</span> <span class="n">z</span> <span class="ow">=</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">fmap2</span> <span class="n">f</span> <span class="n">x</span> <span class="n">y</span><span class="p">)</span> <span class="n">z</span>
+</pre></div>
+
+
+<p>and carry on, to get a whole family of maps <code>fmapn</code>. Using infix notation for
+<code>&lt;*&gt;</code> and assuming associativity to the left, we could then write the general
+case as</p>
+<div class="highlight"><pre><span></span><span class="nf">fmapn</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a1</span> <span class="ow">-&gt;</span> <span class="o">...</span> <span class="ow">-&gt;</span> <span class="n">an</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">T</span> <span class="n">a1</span> <span class="ow">-&gt;</span> <span class="o">...</span> <span class="ow">-&gt;</span> <span class="kt">T</span> <span class="n">an</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">fmapn</span> <span class="n">f</span> <span class="n">x1</span> <span class="o">...</span> <span class="n">xn</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="n">f</span> <span class="n">x1</span> <span class="o">&lt;*&gt;</span> <span class="o">...</span> <span class="o">&lt;*&gt;</span> <span class="n">xn</span>
+</pre></div>
+
+
+<p>This is now starting to look just like function application, except that we are
+not making that very explicit with the first argument <code>x1</code> of type <code>T a1</code>. If we
+wanted to fix that, we would have to find, e.g., a function <code>p</code> such that <code>fmap
+f x1 = (p f) &lt;*&gt; x</code>. What's the type of <code>p</code>? We see that <code>p :: a -&gt; T a</code> would
+work well here, so if we could find such a function we could push the base of
+the recursion back and define <code>fmap</code> itself in terms of <code>p</code> and <code>&lt;*&gt;</code>. Then we
+could easily generalise functors to functions of an arbitrary number of
+arguments by simply mapping it through <code>p</code> and applying arguments with <code>&lt;*&gt;</code>.</p>
+<p>In Haskell, it is customary to call the function <code>p</code> with the name <code>pure</code>; any
+functor for which one can define both <code>pure</code> and <code>&lt;*&gt;</code> is then called an
+<em>applicative</em> functor. The importance of these special objects does not come
+solely from the fact that they generalise the notion of mapping to functions of
+more than one argument. Indeed, they represent an important step toward
+<em>effectful</em> programming inside a purely functional programming language. Perhaps
+we can appreciate this better with a concrete example based on the functor
+<code>Maybe</code>. Its values can be used to represent the success or failure of an
+operation. For exmaple, when an operation failed, we can simply return
+<code>Nothing</code>, else we return <code>Just x</code>, where <code>x</code> is the valid result of the
+operation. Haskell makes <code>Maybe</code> into an applicative functor by default by
+defining</p>
+<div class="highlight"><pre><span></span><span class="nf">pure</span> <span class="ow">=</span> <span class="kt">Just</span>
+
+<span class="kt">Nothing</span> <span class="o">&lt;*&gt;</span> <span class="kr">_</span> <span class="ow">=</span> <span class="kt">Nothing</span>
+<span class="p">(</span><span class="kt">Just</span> <span class="n">f</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">mx</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="n">f</span> <span class="n">mx</span>
+</pre></div>
+
+
+<p>We see from the above definitions and the recursive nature of applicative
+functors that the propagation of the occurrence of an invalid value like
+<code>Nothing</code> during the computation is automatically propagated to the end result,
+with no need to put checks in place for each argument of the function <code>f</code>.</p>
+<p>Before moving on, we should spend some more time looking back at the identity
+<code>(pure f) &lt;*&gt; x = fmap f x</code> and recalling that <code>fmap</code> must satisfy some
+coherence properties that make it part of the description of a functor. As we
+have said earlier, we expect <code>pure</code> and <code>&lt;*&gt;</code> to satisfy some coherence
+properties themselves if they are to work as they are supposed to, and we see
+why that is. One of such properties comes for free, viz.</p>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">pure</span> <span class="n">id</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">x</span>
+</pre></div>
+
+
+<p>since <code>fmap id x = x</code>. The other properties that are required of <code>pure</code> and
+<code>&lt;*&gt;</code> are</p>
+<div class="highlight"><pre><span></span><span class="nf">pure</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">f</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">x</span>
+<span class="nf">x</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">y</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="o">$</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">x</span>
+<span class="nf">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">x</span> <span class="o">&lt;*&gt;</span> <span class="n">y</span> <span class="o">&lt;*&gt;</span> <span class="n">z</span> <span class="ow">=</span> <span class="n">x</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;*&gt;</span> <span class="n">z</span><span class="p">)</span>
+</pre></div>
+
+
+<p>and all ensure that <code>pure</code> pretty much delivers what it promises. For example,
+the first of the above three properties is just a way of ensuring that <code>pure</code>
+embeds ordinary function application into the effectful programming realm in an
+unsurprising way.</p>
+<blockquote>
+<p>Deeper ties with Category Theory are presented in details in the original
+paper <a href="http://www.staff.city.ac.uk/~ross/papers/Applicative.html">(McBride &amp; Paterson,
+2008)</a>. There it is
+shown how one can give a symmetric definition of <code>&lt;*&gt;</code> and show that an
+applicative functor is just a <em>lax monoidal functor</em>.</p>
+</blockquote>
+<h1 id="monads">Monads</h1>
+<p>Monads have been introduced to crystallise yet another common pattern in
+effectful programming that is not quite captured by both the Functor and the
+Applicative "patterns".</p>
+<p>Consider the case of a program that consists of a series of steps that need to
+be executed in order, and such that the output of one is used as input for the
+next one. A classical example is a function <code>f</code> that requires the result of a
+division <code>g x y = x / y</code>. It is clear that if <code>g</code> receives a <code>0</code> as second
+argument during the execution of the program, we are in an exceptional situation
+that somehow we need to handle. But we can hardly do so if <code>g</code> is of type, say,
+<code>g :: Int -&gt; Int -&gt; Int</code>. Lacking support for catching and reacting to
+exceptions, we need a way to <em>signal</em> that something went wrong and propagate
+that to the end.</p>
+<p>The first obvious thing to do is to rewrite <code>g</code> in such a way that its type is
+<code>g :: Int -&gt; Int -&gt; Maybe Int</code>, so that <code>g _ 0 = Nothing</code> and <code>g x y = Just (x /
+y)</code>. Then, for every function <code>f</code> that receives the output of <code>g</code> as input, we
+would have to go through the tedious process of checking whether the value it
+received is valid or not. If those functions have been coded already, then we
+have a problem that is not much fun to solve.</p>
+<p>How about we check the arguments we are passing to a function that is coming
+from another function, detecting any failures to propagate, else continue with
+the normal execution? With this approach, all we need is a <em>binding</em> function
+<code>&gt;&gt;= :: Maybe a -&gt; (a -&gt; Maybe b) -&gt; Maybe b</code> that checks the first argument,
+and only apply it to the second argument if it makes sense to do so, propagating
+any "bad" value otherwise. It is clear, just by looking at the involved types,
+that applicative functors are of no much use in this case, since a function like
+<code>g</code> is not <em>pure</em>, given that it can produce a side effect like <code>Nothing</code>.
+Hence, what we have here is a different pattern: the <strong>monad</strong> pattern.</p>
+<p>The notion of <em>monad</em> comes from category theory and arises from adjunction. But
+before we can make contact with the Haskell notion of monads that was given
+above we need to replace the bind operator <code>&gt;&gt;= :: M a -&gt; (a -&gt; M b) -&gt; M b</code>
+(here <code>M</code> is a parametrised type that we want to turn into a monad; hence <code>M</code> is
+a functor) with the function <code>join :: M (Μ a) -&gt; M a</code>. Together with <code>pure</code> (or
+<code>return</code> we should say), it provides the structure that makes the endofunctor
+<code>M</code> a monad. In a nutshell, what we want to do is prove that <code>(M, pure, join)</code>
+has the monad structure. And we shall also see in what sense a monad can be
+defined as a "monoid in the category of endofunctors", as Mac Lane put it.</p>
+<p>First things first, let's see how the <code>join</code> function relates to the bind
+operator <code>&gt;&gt;=</code>. You can convince yourself that the definition</p>
+<div class="highlight"><pre><span></span><span class="nf">join</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">x</span> <span class="o">&gt;&gt;=</span> <span class="n">id</span>
+</pre></div>
+
+
+<p>has the correct type. As to what this is good for from a practical point of
+view, recall the example of the function <code>g :: Int -&gt; Int -&gt; Maybe Int</code> that we
+saw before. We argued that we couldn't apply the applicative pattern because <code>g</code>
+is not a pure function and that the issue boiled down to <code>g</code> having the "wrong"
+type. For if we used <code>fmap2 :: (a -&gt; b -&gt; c) -&gt; (Maybe a -&gt; Maybe b -&gt; Maybe
+c)</code>, we would end up with <code>fmap2 g :: Maybe Int -&gt; Maybe Int -&gt; Maybe (Maybe
+Int)</code>. But now, if we curry and apply <code>join</code> we can <em>cure</em> that double boxing
+<code>Maybe (Maybe Int)</code> to get back a <code>Maybe Int</code> instead.</p>
+<p>Let's now look at the coherence properties that must be satisfied by <code>join</code>. The
+first one we note is its interaction with itself</p>
+<div class="highlight"><pre><span></span><span class="nf">join</span> <span class="o">.</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">join</span><span class="p">)</span> <span class="ow">=</span> <span class="n">join</span> <span class="o">.</span> <span class="n">join</span>
+</pre></div>
+
+
+<p>which is quite easily understood if we look at the case of lists. Here the
+<code>join</code> function does what we would expect, considering its name: it flattens the
+list of lists <code>[[a]]</code> into a single list <code>[a]</code> obtained by concatenation. The
+second coherence property that we look at involves the interaction between
+<code>join</code> and <code>pure</code> (or <code>return</code>), viz.</p>
+<div class="highlight"><pre><span></span><span class="nf">join</span> <span class="o">.</span> <span class="n">pure</span> <span class="ow">=</span> <span class="n">join</span> <span class="o">.</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">pure</span><span class="p">)</span> <span class="ow">=</span> <span class="n">id</span>
+</pre></div>
+
+
+<p>which can be understood as saying that when we embed a value of type <code>M a</code> into
+the "pure" part of <code>M (M a)</code>, then <code>join</code> "unboxes" the structure and gives us
+the initial value back.</p>
+<p>Now, thanks to the two above properties, we can easily recognise a monad
+structure for the triplet <code>(M, pure, join)</code>, with <code>T</code> the endofunctor and <code>pure</code>
+and <code>join</code> representing the required natural transformations.</p>
+<p>In what sense can we regard a monad as a monoid? The general qualitative answer
+is that the map <code>pure</code> is akin to a unit and <code>join</code> is akin to the binary
+operation on a monoid. But if we look at the type of <code>join</code>, which is <code>M (M a)
+-&gt; M a</code>, we don't see any sign of a Cartesian product. Instead, we have some
+sort of composition of functors, whence the second part of the qualitative
+answer, i.e. that the Cartesian product should be replaced with "composition".
+But what kind of composition? Let's clarify these points a bit.</p>
+<dl>
+<dt>Let'sabandon Haskell functors for now, since it is pretty clear that the last</dt>
+<dt>"pattern" that we have described has all the rights to be called a <em>monad</em>, and</dt>
+<dt>look at the matter from the perspective of category theory. Given functors $F, G</dt>
+<dd>C \to D<span class="math">\(, $J, K : D \to E\)</span> and natural transformations <span class="math">\(\alpha : F \Rightarrow
+G\)</span> and <span class="math">\(\beta : J \Rightarrow K\)</span>, we can construct a new natural transformation
+<span class="math">\(\beta \circ \alpha\)</span> between the functors <span class="math">\(J \circ F\)</span> and <span class="math">\(K \circ G\)</span> according
+to the following commutative diagram</dd>
+</dl>
+<div class="math">$$\require{AMScd}
+\begin{CD}
+  F(X) @&gt;\alpha_X&gt;&gt; G(X)\\
+  @VJVV @VJVV\\ (J\circ F)(X) @&gt;J(\alpha_X)&gt;&gt;
+(J\circ G)(X) @&gt;\beta_{G(X)}&gt;&gt; (K\circ G)(X)
+\end{CD}$$</div>
+<p>That is, we define the natural transformation <span class="math">\(\beta\circ\alpha : J \circ F
+\Rightarrow K \circ G\)</span> as having components</p>
+<div class="math">$$(\beta \circ \alpha)_X = \beta_{G(X)} \circ J(\alpha_X)$$</div>
+<p>Using <span class="math">\(\eta\)</span> and <span class="math">\(\mu\)</span> as short-hand notation for the natural transformations
+<code>pure</code> and <code>join</code>, we see that the two coherence properties above can be stated
+in the form of commutative diagram</p>
+<div class="math">$$\require{AMScd}
+\begin{CD}
+  M \circ M \circ M @&gt;\iota_M\circ \mu&gt;&gt; M \circ M\\
+  @V\mu \circ \iota_MVV @V\mu VV\\
+  M \circ M @&gt;\mu&gt;&gt; M
+\end{CD}$$</div>
+<p>and</p>
+<div class="math">$$\require{AMScd}
+\begin{CD}
+  M \circ I @&gt; \iota_M \circ \eta &gt;&gt; M \circ M @&lt; \eta\circ\iota_M &lt;&lt; I \circ
+    M\\
+  @| @V \mu VV @|\\
+  M @= M @= M
+\end{CD}$$</div>
+<p>where <span class="math">\(\iota_M\)</span> denotes of course the identity natural transformation. Note
+that, in terms of components, the two diagrams are equivalent to the relations</p>
+<div class="math">$$\forall X,\ \mu_X(M(\mu_X)) = \mu_X(\mu_{M(X)})$$</div>
+<p>and</p>
+<div class="math">$$\forall X,\ \mu(M(\eta_X)) = \mu(\eta_{M(X)}),$$</div>
+<p>which we can easily translate back into the original properties for the Haskell
+<code>pure</code> and <code>join</code>.</p>
+<p>The above diagrams should now make more precise the meaning of Mac Lane's sentence</p>
+<blockquote>
+<p>All told, a monad in <span class="math">\(X\)</span> is just a monoid in the category of endofunctors of
+<span class="math">\(X\)</span>, with product <span class="math">\(\times\)</span> replaced by composition of endofunctors and unit
+set by the identity endofunctor.</p>
+</blockquote>
+<p>Indeed we see that <span class="math">\(\mu\)</span> and <span class="math">\(\eta\)</span> have diagrams similar to the analogous
+concepts in monoids, with the difference that functor composition <span class="math">\(\circ\)</span> is now
+everywhere we would expect a Cartesian product <span class="math">\(\times\)</span>.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./an-overview-of-monads-in-haskell.html";
+  this.page.identifier = "haskell-monads"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>
