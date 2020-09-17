@@ -36,12 +36,11 @@ p {
 code {
   font-family: "Ubuntu Mono", Meslo, Consolas, monospace;
   border-radius: 4px;
-  border: solid 1px #4b5063;
   color: #a3b3c3;
-  padding: 2px;
-  background-color: rgb(35, 40, 47, 0.33);
+  padding: 2px 6px;
+  background-color: rgb(65, 70, 87, .33);
   font-style: normal;
-  font-size: smaller;
+  font-size: small;
 }
 
 .highlight pre {
@@ -162,10 +161,6 @@ h1 {
 #sidebar_toc li li {
   padding-left:1em;
   font-style: italic;
-}
-
-#content div.math {
-    border-left: 2px solid #4b82aa;
 }
 
 #content blockquote {
