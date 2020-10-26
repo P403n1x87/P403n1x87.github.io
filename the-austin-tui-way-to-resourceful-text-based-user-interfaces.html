@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - The Austin TUI Way to Resourceful Text-based User Interfaces</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="tui" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/mini_top_heading.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
+      <h1 class="entry-title">The Austin TUI Way to Resourceful Text-based User Interfaces</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2020-10-26T10:08:00+00:00">
+          &#128197; Mon 26 October 2020
+        </time>
+        <span class="readtime py-1">&#9202; A 14 min read</span>
+        <span id="github">
+          <i class="fa fa-github" aria-hidden="true"></i>
+          <a href="https://github.com/p403n1x87/mini-top" target="_blank">
+            p403n1x87/mini-top
+          </a>
+        </span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/tui.html">tui</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>The latest version of the Austin TUI project makes use of a custom XML resource file to describe and build the actual text-based UI, using <code>curses</code> as back-end. In this post we shall see how one can use the same technology to quickly build reactive TUIs using Python.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-view-object">The View Object</a></li>
+<li><a href="#the-widgets">The Widgets</a></li>
+<li><a href="#updating-the-ui">Updating the UI</a></li>
+<li><a href="#spicing-things-up-with-colours">Spicing Things up with Colours</a></li>
+</ul>
+</div>
+<h1 id="introduction">Introduction</h1>
+<p>Due to the increasing popularity of the sample tools that were included with
+earlier versions of <a href="https://github.com/p403n1x87/austin">Austin</a>, I have
+decided to move them into their own dedicated repositories. The TUI, for
+example, can now be found at <a href="https://github.com/p403n1x87/austin-tui">Austin
+TUI</a>.</p>
+<p>Being, as I said, sample tools, the original coding wasn't very pleasant as the
+main focus was on how to embed Austin into your application, rather than the
+application itself. So the first step was to come up with a good design so that
+the code would be tidy and easy to maintain. Austin TUI has also been my very
+first attempt at a serious TUI application. The standard approach in Python is
+with the <a href="https://docs.python.org/3/howto/curses.html"><code>curses</code></a> module, but one
+thing that you learn quite quickly is that such a low-level API tends to make
+for untidy-looking code pretty easily if you're not careful. There are some way
+out of this, in the form of higher level frameworks which offer you many cool
+features and abstractions like <em>widgets</em>. None of them, as nice as they are,
+were to my taste though.</p>
+<p>My previous experiences with UI have almost always revolved around the notion of
+<em>resource files</em>. That is, the various bits of the user interface, like the main
+window, configuration and about dialogs, were all described by some DSL living
+in the project folder as resource files. You can take
+<a href="https://glade.gnome.org/">Glade</a> as an example, which is also the tool that
+inspired the solution that I ended up developing and adopting for Austin TUI.
+With Glade, a GTK UI is described by an XML document, which is then parsed at
+runtime to produce the actual UI. What I wanted for Austin TUI was something
+similar so that I could de-clutter the Python code from all the UI definition
+logic, and focus only on the other aspects of a UI project, like event handling.
+I also wanted something that played nicely with the
+<a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>
+design pattern and, as we shall see briefly, the main concept behind Austin TUI
+is indeed that of a <em>view</em>.</p>
+<h1 id="the-view-object">The View Object</h1>
+<p>The central object of the Austin TUI is the <code>View</code> object. This is responsible
+for refreshing the interface as well as exposing the event handlers for events
+like key presses. The view itself is not the UI though, but it contains a
+reference to it via the <code>root_widget</code>. The novelty in Austin TUI is that we want
+to partially build a view, or at least the UI part, using a resource file.</p>
+<p>So take a look at the following minimalist example.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+
+<span class="nt">&lt;aui:MinimalView</span> <span class="na">xmlns:aui=</span><span class="s">&quot;http://austin.p403n1x87.com/ui&quot;</span> <span class="na">name=</span><span class="s">&quot;minimal_view&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;aui:Window</span> <span class="na">name=</span><span class="s">&quot;main&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;label&quot;</span>
+      <span class="na">text=</span><span class="s">&quot;Hello World&quot;</span>
+      <span class="na">align=</span><span class="s">&quot;center&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/aui:Window&gt;</span>
+
+  <span class="c">&lt;!-- Signal mappings --&gt;</span>
+
+  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;q&quot;</span> <span class="na">handler=</span><span class="s">&quot;on_quit&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/aui:MiniTop&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p><em>minimal-view.xml</em></p>
+<p>The above XML document describes a view with two main components: a <code>Window</code>
+element, which provides the root node for the UI, and a <code>signal</code> to bind the
+method <code>on_quit</code> to the key <code>q</code>. The UI itself contains a single label that will
+display the text <code>Hello World</code>. When we run an application that uses this UI, we
+expect to see the text <code>Hello World</code> centred on the screen and we also expect to
+exit as soon as we press <code>Q</code>.</p>
+<p>So what do we need to make the above UI work? With the framework included in
+Austin TUI, all that we need to do is declare a subclass of <code>View</code> with the same
+name as the root node of the XML document, that is <code>MinimalView</code> in this case,
+and then build the actual view object using the <code>ViewBuilder</code> class, like so</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="kn">from</span> <span class="nn">austin_tui.view</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">ViewBuilder</span>
+
+
+<span class="k">class</span> <span class="nc">MinimalView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">(</span><span class="s2">&quot;quit signal&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;minimal-view.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">view_stream</span><span class="p">:</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">ViewBuilder</span><span class="o">.</span><span class="n">from_stream</span><span class="p">(</span><span class="n">view_stream</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bye!&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>This is all the Python code required to build a minimalist TUI that displays a
+label on the screen and that quits whenever the user presses <code>Q</code>. Things we
+notice from this example are</p>
+<ul>
+<li>we are using <code>asyncio</code> to handle user events on the UI; this means that we
+   can schedule our own asynchronous task without making the UI unresponsive;</li>
+<li>we use the static method <code>from_stream</code> of the <code>ViewBuilder</code> class to build a
+   UI from file; if the file resided inside a Python module we could have used
+   the <code>from_resource</code> static method instead for convenience;</li>
+<li>we call the <code>open</code> method on the view object to display the UI;</li>
+<li>we call the <code>close</code> method on the view object to close the UI and restore the
+   terminal to its original status.</li>
+</ul>
+<p>In this particular example, we make the <code>on_quit</code> event handler simulate a
+keyboard interrupt and we handle <code>KeyboardInterrupt</code> to quit nicely.</p>
+<h1 id="the-widgets">The Widgets</h1>
+<p>Austin TUI uses the widget abstraction too. Elements like <code>Window</code> and <code>Label</code>
+that we have seen above are all exposed by the Austin TUI library via the
+<code>austin_tui.widgets.catalog</code> sub-module. A window is a simple logical container
+that can hold a single child, spanning the full content of the window. In the
+example above, the only child of the window is the <code>Label</code> widget identified by
+the name <code>label</code>. If you want to add multiple children to the window, you would
+want to include an intermediate <code>Box</code> container widget which acts as an HTML5
+flex container. Let's see how we can build a simple UI for a minimalist <code>top</code>
+utility.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+
+<span class="nt">&lt;aui:MiniTop</span> <span class="na">xmlns:aui=</span><span class="s">&quot;http://austin.p403n1x87.com/ui&quot;</span> <span class="na">name=</span><span class="s">&quot;tui&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;aui:Window</span> <span class="na">name=</span><span class="s">&quot;main&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;aui:Box</span> <span class="na">name=</span><span class="s">&quot;main_box&quot;</span> <span class="na">flow=</span><span class="s">&quot;v&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;aui:Box</span> <span class="na">name=</span><span class="s">&quot;overview_box&quot;</span> <span class="na">flow=</span><span class="s">&quot;h&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;nprocs_label&quot;</span>
+          <span class="na">text=</span><span class="s">&quot;No. of procs.&quot;</span>
+          <span class="na">width=</span><span class="s">&quot;16&quot;</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;nprocs&quot;</span>
+          <span class="na">align=</span><span class="s">&quot;center&quot;</span>
+          <span class="na">width=</span><span class="s">&quot;8&quot;</span>
+          <span class="na">bold=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;cpu_label&quot;</span>
+          <span class="na">text=</span><span class="s">&quot;Total %CPU&quot;</span>
+          <span class="na">width=</span><span class="s">&quot;16&quot;</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;cpu&quot;</span>
+          <span class="na">align=</span><span class="s">&quot;right&quot;</span>
+          <span class="na">width=</span><span class="s">&quot;6&quot;</span>
+          <span class="na">bold=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/aui:Box&gt;</span>
+
+      <span class="nt">&lt;aui:Box</span> <span class="na">name=</span><span class="s">&quot;table_header&quot;</span> <span class="na">flow=</span><span class="s">&quot;h&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;own&quot;</span>
+          <span class="na">text=</span><span class="s">&quot;PID&quot;</span>
+          <span class="na">align=</span><span class="s">&quot;right&quot;</span>
+          <span class="na">width=</span><span class="s">&quot;8&quot;</span>
+          <span class="na">bold=</span><span class="s">&quot;true&quot;</span>
+          <span class="na">reverse=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;proc_cpu&quot;</span>
+          <span class="na">text=</span><span class="s">&quot;%CPU&quot;</span>
+          <span class="na">align=</span><span class="s">&quot;center&quot;</span>
+          <span class="na">width=</span><span class="s">&quot;10&quot;</span>
+          <span class="na">bold=</span><span class="s">&quot;true&quot;</span>
+          <span class="na">reverse=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;cmdline&quot;</span>
+          <span class="na">text=</span><span class="s">&quot;COMMAND LINE&quot;</span>
+          <span class="na">bold=</span><span class="s">&quot;true&quot;</span>
+          <span class="na">reverse=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/aui:Box&gt;</span>
+
+      <span class="nt">&lt;aui:ScrollView</span> <span class="na">name=</span><span class="s">&quot;proc_view&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;aui:Table</span> <span class="na">name=</span><span class="s">&quot;table&quot;</span> <span class="na">columns=</span><span class="s">&quot;3&quot;</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/aui:ScrollView&gt;</span>
+
+      <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;footer&quot;</span>
+        <span class="na">text=</span><span class="s">&quot;Press Q to exit.&quot;</span>
+        <span class="na">align=</span><span class="s">&quot;center&quot;</span>
+        <span class="na">bold=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/aui:Box&gt;</span>
+  <span class="nt">&lt;/aui:Window&gt;</span>
+
+  <span class="c">&lt;!-- Signal mappings --&gt;</span>
+
+  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;q&quot;</span>         <span class="na">handler=</span><span class="s">&quot;on_quit&quot;</span>   <span class="nt">/&gt;</span>
+  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_UP&quot;</span>    <span class="na">handler=</span><span class="s">&quot;on_up&quot;</span>     <span class="nt">/&gt;</span>
+  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_DOWN&quot;</span>  <span class="na">handler=</span><span class="s">&quot;on_down&quot;</span>   <span class="nt">/&gt;</span>
+  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_PPAGE&quot;</span> <span class="na">handler=</span><span class="s">&quot;on_pgup&quot;</span>   <span class="nt">/&gt;</span>
+  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_NPAGE&quot;</span> <span class="na">handler=</span><span class="s">&quot;on_pgdown&quot;</span> <span class="nt">/&gt;</span>
+
+  <span class="c">&lt;!-- Palette --&gt;</span>
+
+  <span class="nt">&lt;aui:palette&gt;</span>
+    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;pid&quot;</span>  <span class="na">fg=</span><span class="s">&quot;3&quot;</span>   <span class="nt">/&gt;</span>
+    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;opt&quot;</span>  <span class="na">fg=</span><span class="s">&quot;4&quot;</span>   <span class="nt">/&gt;</span>
+    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;cmd&quot;</span>  <span class="na">fg=</span><span class="s">&quot;10&quot;</span>  <span class="nt">/&gt;</span>
+    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;args&quot;</span> <span class="na">fg=</span><span class="s">&quot;246&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/aui:palette&gt;</span>
+
+<span class="nt">&lt;/aui:MiniTop&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p><em>mini-top.xml</em></p>
+<p>This is a slightly bigger XML document where we have a few more nested widgets,
+as well as a new feature: the <code>palette</code> element. Let's start by looking at the
+UI part. We see that the child of the <code>Window</code> element is now a <code>Box</code> with
+vertical flow. This means that all the children that we add to this box will
+span the whole width and pile up vertically. We use this element to divide the
+window into three parts: the top one will hold some summary stats; the middle
+will hold the process table; the bottom part is just a label telling us how to
+quit the application.</p>
+<p>We see that the top part is just another <code>Box</code>, this time with horizontal flow.
+Inside we have four labels, two of which have fixed content and act as actual
+labels, describing the values that we will update. In this case we will keep
+track of the number of active process and the total CPU load.</p>
+<p>The middle section of the UI is a <code>ScrollView</code>, which allows us create widgets
+within it that overflow the actual terminal size. This is an abstraction that
+makes for easy scrolling of overflowing content. In this example, inside the
+<code>ScrollView</code> we have a <code>Table</code> object with three columns; these will be the
+process ID, the CPU load for the process and its command line.</p>
+<p>To make the UI appealing to the eye, we shall make use of colours, and this is
+where the new <code>palette</code> element in the XML document steps in. This is used to
+give a name to <code>curses</code> colour pairs. In this particular example we are changing
+the foreground colour only, but in principle we could change the background as
+well by setting the <code>bg</code> attribute. We'll see with the Python code below how to
+easily reference the colours in the palette.</p>
+<p>Before moving on though, I appreciate that there isn't much of an official
+documentation of the UI framework used by the Austin TUI project, and this post
+is a way to make up for that as much as possible for now. Looking at all the
+sample XML above you might be wondering where all those attributes come from.
+For example, when we look at a <code>Label</code> element, we see</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;label&quot;</span>
+  <span class="na">text=</span><span class="s">&quot;Hello World&quot;</span>
+  <span class="na">align=</span><span class="s">&quot;center&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+
+
+<p>The attributes <code>name</code>, <code>text</code> and <code>align</code> are precisely the arguments of the
+<code>__init__</code> method of the <code>Label</code> class. Hence, if you want to find out which
+attributes are available for a certain widget you will have to find it in the
+widget collection and look at its constructor.</p>
+<blockquote>
+<p>Every widget has at least the <code>name</code> attribute. Every other widget requires
+its own set of attributes.</p>
+</blockquote>
+<p>Widgets are discovered by the view builder in a dynamic way, which means that
+you could sub-class <code>Widget</code> and make your own widgets. If you do so and want
+to reference your custom widget in the XML document, all you have to do is use
+the class name as element name. For example, if you have something like</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">austin_tui.widgets</span> <span class="kn">import</span> <span class="n">Widget</span>
+
+
+<span class="k">class</span> <span class="nc">MyWidget</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">some_attribute</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+
+
+<p>then in the XML document you would have something like</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;aui:MyWidget</span> <span class="na">name=</span><span class="s">&quot;mywidget_instance&quot;</span> <span class="na">some-attribute=</span><span class="s">&quot;42&quot;</span> <span class="nt">&gt;</span>
+  <span class="c">&lt;!-- any potential children here --&gt;</span>
+<span class="nt">&lt;/aui:MyWidget&gt;</span>
+</pre></div>
+
+
+<h1 id="updating-the-ui">Updating the UI</h1>
+<p>For the model part of the MVC pattern we don't have much to say here as that
+will depend upon your application. In this post I will show you how to make a
+minimalist top application, so we can have a look what the model code could look
+like in this case a move over to the more interesting bit, which is the <code>C</code> in
+MVC.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">psutil</span>
+
+
+<span class="n">data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">],</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;cpu_percent&quot;</span><span class="p">],</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;cmdline&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">process_iter</span><span class="p">([</span><span class="s2">&quot;pid&quot;</span><span class="p">,</span> <span class="s2">&quot;cpu_percent&quot;</span><span class="p">,</span> <span class="s2">&quot;cmdline&quot;</span><span class="p">])</span>
+    <span class="p">],</span>
+    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>If you are familiar with the <code>psutil</code> module, you will see that we are iterating
+over all active processes to extract some information from them. In this case we
+are interested in the PIDs, the CPU usage and the command line. These three
+values will be used to fill in the three columns of the <code>Table</code> widgets that we
+introduced in <code>mini-top.xml</code>. As we will see, there is some more code that we
+could put into the model part of our design, but for simplicity we will embed
+that into the controller. The  code below shows you how to update the UI every 2
+seconds with fresh system data.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">from</span> <span class="nn">austin_tui.view</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">ViewBuilder</span>
+
+
+<span class="k">def</span> <span class="nf">format_cmdline</span><span class="p">(</span><span class="n">cmdline</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdline</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">cmd</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="n">cmdline</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">arg</span> <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;&lt;opt&gt;</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s2">&lt;/opt&gt;&lt;/b&gt;&quot;</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;cmd&gt;</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&lt;/cmd&gt; &lt;args&gt;</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&lt;/args&gt;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">MiniTop</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">(</span><span class="s2">&quot;quit signal&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_pgdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">on_pgup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_up</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">on_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_up</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">on_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_down</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">(</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">],</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;cpu_percent&quot;</span><span class="p">],</span>
+                        <span class="n">format_cmdline</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;cmdline&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">process_iter</span><span class="p">([</span><span class="s2">&quot;pid&quot;</span><span class="p">,</span> <span class="s2">&quot;cpu_percent&quot;</span><span class="p">,</span> <span class="s2">&quot;cmdline&quot;</span><span class="p">])</span>
+                <span class="p">],</span>
+                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;pid&gt;</span><span class="si">{</span><span class="n">pid</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2">&lt;/pid&gt;&quot;</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;b&gt;</span><span class="si">{</span><span class="n">cpu</span><span class="si">:</span><span class="s2">^10.2f</span><span class="si">}</span><span class="s2">&lt;/b&gt;&quot;</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">format_cmdline</span><span class="p">(</span><span class="n">cmdline</span><span class="p">)),</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pid</span><span class="p">,</span> <span class="n">cpu</span><span class="p">,</span> <span class="n">cmdline</span> <span class="ow">in</span> <span class="n">data</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">nprocs</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cpu</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">()</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root_widget</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;mini-top.austinui&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">austinui</span><span class="p">:</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">ViewBuilder</span><span class="o">.</span><span class="n">from_stream</span><span class="p">(</span><span class="n">austinui</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">update</span><span class="p">())</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bye!&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>There are quite a few new things that we need to explan here. First of all we
+see that we implement <code>MiniTop</code> as a sub-class of <code>View</code> and we declare all the
+required event handlers. We now have an <code>update</code> asynchronous method which we
+use to update the UI every 2 seconds. For this to work, we need to create a task
+using this method before starting the <code>asyncio</code> event loop (line 83). On line 43
+we have the model logic that we just saw above and the interesting part starts
+after that. On line 55 we set the collected tabular data to the <code>table</code> widget.
+You would have guessed at this point that the way to reference a widget declared
+by the XML document is via attribute access on the view object. In this case,
+the <code>Table</code> element has the <code>name</code> attribute set to <code>table</code>. Therefore we can
+reference it inside the <code>MiniTop</code> instance via <code>self</code>, i.e. <code>self.table</code>. On
+lines 66-67 we do a similar thing, i.e. we update the value of the <code>nprocs</code> and
+<code>cpu</code> labels with the number of process and the total CPU usage respectively. At
+this point, no update is displayed on screen and this is for efficiency reasons.
+Once we have modified all the widgets that needed to be updated we can force a
+redraw by calling the <code>draw</code> method. This merely updates some buffers in memory,
+so in order to flush the changes to screen we have to make a call to the
+<code>refresh</code> method on a window-like object. In this case the simplest thing is to
+just refresh the whole root widget (line 70).</p>
+<p>You might have also noticed that most of the event handlers are explicitly
+returning <code>False</code>. That's because we are manually forcing a refresh of the
+<code>ScrollView</code> widget (lines 23, 28, 33, 38) and therefore we return <code>False</code> to
+avoid propagating the refresh request further up the widget hierarchy for
+performance. Here we only needed refreshing the <code>ScrollView</code>; we could have
+omitted the manual refresh and returned <code>True</code> with the same result, but the
+window that would get refreshed would be the root one.</p>
+<h1 id="spicing-things-up-with-colours">Spicing Things up with Colours</h1>
+<p>The last thing we need to have a look at are those mysterious calls to the
+<code>markup</code> method and the <code>format_cmdline</code> helper function. This is we we find
+references to the <code>palette</code> element in the XML document. Let's have a closer
+look at line 58 for example.</p>
+<div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;pid&gt;</span><span class="si">{</span><span class="n">pid</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2">&lt;/pid&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The <code>markup</code> method of a <code>View</code> object is a convenience method for creating
+strings with multiple attributes, like foreground/background colour, boldface,
+reversed, using an XML-like markup syntax. In this particular case, we want to
+write the PID on screen using the color pair with name <code>pid</code> declared inside the
+<code>palette</code> element of the XML document. On line 59 we use the <code>&lt;b&gt;</code> tag to make
+the CPU usage bold. For the command line we do something more complex with the
+<code>format_cmdline</code> function. If the command line is non-empty, we use the <code>cmd</code>
+colour for the actual command, and the colour <code>args</code> for the rest of the
+arguments, with the exception of option values, which are highlighted with the
+colour <code>opt</code> and with boldface. This spares us from having to manually split a
+string into chunks with different formatting.</p>
+<p>When you run the code above you should see something similar to the screenshot
+below appearing in your terminal.</p>
+<p align="center">
+  <img
+    src="./images/mini_top.png"
+    alt="CPython data structures"
+  />
+</p>
+
+<p>To quit the application, simply press <code>Q</code> as suggested at the bottom.</p>
+<p>You can find a working example of this minimalistic top utility on
+<a href="https://github.com/p403n1x87/mini-top">GitHub</a> if you want to play around with
+it and familiarise a bit more with the Austin TUI way to resourceful text-based
+user interfaces.</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./the-austin-tui-way-to-resourceful-text-based-user-interfaces.html";
+  this.page.identifier = "austin-tui-way"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

@@ -22,6 +22,7 @@ p {
 
 #heading-info {
   max-height: 180px;
+  backdrop-filter: blur(12px);
 }
 
 #summary {
