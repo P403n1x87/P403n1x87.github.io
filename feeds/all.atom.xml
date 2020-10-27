@@ -71,7 +71,7 @@ to partially build a view, or at least the UI part, using a resource file.&lt;/p
 
   &lt;span class="nt"&gt;&amp;lt;aui:signal&lt;/span&gt; &lt;span class="na"&gt;key=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;q&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;handler=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;on_quit&amp;quot;&lt;/span&gt; &lt;span class="nt"&gt;/&amp;gt;&lt;/span&gt;
 
-&lt;span class="nt"&gt;&amp;lt;/aui:MiniTop&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/aui:MinimalView&amp;gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 
