@@ -1,6 +1,7 @@
 p {
   margin-bottom: 4px;
   margin-top: 4px;
+  line-height: 1.5;
 }
 
 #heading header {
@@ -48,10 +49,13 @@ code {
   font-family: "Ubuntu Mono", Meslo, Consolas, monospace;
   font-size: small;
   padding-left: 1em;
+  padding-top: 16px;
+  padding-bottom: 16px;
   margin-top: 16px;
   margin-bottom: 16px;
   overflow-x: auto;
   border-left: 2px solid #4baa5a;
+  background-color: #212121;
 }
 
 /* ---- Code caption ---- */
@@ -111,6 +115,7 @@ code {
 
 #content-block a {
   text-decoration: underline;
+  color: burlywood;
 }
 
 #content table {

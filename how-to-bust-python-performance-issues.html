@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - How to bust Python performance issues</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="profiling" />
+    <meta name="tags" content="optimisation" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/bust-perf-issues/austin_sign.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
+      <h1 class="entry-title">How to bust Python performance issues</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2021-07-02T17:43:00+01:00">
+          &#128197; Fri 02 July 2021
+        </time>
+        <span class="readtime py-1">&#9202; A 6 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/profiling.html">profiling</a>
+            <a class="tag" href="./tag/optimisation.html">optimisation</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>In this short post I will try to convince you of how easy it is to find performance issues in your Python code and how you should develop the habit of profiling your code before you ship it.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <p>In my experience as a software engineer, I think it's still way to common to see
+production-ready code being shipped without having been profiled at least once.
+With the current computing power and the ever increasing number of available
+cores per machine, it feels like a lot of preference is generally given to
+readable and maintainable code at the cost of those extra microseconds. Whilst
+this might make sense for extremely complex code-bases in low-level languages,
+this is perhaps more of an issue with technologies like Python, where in general
+you can still make some substantial optimisations while still retaining
+readability and maintainability.</p>
+<p>To further prove to myself that profiling is still an important step in the
+development process that gets overlooked, I did the following experiment. I
+grabbed a Python project at random, the first one that popped up on my GitHub
+feed, looked at its test suite and profiled the test runs. The day I did this,
+<a href="https://github.com/willmcgugan/rich">Rich</a> was sitting at the top of my GitHub
+feed, so what follows is a trace-back of the steps that led me to contribute
+<a href="https://github.com/willmcgugan/rich/pull/1253">this performance PR</a> to the
+project. Besides Python, the other tools that I have used are <a href="https://github.com/p403n1x87/austin">Austin
+3</a> and VS Code with the <a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode">Austin
+extension</a>
+installed.</p>
+<p>So first of all, let's make sure that our test environment is fully set up. If
+you want to follow along, make sure that you have Austin and VS Code installed.
+I was using Windows the day I made this experiment, so I had Austin installed
+with <a href="https://community.chocolatey.org/packages/austin/">choco</a>, and the VS Code
+extension installed from the Visual Studio Marketplace. Let's get our hands on
+some code now by cloning Rich and checking out that commit that was master for
+me at that time. Open up a terminal and type</p>
+<div class="highlight"><pre><span></span>git clone https://github.com/willmcgugan/rich.git
+git checkout ce4f18c
+</pre></div>
+
+
+<p>The project uses <a href="https://github.com/python-poetry/poetry">poetry</a> so running
+the test suite is as easy as invoking</p>
+<div class="highlight"><pre><span></span>poetry install
+poetry run python -m pytest
+</pre></div>
+
+
+<p>Once we are sure that all the tests pass we are ready to start getting some
+profiling data to see what's actually running. Version 3 of Austin comes with a
+reworked <code>sleepless</code> mode that can be used to get an estimate of CPU time
+instead of wall time. One big advantage of using a tool like Austin is that we
+do not have to make any changes to the code in order to get profiling data out
+of it. Besides, Austin runs out-of-process, which means that it won't have any
+effects on the code. Getting profiling data is as easy as invoking Austin just
+before the test run</p>
+<div class="highlight"><pre><span></span>poetry run austin -so profile_master.austin python -m pytest -vv tests
+</pre></div>
+
+
+<blockquote>
+<p><strong>WARNING</strong> Here we can let Austin sample the whole <code>pytest</code> run because we
+have checked beforehand that it only takes a few seconds to complete. <strong>DO
+NOT</strong> try the same exact thing with long-running test suites or you would end
+up with a massive sample file that would be hard to process. In such cases you
+can either select a few tests, or run Austin with the <code>-x,--exposure</code> option
+to limit sampling to just a few seconds, and adjust the sampling interval with
+the <code>-i\--interval</code> option as best suited.</p>
+</blockquote>
+<p>The <code>-s</code> option turns the <code>sleepless</code> mode on, which gives us only the on-CPU
+samples, whereas the <code>-o</code> option specifies the output file. Once the test run
+terminates, our profiling data will be in <code>profile_master.austin</code>, ready to be
+analysed with the Austin VS Code extension. We get the best experience if we
+start VS Code from within the project's root directory as this allows us to
+browse the code while we look at the flame graph. So fire up VS Code from the
+terminal with</p>
+<div class="highlight"><pre><span></span>code .
+</pre></div>
+
+
+<p>and activate the Austin extension by clicking on the <code>FLAME GRAPH</code> tab in the
+bottom panel. Sometimes you would have to right click inside the panel and click
+the menu entry to fully activate the extension.</p>
+<p align="center">
+  <img
+    src="./images/bust-perf-issues/austin-panel.png"
+    alt="The Austin Flame Graph panel within VS Code"
+  />
+</p>
+
+<p>At this point we are ready to load the profiling data that we have collected.
+Click on the <code>OPEN</code> button or press <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> +
+<kbd>A</kbd> to bring up the open dialog and select <code>profile_master.austin</code>. The
+Austin VS Code extension will analyse all the collected sample and generate the
+flame graph.</p>
+<p align="center">
+  <img
+    src="./images/bust-perf-issues/open-profile.gif"
+    alt="Open a profile file"
+  />
+</p>
+
+<p>The picture we get is certainly overwhelming at first, especially for those that
+are not familiar with how <code>pytest</code> works internally. This is perhaps a nice way
+to actually find out how <code>pytest</code> collects and run tests. By poking around we
+discover that some of the test runs are under the <code>pytest_pyfunc_call</code> frame. If
+you are struggling to find it, press <kbd>F</kbd> inside the flame graph to
+reveal the search input box, type <code>pytest_pyfunc_call</code> and hit <kbd>ENTER</kbd>.
+The frames that match the search string will be highlighted in purple. Let's
+scroll until we find the largest one. When we click on it, it will expand to the
+full width of the panel to give us a better idea of what lies underneath it, and
+the corresponding portion of the source code will also appear in VS Code!</p>
+<p align="center">
+  <img
+    src="./images/bust-perf-issues/pytest_pyfunc_call.gif"
+    alt="pytest_pyfunc_call"
+  />
+</p>
+
+<p>We now have a better view of the tests that are being executed under this path.
+At this point we can start looking for the largest leaf frames and see if we can
+make any sense of them. When I first looked at this graph, one thing that
+quickly caught my eye was this particular stack.</p>
+<p align="center">
+  <img
+    src="./images/bust-perf-issues/test_log.png"
+    alt="test_log"
+  />
+</p>
+
+<p>Clicking on the <code>test_log</code> frame reveals the test code in VS Code. Surprisingly,
+the test has just a single call to <code>Console.log</code>, and the percent timing
+annotation generated by the Austin extension tell us that, of the whole on-CPU
+time for the test suite, about 4.9% is spent on that single call!</p>
+<p align="center">
+  <img
+    src="./images/bust-perf-issues/test_log_code.png"
+    alt="The code for the test_log test case"
+  />
+</p>
+
+<p>Looking back at the flame graph, we realise that all the time in the <code>log</code> frame
+is spent calling <code>stack</code>. Clicking on the <code>log</code> frame reveals the source code
+for the <code>Console.log</code> method and we can inspect how the information from the
+stack is used to generate the log entry. The line we are interested in is 1685,
+where we have</p>
+<div class="highlight"><pre><span></span>            <span class="n">caller</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="n">_stack_offset</span><span class="p">]</span>
+</pre></div>
+
+
+<p>So <code>inspect.stack()</code> is called, which according to the flame graph does a lot of
+resolutions for each frame (see those calls to <code>findsource</code>, <code>getmodule</code>
+etc...), none of which seems to be used in <code>Console.log</code>, and besides we just
+pick one of the frames close to the top of the stack and chuck the rest away.
+That's pretty expensive for a simple log call. Since I had some familiarity with
+the <a href="https://docs.python.org/3/library/inspect.html"><code>inspect</code></a> module with my
+work on Austin and other stuff, I knew there is (at least for CPython) the lower
+level method
+<a href="https://docs.python.org/3/library/inspect.html#inspect.currentframe"><code>currentframe</code></a>
+that would give you essential information about the currently executing frame.
+From there you can navigate down the stack and stop at the frame of interest. In
+this case we just need to take the parent frame of the current one, and we
+already find all the information needed by the <code>Console.log</code> method. I made the
+changes as part of the already mentioned PR
+<a href="https://github.com/willmcgugan/rich/pull/1253">#1253</a>, so if you check that
+code out and re-run the tests with</p>
+<div class="highlight"><pre><span></span>poetry run austin -so profile_pr.austin python -m pytest -vv tests
+</pre></div>
+
+
+<p>and open the new profiling data in <code>profile_pr.austin</code> you will see that the
+test case <code>test_log</code> has pretty much disappeared as it basically takes almost
+zero CPU time now.</p>
+<p align="center">
+  <img
+    src="./images/bust-perf-issues/test_log_pr.png"
+    alt="test_log with the performance change"
+  />
+</p>
+
+<p>Instead we see <code>test_log_caller_frame_info</code>, which is the test case for the
+compatibility utility for those Python implementations that do not implement
+<code>currentframe</code>. But with CPython, calling <code>Console.log</code> is now inexpensive
+compared to the original implementation.</p>
+<p>See how easy it's been to find a performance issue. With the right tool we
+didn't have to add any instrumentation to the code, especially in one we
+probably had no familiarity with. In many cases you only understand your code
+truly if you see it in action. So no more excuses for not profiling your code
+before you ship it! ;P</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./how-to-bust-python-performance-issues.html";
+  this.page.identifier = "bust-perf-issues"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>
