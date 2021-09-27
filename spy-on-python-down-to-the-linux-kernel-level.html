@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - Spy on Python down to the Linux kernel level</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="profiling" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/bust-perf-issues/austin_sign.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
+      <h1 class="entry-title">Spy on Python down to the Linux kernel level</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2021-09-27T11:56:00+01:00">
+          &#128197; Mon 27 September 2021
+        </time>
+        <span class="readtime py-1">&#9202; A 5 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/profiling.html">profiling</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>Observability into native call stacks requires some compromise. In this post I explain what this actually means for a Python tool like Austin.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <p>When I conceived the design of <a href="https://github.com/p403n1x87/austin">Austin</a> for the first time, I've sworn
+to always adhere to two guiding principles:</p>
+<ul>
+<li>no dependencies other than the standard C library (and whatever system calls
+  the OS provides);</li>
+<li>minimal impact on the tracee, even under high sampling frequency.</li>
+</ul>
+<p>Let me elaborate on why I decided to stick to these two <em>rules</em>. The first one
+is more of a choice of simplicity. The power horse of Austin is the capability
+of reading the private memory of any process, be it a child process or not. Many
+platforms provide the API or system calls to do that, some with more security
+gotchas than others. Once Austin has access to that information, the rest is
+plain C code that makes sense of that data and provides a meaningful
+representation to the user by merely calling <code>libc</code>'s <code>fprintf</code> on a loop.</p>
+<p>The second guiding principle is what everybody desires from observability tools.
+We want to be able to extract as much information as possible from a running
+program, perturbing it as little as possible as to avoid skewed data. Austin can
+make this guarantee because reading VM memory does not require the tracee to be
+halted. Furthermore, the fact that Python has a <a href="https://realpython.com/python-gil/">GIL</a> implies that a simple
+Python application will run on at most one physical core. To be more precise, a
+normal, pure-Python application would not spend more CPU time than wall-clock
+time. Therefore, on machines with multiple cores, even if Austin ends up acting
+like a busy loop at high sampling frequencies and hogging a physical core, there
+would still be plenty of other cores to run the Python application unperturbed
+and unaware that is being spied on. Even for <a href="https://docs.python.org/3/library/multiprocessing.html">multiprocess</a> applications,
+the expected impact is minimal, for if you are running, say, a uWSGI server on a
+64-core machine, you wouldn't lose much if Austin hogs one of them. Besides, you
+probably don't need to sample at very high frequences (like once every 50
+microseconds), but you could be happy with, e.g. 1000 Hz, which is still pretty
+high, but would not cause Austin to require an entire core for itself.</p>
+<p>When you put these two principles together you get a tool that compiles down to
+a single tiny binary and that has minimal impact on the tracee at runtime. The
+added bonus is that it doesn't even require any instrumentation! These are
+surely ideal features for an observability tool that make Austin very well
+suited for running in a production environment.</p>
+<p>But Austin strengths are also its limitations unfortunately. What if our
+application has parts written as Python extensions, e.g. native <a href="https://docs.python.org/3/extending/extending.html">C/C++
+extensions</a>, <a href="https://cython.org/">Cython</a>, <a href="https://github.com/PyO3/pyo3">Rust</a>, or even <a href="{filename}2018-03-24-asn-python.md">assembly</a>? By
+reading a process private VM, Austin can only reconstruct the pure-Python call
+stacks. To unwind the native call stacks, Austin would need to use some heavier
+machinery. Forget about using a third-party library for doing that, which would
+violate the first principle, the more serious issue here is that there are
+currently no ways of avoiding the use of system calls like <a href="https://man7.org/linux/man-pages/man2/ptrace.2.html"><code>ptrace(2)</code></a>
+from user-space. This would be a serious violation of the second principle. Why?
+Because stack unwinding using <code>ptrace</code> requires threads to be halted, thus
+causing a non-negligible impact on the tracee. Besides, stack unwinding is not
+exactly straight-forward on every platform to implement.</p>
+<p>The compromise is <a href="https://github.com/P403n1x87/austin/tree/devel#native-frame-stack">austinp</a>, a <em>variant</em> of Austin that can do native
+stack unwinding, <em>just</em> on Linux, using <a href="https://www.nongnu.org/libunwind/"><code>libunwind</code></a> and <code>ptrace</code>.
+This tool is to be used when you really need to have observability into native
+call stacks, as the use of <code>ptrace</code> implies that the tracee will be impacted to
+some extent. This is why, be default, <code>austinp</code> samples at a much lower rate.
+This doesn't mean that you cannot use this tool in a production environment, but
+that you should be aware of the potential penalties that come with it. Many
+observability tools from the past relied on <code>ptrace</code> or similar to achieve their
+goal, and <code>austinp</code> is just a (relatively) new entry into that list. More modern
+solutions rely on technologies like <a href="https://ebpf.io/">eBPF</a> to provide efficient
+observability into the Linux kernel, as well as into user-space.</p>
+<p>Speaking of the Linux kernel, eBPF is not the only way to retrieve kernel
+stacks. In the future we might have a variant of Austin that relies on eBPF for
+some heavy lifting, but for now <code>austinp</code> leverages the information exposed by
+<a href="https://man7.org/linux/man-pages/man5/proc.5.html"><code>procfs</code></a> to push stack unwinding down to the Linux kernel level. The
+<code>austinp</code> variant has the same CLI of Austin, but with the extra option <code>-k</code>,
+which can be used to sample kernel stacks alongside native ones. I am still to
+find a valid use-case for wanting to obtain kernel observability from a Python
+program, but I think this could be an interesting way to see how the interpreter
+interacts with the kernel; and perhaps someone might find ways of inspecting the
+Linux kernel performance by coding a simple Python script rather than a more
+verbose C equivalent.</p>
+<p>You can find some examples of <code>austinp</code> in action on my <a href="https://twitter.com/p403n1x87">Twitter
+account</a>. This, for example, is what you'd get for a simple
+<a href="https://scikit-learn.org/stable/">scikit-learn</a> classification model, when you open the collected
+samples via the <a href="[https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode]">Austin VS Code</a> extension:</p>
+<blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">The latest development builds of <a href="https://twitter.com/AustinSampler?ref_src=twsrc%5Etfw">@AustinSampler</a>, including the austinp variant for native stack sampling on Linux are now available from <a href="https://twitter.com/github?ref_src=twsrc%5Etfw">@github</a> releases <a href="https://t.co/nBfzm3mDng">https://t.co/nBfzm3mDng</a>. <a href="https://t.co/IjVfAm1hRk">pic.twitter.com/IjVfAm1hRk</a></p>&mdash; Gabriele Tornetta 🇪🇺 🇮🇹 🇬🇧 (@p403n1x87) <a href="https://twitter.com/p403n1x87/status/1435569784620470283?ref_src=twsrc%5Etfw">September 8, 2021</a></blockquote>
+
+<p><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+<p>If you want to give <code>austinp</code> a try you can follow the instructions on the
+<a href="https://github.com/P403n1x87/austin/tree/devel#native-frame-stack">README</a> for compiling from sources, or download the pre-built binary
+from the the <a href="https://github.com/P403n1x87/austin/releases/tag/dev">Development build</a>. In the future, <code>austinp</code> will be
+available from ordinary releases too!</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./spy-on-python-down-to-the-linux-kernel-level.html";
+  this.page.identifier = "python-kernel"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

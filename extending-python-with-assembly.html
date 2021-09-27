@@ -425,17 +425,17 @@ contains all the relevant metadata that is then passed to CPython for correct
 initialisation and use of the module. Its definition is in the <code>moduleobject.h</code>
 header file and, at first sight, looks a bit complicated, with some references
 to other structures and C macros.</p>
-<div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">PyModuleDef</span><span class="p">{</span>
-  <span class="n">PyModuleDef_Base</span> <span class="n">m_base</span><span class="p">;</span>
-  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">m_name</span><span class="p">;</span>
-  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">m_doc</span><span class="p">;</span>
-  <span class="n">Py_ssize_t</span> <span class="n">m_size</span><span class="p">;</span>
-  <span class="n">PyMethodDef</span> <span class="o">*</span><span class="n">m_methods</span><span class="p">;</span>
-  <span class="k">struct</span> <span class="nc">PyModuleDef_Slot</span><span class="o">*</span> <span class="n">m_slots</span><span class="p">;</span>
-  <span class="n">traverseproc</span> <span class="n">m_traverse</span><span class="p">;</span>
-  <span class="n">inquiry</span> <span class="n">m_clear</span><span class="p">;</span>
-  <span class="n">freefunc</span> <span class="n">m_free</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">PyModuleDef</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span> <span class="nc">PyModuleDef</span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">PyModuleDef_Base</span><span class="w"> </span><span class="n">m_base</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m_name</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m_doc</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">Py_ssize_t</span><span class="w"> </span><span class="n">m_size</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">PyMethodDef</span><span class="w"> </span><span class="o">*</span><span class="n">m_methods</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">struct</span> <span class="nc">PyModuleDef_Slot</span><span class="o">*</span><span class="w"> </span><span class="n">m_slots</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">traverseproc</span><span class="w"> </span><span class="n">m_traverse</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">inquiry</span><span class="w"> </span><span class="n">m_clear</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">freefunc</span><span class="w"> </span><span class="n">m_free</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="n">PyModuleDef</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 
 
@@ -545,7 +545,7 @@ you will find the macro <code>PyNone</code> defined as</p>
 
 
 <p>in the <code>python.inc</code> file. This is equivalent to the two lines</p>
-<div class="highlight"><pre><span></span><span class="n">PyAPI_DATA</span><span class="p">(</span><span class="n">PyObject</span><span class="p">)</span> <span class="n">_Py_NoneStruct</span><span class="p">;</span> <span class="cm">/* Don&#39;t use this directly */</span>
+<div class="highlight"><pre><span></span><span class="n">PyAPI_DATA</span><span class="p">(</span><span class="n">PyObject</span><span class="p">)</span><span class="w"> </span><span class="n">_Py_NoneStruct</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Don&#39;t use this directly */</span><span class="w"></span>
 <span class="cp">#define Py_None (&amp;_Py_NoneStruct)</span>
 </pre></div>
 
