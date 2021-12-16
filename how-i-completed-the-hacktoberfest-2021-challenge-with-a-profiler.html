@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - How I completed the Hacktoberfest 2021 challenge with a profiler</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="profiling" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/headings/hacktoberfest.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
+      <h1 class="entry-title">How I completed the Hacktoberfest 2021 challenge with a profiler</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2021-12-16T11:56:00+01:00">
+          &#128197; Thu 16 December 2021
+        </time>
+        <span class="readtime py-1">&#9202; A 4 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/profiling.html">profiling</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>I shall reveal to you how I managed to complete the Hacktoberfest 2021 challenge with just a profiler. So read on if you are interested!</p>
+  </div>
+
+
+  <div class="entry-content">
+    <p>Remember my post about <a href="{filename}2021-06-22-bust-perf-issues">how to bust performace issues</a>? My claim there was
+that if you picked a project at random from e.g. GitHub, you'd find something
+that would catch your eye if you ran the code through a profiler. Iterating this
+process then seemed like a good strategy to generate PRs, which is what you need
+to do if you want to <a href="https://dev.to/p403n1x87">complete the Hacktoberfest challenge</a> when that
+time of the year comes around.</p>
+<p>But let's not get the wrong idea. You shouldn't walk away from here thinking
+that performance analysis is as trivial as turning the profiler on during test
+runs. What my previous post was trying to show is that, in many cases, code is
+not profiled and therefore it is easy to find some (rather) low-hanging fruits
+that can be fixed easily just as simply as looking at profiling data from the
+test suite. Once these are out of the way, that's when the performance analysis
+becomes a challenge itself, and some more serious and structured methodologies
+are required to make further progress.</p>
+<p>So how did I actually use a profiler to complete the Hacktoberfest? I started by
+looking at all the Python projects with the <code>hacktoberfest</code> topic on GitHub and
+picked some that looked interesting to me. The profiler of choice was (surprise,
+surprise) <a href="https://github.com/p403n1x87/austin">Austin</a>, since it requires no instrumentation and has
+practically no impact on the tracee, meaning that I could just sneak a <code>austin</code>
+in the command line used to start the tests to get the data that I needed.</p>
+<p>As a concrete example, let's look at how I was able to detect and fix a
+performance regression in <a href="https://github.com/bee-san/pyWhat">pyWhat</a>. I forked the repository, made a
+local clone and looked at how the test suite is run. Peeking at the GitHub
+Actions I could see the test suite was triggered with <code>nox</code></p>
+<div class="highlight"><pre><span></span>python -m nox
+</pre></div>
+
+
+<p>Inside the <code>noxfile.py</code> we can find the <code>tests</code> session, which is the one we are
+interested in</p>
+<div class="highlight"><pre><span></span><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
+<span class="k">def</span> <span class="nf">tests</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Run the test suite.&quot;&quot;&quot;</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;poetry&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-dev&quot;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">install_with_constraints</span><span class="p">(</span>
+        <span class="n">session</span><span class="p">,</span>
+        <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-black&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-cov&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-isort&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-flake8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-mypy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;types-requests&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;types-orjson&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;pytest&quot;</span><span class="p">,</span> <span class="s2">&quot;-vv&quot;</span><span class="p">,</span> <span class="s2">&quot;--cov=./&quot;</span><span class="p">,</span> <span class="s2">&quot;--cov-report=xml&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>So let's create a <code>profile</code> session where we run the test suite through Austin.
+All we have to do is add <code>austin</code> at the right place in the arguments to
+<code>session.run</code>, plus some additional options, e.g.:</p>
+<div class="highlight"><pre><span></span><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
+<span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Profile the test suite.&quot;&quot;&quot;</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;poetry&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-dev&quot;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">profile_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AUSTIN_FILE&quot;</span><span class="p">,</span> <span class="s2">&quot;tests.austin&quot;</span><span class="p">)</span>
+    <span class="n">install_with_constraints</span><span class="p">(</span>
+        <span class="n">session</span><span class="p">,</span>
+        <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-black&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-cov&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-isort&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-flake8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-mypy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;types-requests&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;types-orjson&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;austin&quot;</span><span class="p">,</span> <span class="s2">&quot;-so&quot;</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="s2">&quot;1ms&quot;</span><span class="p">,</span> <span class="s2">&quot;pytest&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Here I've actually removed options to <code>pytest</code> which I don't care about, like
+code coverage, as it's not what I want to profile this time. The <code>-s</code> option
+tells Austin to give us non-idle samples only, effectively giving us a profile
+of CPU time. I'm also allowing the Austin output file to be specified from the
+environment via the <code>AUSTIN_FILE</code> variable. This means that, if I want to
+profile the tests and save the results to <code>tests.austin</code>, all I have to do is
+invoke</p>
+<div class="highlight"><pre><span></span>pipx install nox  <span class="c1"># if not installed already</span>
+<span class="nv">AUSTIN_FILE</span><span class="o">=</span>tests.austin nox -rs profile
+</pre></div>
+
+
+<p>Once this completes, the profiling data will be sitting in <code>tests.austin</code>, ready
+to be analysed. With VS Code open on my local copy of <code>pyWhat</code>, I've used the
+<a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode">Austin VS Code</a> extension to visualise the data in the form of a flame
+graph and, by poking around, this is what caught my eye</p>
+<p align="center">
+  <a href="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png" target="_blank">
+    <img
+      src="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png"
+      alt="pyWhat tests before the fix"
+    />
+  </a>
+</p>
+
+<p>The suspect here is the chunky <code>deepcopy</code> frame stack which is quite noticeable.
+The question, of course, is whether the deepcopy is really needed. Clicking on
+the <code>check</code> frame takes us straight into the part of the code where the
+<code>deepcopy</code> is triggered. By inspecting the lines around I couldn't really see
+the need of making <code>deepcopy</code> of objects. So I turned that back (it was
+originally a shallow copy, that was later turned into a deep copy) into a
+shallow copy with <a href="https://github.com/bee-san/pyWhat/pull/218/files">this PR</a>,
+ran the test and checked for the expected output. All was looking find. In fact,
+things now looked much, much better! Rerunning the profile session with the
+change produced the following picture:</p>
+<p align="center">
+  <a href="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png" target="_blank">
+    <img
+      src="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png"
+      alt="pyWhat tests after the fix"
+    />
+  </a>
+</p>
+
+<p>The <code>deepcopy</code> stacks have disappeared and the <code>check</code> frame is overall much
+slimmer! And so, just like that, a performance regression has been found and
+fixed in just a few minutes :).</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html";
+  this.page.identifier = "hacktoberfest-2021"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

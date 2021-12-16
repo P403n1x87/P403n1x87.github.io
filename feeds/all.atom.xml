@@ -1,5 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"></link><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"></link><id>https://p403n1x87.github.io/</id><updated>2021-09-27T11:56:00+01:00</updated><subtitle></subtitle><entry><title>Spy on Python down to the Linux kernel level</title><link href="https://p403n1x87.github.io/spy-on-python-down-to-the-linux-kernel-level.html" rel="alternate"></link><published>2021-09-27T11:56:00+01:00</published><updated>2021-09-27T11:56:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2021-09-27:/spy-on-python-down-to-the-linux-kernel-level.html</id><summary type="html">&lt;p&gt;Observability into native call stacks requires some compromise. In this post I explain what this actually means for a Python tool like Austin.&lt;/p&gt;</summary><content type="html">&lt;p&gt;When I conceived the design of &lt;a href="https://github.com/p403n1x87/austin"&gt;Austin&lt;/a&gt; for the first time, I've sworn
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"></link><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"></link><id>https://p403n1x87.github.io/</id><updated>2021-12-16T11:56:00+01:00</updated><entry><title>How I completed the Hacktoberfest 2021 challenge with a profiler</title><link href="https://p403n1x87.github.io/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html" rel="alternate"></link><published>2021-12-16T11:56:00+01:00</published><updated>2021-12-16T11:56:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2021-12-16:/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html</id><summary type="html">&lt;p&gt;I shall reveal to you how I managed to complete the Hacktoberfest 2021 challenge with just a profiler. So read on if you are interested!&lt;/p&gt;</summary><content type="html">&lt;p&gt;Remember my post about &lt;a href="{filename}2021-06-22-bust-perf-issues"&gt;how to bust performace issues&lt;/a&gt;? My claim there was
+that if you picked a project at random from e.g. GitHub, you'd find something
+that would catch your eye if you ran the code through a profiler. Iterating this
+process then seemed like a good strategy to generate PRs, which is what you need
+to do if you want to &lt;a href="https://dev.to/p403n1x87"&gt;complete the Hacktoberfest challenge&lt;/a&gt; when that
+time of the year comes around.&lt;/p&gt;
+&lt;p&gt;But let's not get the wrong idea. You shouldn't walk away from here thinking
+that performance analysis is as trivial as turning the profiler on during test
+runs. What my previous post was trying to show is that, in many cases, code is
+not profiled and therefore it is easy to find some (rather) low-hanging fruits
+that can be fixed easily just as simply as looking at profiling data from the
+test suite. Once these are out of the way, that's when the performance analysis
+becomes a challenge itself, and some more serious and structured methodologies
+are required to make further progress.&lt;/p&gt;
+&lt;p&gt;So how did I actually use a profiler to complete the Hacktoberfest? I started by
+looking at all the Python projects with the &lt;code&gt;hacktoberfest&lt;/code&gt; topic on GitHub and
+picked some that looked interesting to me. The profiler of choice was (surprise,
+surprise) &lt;a href="https://github.com/p403n1x87/austin"&gt;Austin&lt;/a&gt;, since it requires no instrumentation and has
+practically no impact on the tracee, meaning that I could just sneak a &lt;code&gt;austin&lt;/code&gt;
+in the command line used to start the tests to get the data that I needed.&lt;/p&gt;
+&lt;p&gt;As a concrete example, let's look at how I was able to detect and fix a
+performance regression in &lt;a href="https://github.com/bee-san/pyWhat"&gt;pyWhat&lt;/a&gt;. I forked the repository, made a
+local clone and looked at how the test suite is run. Peeking at the GitHub
+Actions I could see the test suite was triggered with &lt;code&gt;nox&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;python -m nox
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Inside the &lt;code&gt;noxfile.py&lt;/code&gt; we can find the &lt;code&gt;tests&lt;/code&gt; session, which is the one we are
+interested in&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@nox&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;tests&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Run the test suite.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;poetry&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;install&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;--no-dev&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;install_with_constraints&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-black&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-cov&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-isort&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-flake8&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-mypy&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;types-requests&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;types-orjson&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;pytest&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;-vv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;--cov=./&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;--cov-report=xml&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;So let's create a &lt;code&gt;profile&lt;/code&gt; session where we run the test suite through Austin.
+All we have to do is add &lt;code&gt;austin&lt;/code&gt; at the right place in the arguments to
+&lt;code&gt;session.run&lt;/code&gt;, plus some additional options, e.g.:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@nox&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;profile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Profile the test suite.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;poetry&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;install&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;--no-dev&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;profile_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AUSTIN_FILE&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;tests.austin&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;install_with_constraints&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-black&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-cov&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-isort&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-flake8&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;pytest-mypy&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;types-requests&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;&amp;quot;types-orjson&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;austin&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;-so&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;profile_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;-i&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;1ms&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;pytest&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Here I've actually removed options to &lt;code&gt;pytest&lt;/code&gt; which I don't care about, like
+code coverage, as it's not what I want to profile this time. The &lt;code&gt;-s&lt;/code&gt; option
+tells Austin to give us non-idle samples only, effectively giving us a profile
+of CPU time. I'm also allowing the Austin output file to be specified from the
+environment via the &lt;code&gt;AUSTIN_FILE&lt;/code&gt; variable. This means that, if I want to
+profile the tests and save the results to &lt;code&gt;tests.austin&lt;/code&gt;, all I have to do is
+invoke&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pipx install nox  &lt;span class="c1"&gt;# if not installed already&lt;/span&gt;
+&lt;span class="nv"&gt;AUSTIN_FILE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;tests.austin nox -rs profile
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Once this completes, the profiling data will be sitting in &lt;code&gt;tests.austin&lt;/code&gt;, ready
+to be analysed. With VS Code open on my local copy of &lt;code&gt;pyWhat&lt;/code&gt;, I've used the
+&lt;a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode"&gt;Austin VS Code&lt;/a&gt; extension to visualise the data in the form of a flame
+graph and, by poking around, this is what caught my eye&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png" target="_blank"&gt;
+    &lt;img
+      src="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png"
+      alt="pyWhat tests before the fix"
+    /&gt;
+  &lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The suspect here is the chunky &lt;code&gt;deepcopy&lt;/code&gt; frame stack which is quite noticeable.
+The question, of course, is whether the deepcopy is really needed. Clicking on
+the &lt;code&gt;check&lt;/code&gt; frame takes us straight into the part of the code where the
+&lt;code&gt;deepcopy&lt;/code&gt; is triggered. By inspecting the lines around I couldn't really see
+the need of making &lt;code&gt;deepcopy&lt;/code&gt; of objects. So I turned that back (it was
+originally a shallow copy, that was later turned into a deep copy) into a
+shallow copy with &lt;a href="https://github.com/bee-san/pyWhat/pull/218/files"&gt;this PR&lt;/a&gt;,
+ran the test and checked for the expected output. All was looking find. In fact,
+things now looked much, much better! Rerunning the profile session with the
+change produced the following picture:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png" target="_blank"&gt;
+    &lt;img
+      src="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png"
+      alt="pyWhat tests after the fix"
+    /&gt;
+  &lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;deepcopy&lt;/code&gt; stacks have disappeared and the &lt;code&gt;check&lt;/code&gt; frame is overall much
+slimmer! And so, just like that, a performance regression has been found and
+fixed in just a few minutes :).&lt;/p&gt;</content><category term="Programming"></category><category term="python"></category><category term="profiling"></category></entry><entry><title>Spy on Python down to the Linux kernel level</title><link href="https://p403n1x87.github.io/spy-on-python-down-to-the-linux-kernel-level.html" rel="alternate"></link><published>2021-09-27T11:56:00+01:00</published><updated>2021-09-27T11:56:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2021-09-27:/spy-on-python-down-to-the-linux-kernel-level.html</id><summary type="html">&lt;p&gt;Observability into native call stacks requires some compromise. In this post I explain what this actually means for a Python tool like Austin.&lt;/p&gt;</summary><content type="html">&lt;p&gt;When I conceived the design of &lt;a href="https://github.com/p403n1x87/austin"&gt;Austin&lt;/a&gt; for the first time, I've sworn
 to always adhere to two guiding principles:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;no dependencies other than the standard C library (and whatever system calls
