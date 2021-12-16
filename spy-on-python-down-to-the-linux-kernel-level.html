@@ -115,7 +115,7 @@ surely ideal features for an observability tool that make Austin very well
 suited for running in a production environment.</p>
 <p>But Austin strengths are also its limitations unfortunately. What if our
 application has parts written as Python extensions, e.g. native <a href="https://docs.python.org/3/extending/extending.html">C/C++
-extensions</a>, <a href="https://cython.org/">Cython</a>, <a href="https://github.com/PyO3/pyo3">Rust</a>, or even <a href="{filename}2018-03-24-asn-python.md">assembly</a>? By
+extensions</a>, <a href="https://cython.org/">Cython</a>, <a href="https://github.com/PyO3/pyo3">Rust</a>, or even <a href="./extending-python-with-assembly.html">assembly</a>? By
 reading a process private VM, Austin can only reconstruct the pure-Python call
 stacks. To unwind the native call stacks, Austin would need to use some heavier
 machinery. Forget about using a third-party library for doing that, which would
