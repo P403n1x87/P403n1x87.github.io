@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - Increasing Austin accuracy with a dobule-heap trick</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="profiling" />
+    <meta name="tags" content="r&d" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/bust-perf-issues/austin_sign.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
+      <h1 class="entry-title">Increasing Austin accuracy with a dobule-heap trick</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2021-12-17T13:35:00+00:00">
+          &#128197; Fri 17 December 2021
+        </time>
+        <span class="readtime py-1">&#9202; A 5 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/profiling.html">profiling</a>
+            <a class="tag" href="./tag/rd.html">r&d</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>The latest version of Austin comes with a heap size option that can be used in increase the accuracy with which invalid samples are detected. In this post I give a brief description of how this works.</p>
+  </div>
+
+
+  <div class="entry-content">
+    <p>It has been argued that, in order to collect reliable data with a sampling
+profiler that peeks at the private VM address space of a process, like
+<a href="https://github.com/p403n1x87/austin">Austin</a>, it is <em>necessary</em> to pause the tracee. However, one of the
+fundamental principles that Austin is based on is: <em>keep perturbations to a
+minimum</em>. Therefore, pausing the tracee to sample its private VM is not an
+option on the table. Does this mean that Austin is bound to report unreliable
+data? My aim with this post it to convince you that halting the tracee is a
+<em>sufficient</em> condition, but not a <em>necessary</em> one. That is, we can still get
+pretty accurate results without pausing the tracee every time we want to sample
+it, provided we are willing to trade in some physical memory.</p>
+<p>So how do we leverage some extra memory consumption for increased accuracy? To
+understand this we need to review how Austin works, which in turns forces us to
+review how Python works when it comes to the frame stack management. When Python
+evaluates some bytecode, it creates a frame object that references the code that
+is being executed and that holds some useful information. These frames are
+referenced by a linked list, which means that, in general, there are no
+guarantees as to where in the VM space the frame objects might get allocated.
+However, the coding of <a href="https://github.com/python/cpython/blob/87539cc716fab47cd4f501f2441c4ab8e80bce6f/Objects/frameobject.c#L778"><code>frame_alloc</code></a> seems to suggest that
+entries in the list might get reused when the become <em>free</em>. So if we keep track
+of the addresses as we discover them we could in principle get all the frames
+with just a single system call, instead of making a call for each one of them.
+But in order to make a single call to the system call to read the private VM of
+the tracee we need an address range, which means we need a buffer large enough
+to receive the content. The VM address space is huge on a 64-bit architecture so
+we cannot really afford to dump an arbitrary range, and therefore we need a
+compromise: start getting frame objects and increase the range <em>up to</em> a given
+threshold. The hope here is that, with a bit of luck, we start tracking a range
+where frame objects are <em>likely</em> to be allocated.</p>
+<p>In practical terms, the above solution might still not be good enough. Depending
+on the allocator that is being used, memory could be allocated <em>anywhere</em> in the
+massive VM address space. However, some patterns generally emerge: sometimes the
+address is close to the image in memory of the process, sometimes it is closer
+to the upper boundary of the allowed user-space VM range. Since the gap in
+between these two regions could be very big, we could double up the above idea
+and have <em>two</em> local buffers, one close to the process image in memory, the
+other closer to the upper boundary of the VM address space. This effectively
+doubles our chances of dumping frames with just two system calls. When we need
+to resolve a frame that is not within that range we bite the bullet and make
+another system call. But, if we are lucky, the overall rate of calls we make
+should drop considerably with the double-heap trick above, and result accuracy
+should benefit from it.</p>
+<p>So let's see if our theoretical speculations work in reality. The latest release
+3.2.0 of Austin comes with a new option, <code>-h/--heap</code>, which allows us to cap the
+total amount of double-heap that Austin can allocate to dump frame objects in
+one go. Let's try profiling</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sum_up_to</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="n">sum_up_to</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">):</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="k">assert</span> <span class="n">sum_up_to</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+</pre></div>
+
+
+<p>with <code>-h 0</code>, i.e. with no heap. This is the picture that we get if we run the
+above with the <a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode">Austin VS Code</a> extension:</p>
+<p align="center">
+  <a href="./images/austin-accuracy/recursive-no-heap.png" target="_blank"><img
+    src="./images/austin-accuracy/recursive-no-heap.png"
+    alt="Results with no heap"
+  /></a>
+</p>
+
+<p>Whilst it is true that most of the CPU time is spent in <code>sum_up_to</code>, we would
+have expected a call stack at most 16 frame high in this case. This flame graph
+is then misleading, although it still conveys the correct information that
+<code>sum_up_to</code> is the largest consumer of CPU time. Let's try again, but with the
+default heap size this time (which is 256 MB):</p>
+<p align="center">
+  <a href="./images/austin-accuracy/recursive-heap.png" target="_blank"><img
+    src="./images/austin-accuracy/recursive-heap.png"
+    alt="Results with the double heap"
+  /></a>
+</p>
+
+<p>This time the recursive call stack have the expected height, and Austin is able
+to tell which samples didn't look quite right. But instead of throwing them
+away,  they are displayed starting from a parent <code>INVALID</code> frame. Why do we want
+to do that? Two reasons: we still account for the total CPU time and we still
+have useful information. Even if invalid, those where the frames that got
+sampled, so some of them must have effectively been running when we sampled.
+Collecting that data is therefore useful for other aggregations, like a source
+code heat map, like the one produced by the Austin VS Code extension:</p>
+<p align="center">
+  <a href="./images/austin-accuracy/recursive-heap-heatmap.png" target="_blank"><img
+    src="./images/austin-accuracy/recursive-heap-heatmap.png"
+    alt="Results with the double heap: source heat map"
+  /></a>
+</p>
+
+<p>But before we get too hopeful about the merits of this solution, let's have a
+look at some other examples. The following flame graph comes from profiling <a href="https://github.com/P403n1x87/aoc/blob/c309c50503bded668745269e3dbc6273acc76d04/2021/12/code.py">my
+solution</a> for <a href="https://adventofcode.com/2021/day/12">Day 12</a> of the Advent of Code 2021 challenge
+with the default heap size:</p>
+<p align="center">
+  <a href="./images/austin-accuracy/day12-heap.png" target="_blank"><img
+    src="./images/austin-accuracy/day12-heap.png"
+    alt="Results for Day 12 with the double heap"
+  /></a>
+</p>
+
+<p>There are clearly invalid frames (those in green that start directly from <code>dfs</code>,
+in the middle of the graph) that are not reported as such. For comparison, this
+is the resulting graph with no heap:</p>
+<p align="center">
+  <a href="./images/austin-accuracy/day12-no-heap.png" target="_blank"><img
+    src="./images/austin-accuracy/day12-no-heap.png"
+    alt="Results for Day 12 without heap"
+  /></a>
+</p>
+
+<p>The conclusion that we draw from these experiments is that the double-heap trick
+implemented in Austin 3.2 increases the accuracy of the results, in the sense
+that Austin is better able to detect invalid samples, but there still is the
+chance of getting invalid samples as valid in the output. However, one thing to
+notice is that these are quite some artificial examples that involve code that
+runs pretty quickly. In many practical situations you would be using a profiler
+to detect unexpected slow paths, where Austin has good chances of producing
+fairly accurate results. This is the profiling data generated by this simple
+test script:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">threading</span>
+
+
+<span class="k">def</span> <span class="nf">keep_cpu_busy</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000000</span><span class="p">):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">1000000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unwanted output &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">keep_cpu_busy</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">keep_cpu_busy</span><span class="p">()</span>
+</pre></div>
+
+
+<p>with the heap:</p>
+<p align="center">
+  <a href="./images/austin-accuracy/target34-heap.png" target="_blank"><img
+    src="./images/austin-accuracy/target34-heap.png"
+    alt="Results for Day 12 without heap"
+  /></a>
+</p>
+
+<p>and without:</p>
+<p align="center">
+  <a href="./images/austin-accuracy/target34-no-heap.png" target="_blank"><img
+    src="./images/austin-accuracy/target34-no-heap.png"
+    alt="Results for Day 12 without heap"
+  /></a>
+</p>
+
+<p>i.e. they're almost identical.</p>
+<p>The default value of 256 MB for the maximum combined heap size seems a
+reasonable compromise for getting even more accurate results, but on system with
+limited resources it is perhaps advisable to run Austin with a lower value, if
+not with the more drastic option <code>--heap 0</code>, which gives the pre-3.2 behaviour.</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./increasing-austin-accuracy-with-a-dobule-heap-trick.html";
+  this.page.identifier = "austin-accuracy"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://twitter.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-twitter" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

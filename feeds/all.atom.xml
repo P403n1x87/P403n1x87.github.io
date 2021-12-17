@@ -1,5 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"></link><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"></link><id>https://p403n1x87.github.io/</id><updated>2021-12-16T11:56:00+01:00</updated><entry><title>How I completed the Hacktoberfest 2021 challenge with a profiler</title><link href="https://p403n1x87.github.io/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html" rel="alternate"></link><published>2021-12-16T11:56:00+01:00</published><updated>2021-12-16T11:56:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2021-12-16:/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html</id><summary type="html">&lt;p&gt;I shall reveal to you how I managed to complete the Hacktoberfest 2021 challenge with just a profiler. So read on if you are interested!&lt;/p&gt;</summary><content type="html">&lt;p&gt;Remember my post about &lt;a href="https://p403n1x87.github.io/how-to-bust-python-performance-issues.html"&gt;how to bust performace issues&lt;/a&gt;? My claim there was
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"></link><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"></link><id>https://p403n1x87.github.io/</id><updated>2021-12-17T13:35:00+00:00</updated><entry><title>Increasing Austin accuracy with a dobule-heap trick</title><link href="https://p403n1x87.github.io/increasing-austin-accuracy-with-a-dobule-heap-trick.html" rel="alternate"></link><published>2021-12-17T13:35:00+00:00</published><updated>2021-12-17T13:35:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2021-12-17:/increasing-austin-accuracy-with-a-dobule-heap-trick.html</id><summary type="html">&lt;p&gt;The latest version of Austin comes with a heap size option that can be used in increase the accuracy with which invalid samples are detected. In this post I give a brief description of how this works.&lt;/p&gt;</summary><content type="html">&lt;p&gt;It has been argued that, in order to collect reliable data with a sampling
+profiler that peeks at the private VM address space of a process, like
+&lt;a href="https://github.com/p403n1x87/austin"&gt;Austin&lt;/a&gt;, it is &lt;em&gt;necessary&lt;/em&gt; to pause the tracee. However, one of the
+fundamental principles that Austin is based on is: &lt;em&gt;keep perturbations to a
+minimum&lt;/em&gt;. Therefore, pausing the tracee to sample its private VM is not an
+option on the table. Does this mean that Austin is bound to report unreliable
+data? My aim with this post it to convince you that halting the tracee is a
+&lt;em&gt;sufficient&lt;/em&gt; condition, but not a &lt;em&gt;necessary&lt;/em&gt; one. That is, we can still get
+pretty accurate results without pausing the tracee every time we want to sample
+it, provided we are willing to trade in some physical memory.&lt;/p&gt;
+&lt;p&gt;So how do we leverage some extra memory consumption for increased accuracy? To
+understand this we need to review how Austin works, which in turns forces us to
+review how Python works when it comes to the frame stack management. When Python
+evaluates some bytecode, it creates a frame object that references the code that
+is being executed and that holds some useful information. These frames are
+referenced by a linked list, which means that, in general, there are no
+guarantees as to where in the VM space the frame objects might get allocated.
+However, the coding of &lt;a href="https://github.com/python/cpython/blob/87539cc716fab47cd4f501f2441c4ab8e80bce6f/Objects/frameobject.c#L778"&gt;&lt;code&gt;frame_alloc&lt;/code&gt;&lt;/a&gt; seems to suggest that
+entries in the list might get reused when the become &lt;em&gt;free&lt;/em&gt;. So if we keep track
+of the addresses as we discover them we could in principle get all the frames
+with just a single system call, instead of making a call for each one of them.
+But in order to make a single call to the system call to read the private VM of
+the tracee we need an address range, which means we need a buffer large enough
+to receive the content. The VM address space is huge on a 64-bit architecture so
+we cannot really afford to dump an arbitrary range, and therefore we need a
+compromise: start getting frame objects and increase the range &lt;em&gt;up to&lt;/em&gt; a given
+threshold. The hope here is that, with a bit of luck, we start tracking a range
+where frame objects are &lt;em&gt;likely&lt;/em&gt; to be allocated.&lt;/p&gt;
+&lt;p&gt;In practical terms, the above solution might still not be good enough. Depending
+on the allocator that is being used, memory could be allocated &lt;em&gt;anywhere&lt;/em&gt; in the
+massive VM address space. However, some patterns generally emerge: sometimes the
+address is close to the image in memory of the process, sometimes it is closer
+to the upper boundary of the allowed user-space VM range. Since the gap in
+between these two regions could be very big, we could double up the above idea
+and have &lt;em&gt;two&lt;/em&gt; local buffers, one close to the process image in memory, the
+other closer to the upper boundary of the VM address space. This effectively
+doubles our chances of dumping frames with just two system calls. When we need
+to resolve a frame that is not within that range we bite the bullet and make
+another system call. But, if we are lucky, the overall rate of calls we make
+should drop considerably with the double-heap trick above, and result accuracy
+should benefit from it.&lt;/p&gt;
+&lt;p&gt;So let's see if our theoretical speculations work in reality. The latest release
+3.2.0 of Austin comes with a new option, &lt;code&gt;-h/--heap&lt;/code&gt;, which allows us to cap the
+total amount of double-heap that Austin can allocate to dump frame objects in
+one go. Let's try profiling&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sum_up_to&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+
+    &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;sum_up_to&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;
+
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1_000_000&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;16&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;sum_up_to&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;with &lt;code&gt;-h 0&lt;/code&gt;, i.e. with no heap. This is the picture that we get if we run the
+above with the &lt;a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode"&gt;Austin VS Code&lt;/a&gt; extension:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/recursive-no-heap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/recursive-no-heap.png"
+    alt="Results with no heap"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Whilst it is true that most of the CPU time is spent in &lt;code&gt;sum_up_to&lt;/code&gt;, we would
+have expected a call stack at most 16 frame high in this case. This flame graph
+is then misleading, although it still conveys the correct information that
+&lt;code&gt;sum_up_to&lt;/code&gt; is the largest consumer of CPU time. Let's try again, but with the
+default heap size this time (which is 256 MB):&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap.png"
+    alt="Results with the double heap"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This time the recursive call stack have the expected height, and Austin is able
+to tell which samples didn't look quite right. But instead of throwing them
+away,  they are displayed starting from a parent &lt;code&gt;INVALID&lt;/code&gt; frame. Why do we want
+to do that? Two reasons: we still account for the total CPU time and we still
+have useful information. Even if invalid, those where the frames that got
+sampled, so some of them must have effectively been running when we sampled.
+Collecting that data is therefore useful for other aggregations, like a source
+code heat map, like the one produced by the Austin VS Code extension:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap-heatmap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap-heatmap.png"
+    alt="Results with the double heap: source heat map"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;But before we get too hopeful about the merits of this solution, let's have a
+look at some other examples. The following flame graph comes from profiling &lt;a href="https://github.com/P403n1x87/aoc/blob/c309c50503bded668745269e3dbc6273acc76d04/2021/12/code.py"&gt;my
+solution&lt;/a&gt; for &lt;a href="https://adventofcode.com/2021/day/12"&gt;Day 12&lt;/a&gt; of the Advent of Code 2021 challenge
+with the default heap size:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/day12-heap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/day12-heap.png"
+    alt="Results for Day 12 with the double heap"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;There are clearly invalid frames (those in green that start directly from &lt;code&gt;dfs&lt;/code&gt;,
+in the middle of the graph) that are not reported as such. For comparison, this
+is the resulting graph with no heap:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/day12-no-heap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/day12-no-heap.png"
+    alt="Results for Day 12 without heap"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The conclusion that we draw from these experiments is that the double-heap trick
+implemented in Austin 3.2 increases the accuracy of the results, in the sense
+that Austin is better able to detect invalid samples, but there still is the
+chance of getting invalid samples as valid in the output. However, one thing to
+notice is that these are quite some artificial examples that involve code that
+runs pretty quickly. In many practical situations you would be using a profiler
+to detect unexpected slow paths, where Austin has good chances of producing
+fairly accurate results. This is the profiling data generated by this simple
+test script:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;threading&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;keep_cpu_busy&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2000000&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="mi"&gt;1000000&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Unwanted output &amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;threading&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Thread&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;keep_cpu_busy&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;keep_cpu_busy&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;with the heap:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/target34-heap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/target34-heap.png"
+    alt="Results for Day 12 without heap"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;and without:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://p403n1x87.github.io/images/austin-accuracy/target34-no-heap.png" target="_blank"&gt;&lt;img
+    src="https://p403n1x87.github.io/images/austin-accuracy/target34-no-heap.png"
+    alt="Results for Day 12 without heap"
+  /&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;i.e. they're almost identical.&lt;/p&gt;
+&lt;p&gt;The default value of 256 MB for the maximum combined heap size seems a
+reasonable compromise for getting even more accurate results, but on system with
+limited resources it is perhaps advisable to run Austin with a lower value, if
+not with the more drastic option &lt;code&gt;--heap 0&lt;/code&gt;, which gives the pre-3.2 behaviour.&lt;/p&gt;</content><category term="Programming"></category><category term="python"></category><category term="profiling"></category><category term="r&amp;d"></category></entry><entry><title>How I completed the Hacktoberfest 2021 challenge with a profiler</title><link href="https://p403n1x87.github.io/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html" rel="alternate"></link><published>2021-12-16T15:18:00+00:00</published><updated>2021-12-16T15:18:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2021-12-16:/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html</id><summary type="html">&lt;p&gt;I shall reveal to you how I managed to complete the Hacktoberfest 2021 challenge with just a profiler. So read on if you are interested!&lt;/p&gt;</summary><content type="html">&lt;p&gt;Remember my post about &lt;a href="https://p403n1x87.github.io/how-to-bust-python-performance-issues.html"&gt;how to bust performace issues&lt;/a&gt;? My claim there was
 that if you picked a project at random from e.g. GitHub, you'd find something
 that would catch your eye if you ran the code through a profiler. Iterating this
 process then seemed like a good strategy to generate PRs, which is what you need
