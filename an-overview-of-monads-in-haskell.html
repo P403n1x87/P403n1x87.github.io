@@ -103,7 +103,7 @@ monoids in the category of endofunctors".</p>
 <p>A typical pattern of functional programming is that of applying a function to a
 list element-wise. There are many ways of doing this, but the most general one
 is that of using the <code>map</code> function</p>
-<div class="highlight"><pre><span></span><span class="nf">map</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<div class="highlight"><pre><span></span><span class="nf">map</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="w"></span>
 </pre></div>
 
 
@@ -112,7 +112,7 @@ list of type <code>[b]</code> by simply applying the function to each entry of t
 list. Two important properties of the function <code>map</code> follow from this
 definition. The first involves its interaction with the identity function <code>id ::
 a -&gt; a</code> which simply evaluates to its sole argument. Indeed,</p>
-<div class="highlight"><pre><span></span><span class="nf">map</span> <span class="n">id</span> <span class="ow">=</span> <span class="n">id</span>
+<div class="highlight"><pre><span></span><span class="nf">map</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">id</span><span class="w"></span>
 </pre></div>
 
 
@@ -123,7 +123,7 @@ compute the composition <code>g . f</code> and apply it to <code>map</code>, or 
 <code>[a]</code> that is sent to a list of type <code>[c]</code> whose elements are precisely given by
 the image of each element of the initial list through the composition <code>g . f</code>.
 We can express this fact with the identity</p>
-<div class="highlight"><pre><span></span><span class="nf">map</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span> <span class="ow">=</span> <span class="n">map</span> <span class="n">f</span> <span class="o">.</span> <span class="n">map</span> <span class="n">g</span>
+<div class="highlight"><pre><span></span><span class="nf">map</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">g</span><span class="w"></span>
 </pre></div>
 
 
@@ -147,12 +147,12 @@ two properties that we have observed earlier.</p>
 we really need is a <em>parametrised</em> type <code>T</code> and a map <code>fmap :: (a -&gt; b) -&gt; T a
 -&gt; T b</code> that <em>plays nicely</em> with <code>T</code>, in the sense that it satisfies the
 functoriality properties</p>
-<div class="highlight"><pre><span></span><span class="nf">fmap</span> <span class="n">id</span> <span class="ow">=</span> <span class="n">id</span>
+<div class="highlight"><pre><span></span><span class="nf">fmap</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">id</span><span class="w"></span>
 </pre></div>
 
 
 <p>and</p>
-<div class="highlight"><pre><span></span><span class="nf">fmap</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="n">f</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span>
+<div class="highlight"><pre><span></span><span class="nf">fmap</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">g</span><span class="w"></span>
 </pre></div>
 
 
@@ -210,8 +210,8 @@ by definition. If we apply <code>fmap</code> to any instances of this type we wo
 something of type <code>T a -&gt; T (b -&gt; c)</code>, which isn't quite what we want. <em>But</em>, if
 we had a function <code>&lt;*&gt; :: T (a -&gt; b) -&gt; (T a -&gt; T b)</code> we would get closer, but
 not quite there yet. Indeed, we could now define <code>fmap2</code> like so</p>
-<div class="highlight"><pre><span></span><span class="nf">fmap2</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">c</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">T</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">T</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">T</span> <span class="n">c</span><span class="p">)</span>
-<span class="nf">fmap2</span> <span class="n">f</span> <span class="n">x</span> <span class="n">y</span> <span class="ow">=</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">f</span> <span class="n">x</span><span class="p">)</span> <span class="n">y</span>
+<div class="highlight"><pre><span></span><span class="nf">fmap2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">T</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"></span>
+<span class="nf">fmap2</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">y</span><span class="w"></span>
 </pre></div>
 
 
@@ -220,15 +220,15 @@ apply <code>&lt;*&gt;</code> to the result to obtain a function that we can comp
 a result of type <code>T c</code>. Of course, we can now repeat these steps to define
 <code>fmap3 :: (a -&gt; b -&gt; c -&gt; d) -&gt; (T a -&gt; T b -&gt; T c -&gt; Td)</code> by using <code>fmap2</code> as a
 starting point, that is</p>
-<div class="highlight"><pre><span></span><span class="nf">fmap3</span> <span class="n">f</span> <span class="n">x</span> <span class="n">y</span> <span class="n">z</span> <span class="ow">=</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">fmap2</span> <span class="n">f</span> <span class="n">x</span> <span class="n">y</span><span class="p">)</span> <span class="n">z</span>
+<div class="highlight"><pre><span></span><span class="nf">fmap3</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">fmap2</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="n">z</span><span class="w"></span>
 </pre></div>
 
 
 <p>and carry on, to get a whole family of maps <code>fmapn</code>. Using infix notation for
 <code>&lt;*&gt;</code> and assuming associativity to the left, we could then write the general
 case as</p>
-<div class="highlight"><pre><span></span><span class="nf">fmapn</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a1</span> <span class="ow">-&gt;</span> <span class="o">...</span> <span class="ow">-&gt;</span> <span class="n">an</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">T</span> <span class="n">a1</span> <span class="ow">-&gt;</span> <span class="o">...</span> <span class="ow">-&gt;</span> <span class="kt">T</span> <span class="n">an</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span>
-<span class="nf">fmapn</span> <span class="n">f</span> <span class="n">x1</span> <span class="o">...</span> <span class="n">xn</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="n">f</span> <span class="n">x1</span> <span class="o">&lt;*&gt;</span> <span class="o">...</span> <span class="o">&lt;*&gt;</span> <span class="n">xn</span>
+<div class="highlight"><pre><span></span><span class="nf">fmapn</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a1</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">T</span><span class="w"> </span><span class="n">a1</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"></span>
+<span class="nf">fmapn</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="n">xn</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">xn</span><span class="w"></span>
 </pre></div>
 
 
@@ -252,10 +252,10 @@ operation. For exmaple, when an operation failed, we can simply return
 <code>Nothing</code>, else we return <code>Just x</code>, where <code>x</code> is the valid result of the
 operation. Haskell makes <code>Maybe</code> into an applicative functor by default by
 defining</p>
-<div class="highlight"><pre><span></span><span class="nf">pure</span> <span class="ow">=</span> <span class="kt">Just</span>
+<div class="highlight"><pre><span></span><span class="nf">pure</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"></span>
 
-<span class="kt">Nothing</span> <span class="o">&lt;*&gt;</span> <span class="kr">_</span> <span class="ow">=</span> <span class="kt">Nothing</span>
-<span class="p">(</span><span class="kt">Just</span> <span class="n">f</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">mx</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="n">f</span> <span class="n">mx</span>
+<span class="kt">Nothing</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span><span class="w"></span>
+<span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">mx</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">mx</span><span class="w"></span>
 </pre></div>
 
 
@@ -269,15 +269,15 @@ coherence properties that make it part of the description of a functor. As we
 have said earlier, we expect <code>pure</code> and <code>&lt;*&gt;</code> to satisfy some coherence
 properties themselves if they are to work as they are supposed to, and we see
 why that is. One of such properties comes for free, viz.</p>
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">pure</span> <span class="n">id</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">x</span>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">pure</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"></span>
 </pre></div>
 
 
 <p>since <code>fmap id x = x</code>. The other properties that are required of <code>pure</code> and
 <code>&lt;*&gt;</code> are</p>
-<div class="highlight"><pre><span></span><span class="nf">pure</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">f</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">x</span>
-<span class="nf">x</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">y</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="o">$</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">x</span>
-<span class="nf">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">x</span> <span class="o">&lt;*&gt;</span> <span class="n">y</span> <span class="o">&lt;*&gt;</span> <span class="n">z</span> <span class="ow">=</span> <span class="n">x</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;*&gt;</span> <span class="n">z</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="nf">pure</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pure</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">pure</span><span class="w"> </span><span class="n">x</span><span class="w"></span>
+<span class="nf">x</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">pure</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pure</span><span class="w"> </span><span class="p">(</span><span class="o">$</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"></span>
+<span class="nf">pure</span><span class="w"> </span><span class="p">(</span><span class="o">.</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">z</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 
 
@@ -331,7 +331,7 @@ has the monad structure. And we shall also see in what sense a monad can be
 defined as a "monoid in the category of endofunctors", as Mac Lane put it.</p>
 <p>First things first, let's see how the <code>join</code> function relates to the bind
 operator <code>&gt;&gt;=</code>. You can convince yourself that the definition</p>
-<div class="highlight"><pre><span></span><span class="nf">join</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">x</span> <span class="o">&gt;&gt;=</span> <span class="n">id</span>
+<div class="highlight"><pre><span></span><span class="nf">join</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="n">id</span><span class="w"></span>
 </pre></div>
 
 
@@ -345,7 +345,7 @@ Int)</code>. But now, if we curry and apply <code>join</code> we can <em>cure</e
 <code>Maybe (Maybe Int)</code> to get back a <code>Maybe Int</code> instead.</p>
 <p>Let's now look at the coherence properties that must be satisfied by <code>join</code>. The
 first one we note is its interaction with itself</p>
-<div class="highlight"><pre><span></span><span class="nf">join</span> <span class="o">.</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">join</span><span class="p">)</span> <span class="ow">=</span> <span class="n">join</span> <span class="o">.</span> <span class="n">join</span>
+<div class="highlight"><pre><span></span><span class="nf">join</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">join</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">join</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">join</span><span class="w"></span>
 </pre></div>
 
 
@@ -354,7 +354,7 @@ first one we note is its interaction with itself</p>
 list of lists <code>[[a]]</code> into a single list <code>[a]</code> obtained by concatenation. The
 second coherence property that we look at involves the interaction between
 <code>join</code> and <code>pure</code> (or <code>return</code>), viz.</p>
-<div class="highlight"><pre><span></span><span class="nf">join</span> <span class="o">.</span> <span class="n">pure</span> <span class="ow">=</span> <span class="n">join</span> <span class="o">.</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">pure</span><span class="p">)</span> <span class="ow">=</span> <span class="n">id</span>
+<div class="highlight"><pre><span></span><span class="nf">join</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">pure</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">join</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">pure</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">id</span><span class="w"></span>
 </pre></div>
 
 

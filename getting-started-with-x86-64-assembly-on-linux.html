@@ -218,41 +218,41 @@ content of my <code>hello64.asm</code> file.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global </span><span class="nv">_start</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">_start</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; CONSTANTS</span>
-<span class="c1">;</span>
-<span class="no">SYS_WRITE</span><span class="kd">   equ</span> <span class="mi">1</span>
-<span class="no">SYS_EXIT</span><span class="kd">    equ</span> <span class="mi">60</span>
-<span class="no">STDOUT</span><span class="kd">      equ</span> <span class="mi">1</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; CONSTANTS</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="no">SYS_WRITE</span><span class="w">   </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="no">SYS_EXIT</span><span class="w">    </span><span class="kd">equ</span><span class="w"> </span><span class="mi">60</span><span class="w"></span>
+<span class="no">STDOUT</span><span class="w">      </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; Initialised data goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.data</span>
-<span class="nf">hello</span>           <span class="nv">db</span>  <span class="s">&quot;Hello World!&quot;</span><span class="p">,</span> <span class="mi">10</span>      <span class="c1">; char *</span>
-<span class="no">hello_len</span><span class="kd">       equ</span> <span class="kc">$</span><span class="o">-</span><span class="nv">hello</span>                 <span class="c1">; size_t</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Initialised data goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span><span class="w"></span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; Code goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.text</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Code goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
 
-<span class="nl">_start:</span>
-    <span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span>
-    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">SYS_WRITE</span>
-    <span class="nf">mov</span>     <span class="nb">rdi</span><span class="p">,</span> <span class="nv">STDOUT</span>
-    <span class="nf">mov</span>     <span class="nb">rsi</span><span class="p">,</span> <span class="nv">hello</span>
-    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nv">hello_len</span>
-    <span class="nf">syscall</span>
-    <span class="nf">push</span>    <span class="nb">rax</span>
+<span class="nl">_start:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_WRITE</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">STDOUT</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
+<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span><span class="w"></span>
 
-    <span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span>
-    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">SYS_EXIT</span>
-    <span class="nf">pop</span>     <span class="nb">rdi</span>
-    <span class="nf">sub</span>     <span class="nb">rdi</span><span class="p">,</span> <span class="nv">hello_len</span>
-    <span class="nf">syscall</span>
+<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span><span class="w"></span>
+<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span><span class="w"></span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
 </pre></div>
 </td></tr></table>
 
@@ -481,41 +481,41 @@ source code would look like this</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global </span><span class="nv">_start</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">_start</span><span class="w"></span>
 
 <span class="cp">%include &quot;../syscalls.inc&quot;</span>
 
-<span class="c1">;</span>
-<span class="c1">; CONSTANTS</span>
-<span class="c1">;</span>
-<span class="no">STDOUT</span><span class="kd">      equ</span> <span class="mi">1</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; CONSTANTS</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="no">STDOUT</span><span class="w">      </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; Initialised data goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.data</span>
-<span class="nf">hello</span>           <span class="nv">db</span>  <span class="s">&quot;Hello World!&quot;</span><span class="p">,</span> <span class="mi">10</span>      <span class="c1">; char *</span>
-<span class="no">hello_len</span><span class="kd">       equ</span> <span class="kc">$</span><span class="o">-</span><span class="nv">hello</span>                 <span class="c1">; size_t</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Initialised data goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span><span class="w"></span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; Code goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.text</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Code goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
 
-<span class="nl">_start:</span>
-    <span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span>
-    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">SYS_WRITE</span>
-    <span class="nf">mov</span>     <span class="nb">rdi</span><span class="p">,</span> <span class="nv">STDOUT</span>
-    <span class="nf">lea</span>     <span class="nb">rsi</span><span class="p">,</span> <span class="p">[</span><span class="nv">hello</span><span class="p">]</span>
-    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nv">hello_len</span>
-    <span class="nf">syscall</span>
-    <span class="nf">push</span>    <span class="nb">rax</span>
+<span class="nl">_start:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_WRITE</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">STDOUT</span><span class="w"></span>
+<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
+<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span><span class="w"></span>
 
-    <span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span>
-    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">SYS_EXIT</span>
-    <span class="nf">pop</span>     <span class="nb">rdi</span>
-    <span class="nf">sub</span>     <span class="nb">rdi</span><span class="p">,</span> <span class="nv">hello_len</span>
-    <span class="nf">syscall</span>
+<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span><span class="w"></span>
+<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span><span class="w"></span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
 </pre></div>
 </td></tr></table>
 
@@ -595,28 +595,28 @@ considerations, the assembly analogue of the above C code will look like this</p
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global </span><span class="nv">main</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">main</span><span class="w"></span>
 
-<span class="k">extern </span><span class="nv">printf</span>
+<span class="k">extern</span><span class="w"> </span><span class="nv">printf</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; Initialised data goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.data</span>
-<span class="nf">hello</span>           <span class="nv">db</span>  <span class="s">&quot;Hello World!&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span>   <span class="c1">; const char *</span>
-<span class="no">hello_len</span><span class="kd">       equ</span> <span class="kc">$</span> <span class="o">-</span> <span class="nv">hello</span>               <span class="c1">; size_t</span>
-<span class="c1">;</span>
-<span class="c1">; Code goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.text</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Initialised data goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span><span class="w"></span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w">               </span><span class="c1">; size_t</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Code goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
 
-<span class="c1">; int main ()</span>
-<span class="nl">main:</span>
-    <span class="c1">; return printf(hello) - hello_len;</span>
-    <span class="nf">lea</span>     <span class="nb">rdi</span><span class="p">,</span> <span class="p">[</span><span class="nv">hello</span><span class="p">]</span>
-    <span class="nf">xor</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rax</span>
-    <span class="nf">call</span>    <span class="nv">printf</span>
-    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">hello_len</span>
+<span class="c1">; int main ()</span><span class="w"></span>
+<span class="nl">main:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">; return printf(hello) - hello_len;</span><span class="w"></span>
+<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span><span class="w"></span>
+<span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span><span class="w"></span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
 </pre></div>
 </td></tr></table>
 
@@ -677,35 +677,35 @@ at times.</p>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global </span><span class="nv">_start</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">_start</span><span class="w"></span>
 
 <span class="cp">%include &quot;../syscalls.inc&quot;</span>
 
-<span class="k">extern </span><span class="nv">printf</span>
+<span class="k">extern</span><span class="w"> </span><span class="nv">printf</span><span class="w"></span>
 
-<span class="c1">;</span>
-<span class="c1">; Initialised data goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.data</span>
-<span class="nf">hello</span>           <span class="nv">db</span>  <span class="s">&quot;Hello World!&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span>   <span class="c1">; const char *</span>
-<span class="no">hello_len</span><span class="kd">       equ</span> <span class="kc">$</span> <span class="o">-</span> <span class="nv">hello</span> <span class="o">-</span> <span class="mi">1</span>           <span class="c1">; size_t</span>
-<span class="c1">;</span>
-<span class="c1">; Code goes here</span>
-<span class="c1">;</span>
-<span class="k">SECTION </span><span class="nv">.text</span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Initialised data goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span><span class="w"></span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="c1">; size_t</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="c1">; Code goes here</span><span class="w"></span>
+<span class="c1">;</span><span class="w"></span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
 
-<span class="nl">_start:</span>
-    <span class="c1">; printf(hello) - hello_len;</span>
-    <span class="nf">lea</span>     <span class="nb">rdi</span><span class="p">,</span> <span class="p">[</span><span class="nv">hello</span><span class="p">]</span>
-    <span class="nf">xor</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rax</span>
-    <span class="nf">call</span>    <span class="nv">printf</span>
-    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">hello_len</span>
+<span class="nl">_start:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">; printf(hello) - hello_len;</span><span class="w"></span>
+<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span><span class="w"></span>
+<span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span><span class="w"></span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
 
-    <span class="c1">; syscall(SYS_EXIT, rax - hello_len)</span>
-    <span class="nf">push</span>    <span class="nb">rax</span>
-    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nv">SYS_EXIT</span>
-    <span class="nf">pop</span>     <span class="nb">rdi</span>
-    <span class="nf">syscall</span>
+<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, rax - hello_len)</span><span class="w"></span>
+<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span><span class="w"></span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span><span class="w"></span>
+<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span><span class="w"></span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
 </pre></div>
 </td></tr></table>
 

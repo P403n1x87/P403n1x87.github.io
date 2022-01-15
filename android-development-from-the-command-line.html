@@ -686,10 +686,10 @@ being, let's have a look at what the <code>main_layout.xml</code> looks like in 
             <span class="na">android:paddingBottom</span><span class="o">=</span><span class="s">&quot;12px&quot;</span>
             <span class="na">android:text</span><span class="o">=</span><span class="s">&quot;Gravity sensors&quot;</span> <span class="p">/&gt;</span>
 
-  <span class="c">&lt;!--</span>
-<span class="c">  A new TextView element will be added programmatically for each on-board</span>
-<span class="c">  gravity sensor detected.</span>
-<span class="c">  --&gt;</span>
+  <span class="cm">&lt;!--</span>
+<span class="cm">  A new TextView element will be added programmatically for each on-board</span>
+<span class="cm">  gravity sensor detected.</span>
+<span class="cm">  --&gt;</span>
 
 <span class="p">&lt;/</span><span class="nt">LinearLayout</span><span class="p">&gt;</span>
 </pre></div>
@@ -881,16 +881,16 @@ example, let's run the <code>lint</code> task with</p>
 
 
 <p>The output should contain something that looks like the following</p>
-<div class="highlight"><pre><span></span><span class="o">...</span>
-<span class="o">&gt;</span> <span class="n">Task</span> <span class="p">:</span><span class="n">lint</span>
-<span class="n">Ran</span> <span class="n">lint</span> <span class="n">on</span> <span class="n">variant</span> <span class="n">debug</span><span class="p">:</span> <span class="mi">13</span> <span class="n">issues</span> <span class="n">found</span>
-<span class="n">Ran</span> <span class="n">lint</span> <span class="n">on</span> <span class="n">variant</span> <span class="n">release</span><span class="p">:</span> <span class="mi">13</span> <span class="n">issues</span> <span class="n">found</span>
-<span class="n">Wrote</span> <span class="n">HTML</span> <span class="n">report</span> <span class="n">to</span> <span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">html</span>
-<span class="n">Wrote</span> <span class="n">XML</span> <span class="n">report</span> <span class="n">to</span> <span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">xml</span>
+<div class="highlight"><pre><span></span><span class="o">...</span><span class="w"></span>
+<span class="o">&gt;</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="p">:</span><span class="n">lint</span><span class="w"></span>
+<span class="n">Ran</span><span class="w"> </span><span class="n">lint</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">debug</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="n">issues</span><span class="w"> </span><span class="n">found</span><span class="w"></span>
+<span class="n">Ran</span><span class="w"> </span><span class="n">lint</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">release</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="n">issues</span><span class="w"> </span><span class="n">found</span><span class="w"></span>
+<span class="n">Wrote</span><span class="w"> </span><span class="n">HTML</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">html</span><span class="w"></span>
+<span class="n">Wrote</span><span class="w"> </span><span class="n">XML</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">xml</span><span class="w"></span>
 
 
-<span class="n">BUILD</span> <span class="n">SUCCESSFUL</span> <span class="ow">in</span> <span class="mi">1</span><span class="n">s</span>
-<span class="mi">25</span> <span class="n">actionable</span> <span class="n">tasks</span><span class="p">:</span> <span class="mi">7</span> <span class="n">executed</span><span class="p">,</span> <span class="mi">18</span> <span class="n">up</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">date</span>
+<span class="n">BUILD</span><span class="w"> </span><span class="n">SUCCESSFUL</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="mi">1</span><span class="n">s</span><span class="w"></span>
+<span class="mi">25</span><span class="w"> </span><span class="n">actionable</span><span class="w"> </span><span class="n">tasks</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">executed</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="n">up</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">date</span><span class="w"></span>
 </pre></div>
 
 

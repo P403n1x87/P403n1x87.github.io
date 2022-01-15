@@ -497,24 +497,24 @@ making a copy of the default web site Apache2 comes with. On Raspbian, this is
 located in <code>/etc/apache2/sites-available</code> and is contained in the
 <code>000-default.conf</code> configuration file. Make a copy of this file in, say,
 <code>led.conf</code> and modify it to look like the following one.</p>
-<div class="highlight"><pre><span></span><span class="c"># File: led.conf</span>
-<span class="nt">&lt;VirtualHost</span> <span class="s">*:80</span><span class="nt">&gt;</span>
-  <span class="nb">ServerAdmin</span> webmaster@localhost
+<div class="highlight"><pre><span></span><span class="c"># File: led.conf</span><span class="w"></span>
+<span class="nt">&lt;VirtualHost</span><span class="w"> </span><span class="s">*:80</span><span class="nt">&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="nb">ServerAdmin</span><span class="w"> </span>webmaster@localhost<span class="w"></span>
 
-  <span class="c"># Required by static data storage access (e.g. css files)</span>
-  <span class="nb">DocumentRoot</span> <span class="sx">/home/pi/Projects/www</span>
+<span class="w">  </span><span class="c"># Required by static data storage access (e.g. css files)</span><span class="w"></span>
+<span class="w">  </span><span class="nb">DocumentRoot</span><span class="w"> </span><span class="sx">/home/pi/Projects/www</span><span class="w"></span>
 
-  <span class="nb">ErrorLog</span> ${APACHE_LOG_DIR}/error.log
-  <span class="nb">CustomLog</span> ${APACHE_LOG_DIR}/access.log combined
+<span class="w">  </span><span class="nb">ErrorLog</span><span class="w"> </span>${APACHE_LOG_DIR}/error.log<span class="w"></span>
+<span class="w">  </span><span class="nb">CustomLog</span><span class="w"> </span>${APACHE_LOG_DIR}/access.log<span class="w"> </span>combined<span class="w"></span>
 
-  <span class="c"># WSGI Configuration</span>
-  <span class="nb">WSGIScriptAlias</span> <span class="sx">/led</span> <span class="sx">/home/pi/Projects/www/led_app/bootstrap.wsgi</span>
+<span class="w">  </span><span class="c"># WSGI Configuration</span><span class="w"></span>
+<span class="w">  </span><span class="nb">WSGIScriptAlias</span><span class="w"> </span><span class="sx">/led</span><span class="w"> </span><span class="sx">/home/pi/Projects/www/led_app/bootstrap.wsgi</span><span class="w"></span>
 
-  <span class="nt">&lt;Directory</span> <span class="s">/home/pi/Projects/www/led_app</span><span class="nt">&gt;</span>
-    <span class="nb">Require</span> <span class="k">all</span> granted
-  <span class="nt">&lt;/Directory&gt;</span>
+<span class="w">  </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">/home/pi/Projects/www/led_app</span><span class="nt">&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="nb">Require</span><span class="w"> </span><span class="k">all</span><span class="w"> </span>granted<span class="w"></span>
+<span class="w">  </span><span class="nt">&lt;/Directory&gt;</span><span class="w"></span>
 
-<span class="nt">&lt;/VirtualHost&gt;</span>
+<span class="nt">&lt;/VirtualHost&gt;</span><span class="w"></span>
 </pre></div>
 
 
