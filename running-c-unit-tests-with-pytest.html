@@ -75,7 +75,7 @@
     <div id="content-block" class="flex-none">
 <section id="content" class="body">
   <div id="summary" class="py-0">
-    <p>In this post I will describe my approach to C unit testing using pytest as test runner.</p>
+    <p>In this post I will describe my approach to C unit testing using pytest. In particular, we get to see how to gracefully handle SIGSEGVs and prevent them from stopping the test runner abruptly. Furthermore, we shall try to write tests in a Pythonic way.</p>
   </div>
 
 
@@ -106,9 +106,9 @@ available for Python, should I ever need to. But these are not all the reasons
 for adopting pytest for running C tests. If you keep reading you will discover a
 few more that might convince you to use pytest for your C unit tests too!</p>
 <h1 id="calling-native-code-from-python">Calling native code from Python</h1>
-<p>Testing C code with Python would only make sense if it was easy to call native
+<p>Testing C code with Python would only make sense if it were easy to call native
 code from the interpreter. Thankfully, the Python standard library comes with
-the <a href="https://docs.python.org/3/library/ctypes.html"><code>ctypes</code></a> module which allows us to do just that! So let's start
+the <a href="https://docs.python.org/3/library/ctypes.html"><code>ctypes</code></a> module that allows us to do just that! So let's start
 looking at some C code, for instance,</p>
 <div class="highlight"><pre><span></span><span class="cp"># file: fact.c</span>
 
@@ -150,7 +150,7 @@ can test the <code>fact</code> function inside <code>fact.c</code> simply with</
 </blockquote>
 <h1 id="enter-pytest">Enter pytest</h1>
 <p>We are not here to just play around with bare <code>assert</code>s. I promised you the full
-power of Python and <code>pytest</code>, so clearly we can't settle with just this simple
+power of Python and <code>pytest</code>, so we can't settle with just this simple
 example. Let's add <code>pytest</code> to our test dependencies and do this instead</p>
 <div class="highlight"><pre><span></span><span class="c1"># file: test_fact.py</span>
 
@@ -239,7 +239,7 @@ the organisation of sources within an <em>actual</em> C project, for instance</p
 </pre></div>
 
 
-<p>In the previous example we built the shared object <code>fact.so</code> by hand, but in a
+<p>In the previous example, we built the shared object <code>fact.so</code> by hand, but in a
 CI environment we would probably want to automate that step too. What should we
 use for that? A bash script? A makefile? Python, of course! What else?!? 😀</p>
 <p>Let's make our sample C sources slightly more interesting. For example, we could
@@ -426,7 +426,7 @@ which implement a simple LRU cache. This is part of the spec</p>
 <p>It's quite a fair bit of code; however, we are not interested in how the data
 structures are implemented, but rather to what it actually implements. This
 already gives us plenty to play with.</p>
-<p>The important detail here is that our C application has a component impemented
+<p>The important detail here is that our C application has a component implemented
 in <code>cache.c</code> and we want to unit-test it. Before we can run any actual tests, we
 need to build a binary object that we can invoke from Python. So let's put this
 code in <code>tests/cunit/__init__.py</code></p>
@@ -485,7 +485,7 @@ test source this way</p>
 </pre></div>
 
 
-<p>At this point your project folder should have the following structure</p>
+<p>At this point, your project folder should have the following structure</p>
 <div class="highlight"><pre><span></span>my-c-project/
 ...
 ├── src/
@@ -504,9 +504,10 @@ test source this way</p>
 runtime using <code>gcc</code>. The tests then run as before, which should produce the same
 output we saw earlier.</p>
 <h1 id="dead-end">Dead end?</h1>
-<p>If you're still with me then things are probably looking interesting to you too.
-So let's test a bit more of the functions exported by the caching component.
-Let's make a test case for the <code>queue_item_t</code> and <code>queue_t</code> objects, like so</p>
+<p>If you're still with me, then things are probably looking interesting to you
+too. So let's test a bit more of the functions exported by the caching
+component. Let's make a test case for the <code>queue_item_t</code> and <code>queue_t</code> objects,
+like so</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
@@ -616,11 +617,11 @@ you are ready to carry on, change line 20 to</p>
 the <code>pytest</code> process when we run into a segmentation fault, which is not so rare
 when running arbitrary C code. Not only that, but we would like to get some
 useful information, like a traceback, that could give us insight as to where the
-problem might actually be! One of the many strengths of <code>pytest</code> is its
-<a href="https://docs.pytest.org/en/latest/reference/reference.html">extensive configuration API</a>. How do we use it to not crash the
-test runner? The idea is to spawn another <code>pytest</code> process that runs just <em>a</em>
-test. Now, if that test causes a segmentation fault, the parent process will
-keep running the other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
+problem might be! One of the many strengths of <code>pytest</code> is its <a href="https://docs.pytest.org/en/latest/reference/reference.html">extensive
+configuration API</a>. How do we use it to not crash the test runner?
+The idea is to spawn another <code>pytest</code> process that runs just <em>a</em> test. Now, if
+that test causes a segmentation fault, the parent process will keep running the
+other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
 <div class="highlight"><pre><span></span><span class="c1"># file: tests/cunit/conftest.py</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -758,7 +759,7 @@ with <code>pytest</code>), followed by the switches <code>-svv</code> and the pa
 provides the test we are wrapping around. This way, when the process terminates,
 either because the test passed or something really bad happened, we can inspect
 the return code and the streams, and act accordingly.</p>
-<p>So now we have a test runner that can handle segmentation faults gracefully, but
+<p>So now we have a test runner that can handle segmentation faults gracefully but
 still doesn't tell us where they actually happened. Can we get some more
 detailed information in the output? When a Python test fails we get a nice
 traceback that tells us where things went wrong. Can we do the same with C unit
@@ -953,7 +954,7 @@ FAILED tests/cunit/test_cache.py::test_queue_item - tests.cunit.conftest.Segment
 </pre></div>
 
 
-<p>Hmm Still not that useful. What if we compile with debug symbols? Let's change
+<p>Hmm, Still not that useful. What if we compile with debug symbols? Let's change
 the <code>cache</code> fixture in <code>test_cache.py</code> so that it compiles the caching sources
 with the <code>-g</code> option</p>
 <div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
@@ -969,7 +970,7 @@ with the <code>-g</code> option</p>
 </pre></div>
 
 
-<p>This tells us <em>exactly</em> where the probem occurred. Now that we have this
+<p>This tells us <em>exactly</em> where the problem occurred. Now that we have this
 information we can fix the test and make the test suite happy again! 🎉</p>
 <h1 id="pythonic-c-unit-testing">Pythonic C unit testing</h1>
 <p>OK, running C unit tests is nice and fun, but it doesn't save us much in terms
@@ -978,7 +979,7 @@ considering we are writing Python code, but don't feel Pythonic at all. Whilst
 there is, in principle, no reason why non-Python tests written in Python should
 look and feel Pythonic, can we somehow do something perhaps more elegant? The
 idea of using a fixture to wrap around a binary object is perhaps interesting,
-but can we maybe pretend that <code>cache</code> is a Python module instead, so that we can
+but can we maybe pretend that <code>cache</code> is a Python module instead so that we can
 do things like <code>from cache import queue_item_new</code> etc... and sweep all this
 <code>ctypes</code> business under the carpet? Well, let's give this a try, shall we?</p>
 <p>Back in <code>tests/cunit/__init__.py</code>, let's add the following subtype of
@@ -1043,11 +1044,11 @@ writing something like this would be</p>
 
 
 <p>and we don't even care about destroying the object as we'd love the garbage
-collector to take care of that for us. That's clearly a more Pythonic way of
-going about our C unit tests. Can we achieve something like this? The answer is
-once again <em>yes</em>, but ... we can make this work provided we make some further
-assumption, like some naming conventions. You might have noticed that the data
-structures defined in <code>cache.h</code> have the naming <code>&lt;adt&gt;_t</code>, in a OOP flavour.
+collector to take care of that for us. Now that's a more Pythonic way of going
+about our C unit tests! Can we achieve something like this? The answer is once
+again <em>yes</em>, but ... we can make this work provided we make some further
+assumptions, like some naming conventions. You might have noticed that the data
+structures defined in <code>cache.h</code> have the naming <code>&lt;adt&gt;_t</code>, in an OOP flavour.
 Methods follow the naming convention <code>&lt;adt&gt;_&lt;staticmethod&gt;</code> and
 <code>&lt;adt&gt;__&lt;emethod&gt;</code>. Some of the methods have <em>special</em> names, like <code>&lt;adt&gt;_new</code>,
 <code>&lt;adt&gt;__destroy</code> etc.... So, provided we adhere to <em>some</em> naming conventions,
@@ -1055,7 +1056,7 @@ like this one, we could dynamically create Python types at runtime. How? With
 the secret art of <a href="https://realpython.com/python-metaclasses/">metaprogramming</a>. But before we can start
 creating new types at runtime, we need to be able to parse C header files to
 infer their definitions. That's why our next step is to add <code>pycparser</code> to our
-test dependencies, and implement a C AST visitor that can collect all the
+test dependencies and implement a C AST visitor that can collect all the
 relevant type and method declarations that we can use to build the spec for
 Python types. Here is what it might look like</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_char_p</span>
@@ -1139,8 +1140,8 @@ Python types. Here is what it might look like</p>
 
 
 <p>This is also a handful, but the behaviour is very simple. We define an AST
-visitor that listens to <code>typedef</code>s and declarations. For the former we single
-out structure declarations and we store the relevant information inside an
+visitor that listens to <code>typedef</code>s and declarations. For the former, we single
+out structure declarations and store the relevant information inside an
 instance of the custom <code>CTypeDef</code> dataclass; as for the latter, we only trap
 function declaration (plus a special handling for those functions that return
 <code>char *</code>). The two intermediate dataclasses <code>CTypeDef</code> and <code>CFunctionDef</code> are
