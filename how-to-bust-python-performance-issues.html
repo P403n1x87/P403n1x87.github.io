@@ -107,17 +107,15 @@ with <a href="https://community.chocolatey.org/packages/austin/">choco</a>, and 
 extension installed from the Visual Studio Marketplace. Let's get our hands on
 some code now by cloning Rich and checking out that commit that was master for
 me at that time. Open up a terminal and type</p>
-<div class="highlight"><pre><span></span>git clone https://github.com/willmcgugan/rich.git
-git checkout ce4f18c
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/willmcgugan/rich.git
+git<span class="w"> </span>checkout<span class="w"> </span>ce4f18c
+</code></pre></div>
 
 <p>The project uses <a href="https://github.com/python-poetry/poetry">poetry</a> so running
 the test suite is as easy as invoking</p>
-<div class="highlight"><pre><span></span>poetry install
-poetry run python -m pytest
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>install
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest
+</code></pre></div>
 
 <p>Once we are sure that all the tests pass we are ready to start getting some
 profiling data to see what's actually running. Version 3 of Austin comes with a
@@ -127,9 +125,8 @@ do not have to make any changes to the code in order to get profiling data out
 of it. Besides, Austin runs out-of-process, which means that it won't have any
 effects on the code. Getting profiling data is as easy as invoking Austin just
 before the test run</p>
-<div class="highlight"><pre><span></span>poetry run austin -so profile_master.austin python -m pytest -vv tests
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>run<span class="w"> </span>austin<span class="w"> </span>-so<span class="w"> </span>profile_master.austin<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-vv<span class="w"> </span>tests
+</code></pre></div>
 
 <blockquote>
 <p><strong>WARNING</strong> Here we can let Austin sample the whole <code>pytest</code> run because we
@@ -147,9 +144,8 @@ analysed with the Austin VS Code extension. We get the best experience if we
 start VS Code from within the project's root directory as this allows us to
 browse the code while we look at the flame graph. So fire up VS Code from the
 terminal with</p>
-<div class="highlight"><pre><span></span>code .
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>code<span class="w"> </span>.
+</code></pre></div>
 
 <p>and activate the Austin extension by clicking on the <code>FLAME GRAPH</code> tab in the
 bottom panel. Sometimes you would have to right click inside the panel and click
@@ -217,9 +213,8 @@ is spent calling <code>stack</code>. Clicking on the <code>log</code> frame reve
 for the <code>Console.log</code> method and we can inspect how the information from the
 stack is used to generate the log entry. The line we are interested in is 1685,
 where we have</p>
-<div class="highlight"><pre><span></span>            <span class="n">caller</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="n">_stack_offset</span><span class="p">]</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>            <span class="n">caller</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="n">_stack_offset</span><span class="p">]</span>
+</code></pre></div>
 
 <p>So <code>inspect.stack()</code> is called, which according to the flame graph does a lot of
 resolutions for each frame (see those calls to <code>findsource</code>, <code>getmodule</code>
@@ -237,9 +232,8 @@ already find all the information needed by the <code>Console.log</code> method. 
 changes as part of the already mentioned PR
 <a href="https://github.com/willmcgugan/rich/pull/1253">#1253</a>, so if you check that
 code out and re-run the tests with</p>
-<div class="highlight"><pre><span></span>poetry run austin -so profile_pr.austin python -m pytest -vv tests
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>run<span class="w"> </span>austin<span class="w"> </span>-so<span class="w"> </span>profile_pr.austin<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-vv<span class="w"> </span>tests
+</code></pre></div>
 
 <p>and open the new profiling data in <code>profile_pr.austin</code> you will see that the
 test case <code>test_log</code> has pretty much disappeared as it basically takes almost

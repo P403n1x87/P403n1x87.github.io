@@ -40,7 +40,7 @@
         <time class="published py-1" datetime="2017-07-31T19:30:15+01:00">
           &#128197; Mon 31 July 2017
         </time>
-        <span class="readtime py-1">&#9202; A 19 min read</span>
+        <span class="readtime py-1">&#9202; A 18 min read</span>
       </div>
 
       <div class="py-1 text-xs">
@@ -193,20 +193,20 @@ breadboard should look like this picture.</p>
 <p><img alt="The physical components" class="center-image" src="./images/iot/iot_bb.png">
 <em>Another schematic representation of the circuit, showing how the components are physically connected with each other on the breadboard and the Raspberry Pi 3 Model B.</em></p>
 <p>Where did the magic number 220 Ω come from? The explanation is very simple and
-essentially based on Ohm's law. Across a resistor <span class="math">\(R\)</span> to which a voltage
-difference of <span class="math">\(V\)</span> is applied, the current flowing through it is given by</p>
-<div class="math">$$I = \frac VR.$$</div>
+essentially based on Ohm's law. Across a resistor $R$ to which a voltage
+difference of $V$ is applied, the current flowing through it is given by</p>
+<p>$$I = \frac VR.$$</p>
 <p>An LED is a diode, i.e. a p-n junction, that is capable of emitting light. In
 <em>forward bias</em>, an order-one approximation of a diode is given by a small
 resistor (order of 10 Ω) in series with a voltage generator (of about -0.67 V).
 The manufacturer of the LED usually provides the maximum current that the diode
 can withstand. In the case of common LEDs, this value is around 20 mA.
 Considering that, when a GPIO pin is on, it will provide 3.3 V to our circuit,
-in order not to burn our LED we need to use a resistor of resistance <span class="math">\(R\)</span> given
+in order not to burn our LED we need to use a resistor of resistance $R$ given
 by the inequality</p>
-<div class="math">$$\frac{3.3\text{ V} - 0.67\text{ V}} R \leq 20\text{ mA},$$</div>
+<p>$$\frac{3.3\text{ V} - 0.67\text{ V}} R \leq 20\text{ mA},$$</p>
 <p>which yields</p>
-<div class="math">$$R\geq 130\ \Omega.$$</div>
+<p>$$R\geq 130\ \Omega.$$</p>
 <p>For a better estimate, we can look at the V-I chart provided by the
 manufacturer, which would probably give us a minimum value closer to 200 Ω.
 Anything below and you might risk frying your LED. Using a way bigger resistor,
@@ -252,7 +252,7 @@ of a future one.</p>
 <p>Returning to our project, let's have a look at how to turn our LED on. Recall
 from the schematic above that we are using the GPIO Pin 16 (according to the
 Broadcom convention), which is the 36th physical pin on the GPIO.</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">G</span>     <span class="c1"># Import the GPIO component from the RPi module</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">RPi.GPIO</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">G</span>     <span class="c1"># Import the GPIO component from the RPi module</span>
 
 <span class="n">LED</span> <span class="o">=</span> <span class="mi">36</span>                 <span class="c1"># Define a constant with the pin number where the LED</span>
                          <span class="c1"># is connected</span>
@@ -262,58 +262,54 @@ Broadcom convention), which is the 36th physical pin on the GPIO.</p>
 <span class="n">G</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>   <span class="c1"># Set the LED pin to output mode</span>
 
 <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>         <span class="c1"># Set the pin to high (3.3 V)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>We can type the above lines of Python code directly into the Python interpreter.
 To turn the LED off we can either set the value on the pin 36 back to 0</p>
-<div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">LED</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
 
 <p>or clean up the GPIO configuration with</p>
-<div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">G</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</code></pre></div>
 
 <p>If we'll ever want to use more than just one LED on our breadboard, we can
 encapsulate most of the above code inside a Python class so that it can be
 reused instead of having to type it every time with setup a new LED. A
 minimalist Python class that would represent a physical LED would be something
 like</p>
-<div class="highlight"><pre><span></span><span class="c1"># File: led.py</span>
-<span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">G</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># File: led.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RPi.GPIO</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">G</span>
 
 <span class="n">G</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">LED</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ch</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LED</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ch</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_ch</span> <span class="o">=</span> <span class="n">ch</span>
     <span class="n">G</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
 
-  <span class="k">def</span> <span class="nf">on</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">on</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-  <span class="k">def</span> <span class="nf">off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
   <span class="nd">@property</span>
-  <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">))</span>
 
   <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
-  <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
-  <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">G</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">,</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch</span><span class="p">))</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Our code for turning an LED on and off would then reduce to the following few
 lines</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">led</span>  <span class="kn">import</span> <span class="n">LED</span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">led</span><span class="w">  </span><span class="kn">import</span> <span class="n">LED</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
 
 <span class="n">led_red</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>
 
@@ -322,8 +318,7 @@ lines</p>
 <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="n">led_red</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The extra method <code>toggle</code> can be used, as the name suggests, to toggle the LED
 state from on to off and vice-versa. In the above example we could then replace
@@ -331,15 +326,13 @@ both <code>led_red.on</code> and <code>led_red.off()</code> by <code>led_red.tog
 <code>state</code> is used to get the state of the LED as a Boolean value (<code>True</code> for on
 and <code>False</code> for off), and it can also be used to set it. For instance, something
 like</p>
-<div class="highlight"><pre><span></span><span class="n">led_red</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">led_red</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div>
 
 <p>would turn the LED on, since <code>[1]</code> evaluates to <code>True</code> when converted to a
 Boolean. Analogously, the following line of code</p>
-<div class="highlight"><pre><span></span><span class="n">led_red</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">{}</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">led_red</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
 
 <p>would turn the LED off, since <code>bool({}) = False</code> in Python.</p>
 <p>Sweet! We now know how to control our LED with code and all that's left to do is
@@ -377,15 +370,13 @@ on the Apache-side, or on the Python-side. If you are into the IoT, chances are
 you will have your web server running on a Raspberry Pi. For this reason, I will
 discuss how to install the mod_wsgi module for the Apache web server. On
 Raspbian, this can be done with</p>
-<div class="highlight"><pre><span></span>sudo apt install libapache2-mod-wsgi
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libapache2-mod-wsgi
+</code></pre></div>
 
 <p>After the installation, the module should already be enabled. If this isn't the
 case, you can enable it with</p>
-<div class="highlight"><pre><span></span>sudo a2enmod wsgi
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>a2enmod<span class="w"> </span>wsgi
+</code></pre></div>
 
 <h2 id="writing-the-web-application">Writing the Web Application</h2>
 <p>The next steps are to actually write our web application and configure Apache to
@@ -402,13 +393,13 @@ problems are. Normally we would have to look in the Apache error log (usually in
 <a href="https://paste.readthedocs.io/en/latest/">paste</a> Python package, which is
 specifically designed for WSGI applications. Our bootstrap script will then look
 like this.</p>
-<div class="highlight"><pre><span></span><span class="c1"># File: bootstrap.wsgi</span>
-<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># File: bootstrap.wsgi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
-<span class="kn">from</span> <span class="nn">index</span> <span class="kn">import</span> <span class="n">Index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
     <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;200 OK&#39;</span>
 
     <span class="n">output</span> <span class="o">=</span> <span class="n">Index</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
@@ -421,10 +412,9 @@ like this.</p>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">output</span><span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">paste.exceptions.errormiddleware</span> <span class="kn">import</span> <span class="n">ErrorMiddleware</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paste.exceptions.errormiddleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorMiddleware</span>
 <span class="n">application</span> <span class="o">=</span> <span class="n">ErrorMiddleware</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The first two lines are necessary if we want to be able to import modules and
 packages that are in the same folder as the bootstrap script.</p>
@@ -436,22 +426,21 @@ To make sense of the rest of the code, have a look at the already referenced
 documentation of the <code>mod_wsgi</code> module for Apache2.</p>
 <p>The core code of our application is contained in the <code>Index</code> class from the
 <code>index</code> module.</p>
-<div class="highlight"><pre><span></span><span class="c1"># File index.py</span>
-<span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="n">templ</span><span class="p">,</span> <span class="n">qs</span>
-<span class="kn">from</span> <span class="nn">led</span>  <span class="kn">import</span> <span class="n">LED</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># File index.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">templ</span><span class="p">,</span> <span class="n">qs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">led</span><span class="w">  </span><span class="kn">import</span> <span class="n">LED</span>
 
 <span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">Index</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Index</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">qs</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;action&quot;</span> <span class="ow">in</span> <span class="n">params</span> <span class="ow">and</span> <span class="s1">&#39;toggle&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]:</span>
             <span class="n">led</span><span class="o">.</span><span class="n">toggle</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">templ</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>In fact, this module looks more like a view rather than a controller, as the
 actual code for controlling the LED is buried in the <code>led</code> module that we have
@@ -461,7 +450,7 @@ the code in this post, but you can find it in the <a href="https://github.com/P4
 repository</a>.</p>
 <p>The HTML template contained in the <code>index.html</code> file is very simple and looks
 like this.</p>
-<div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en-us&quot;</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="p">&gt;</span>
@@ -472,8 +461,7 @@ like this.</p>
     <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;?action=toggle&quot;</span><span class="p">&gt;&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button {state}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
   <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The body is essentially just a link that executes a request with the parameter
 <code>action</code> set to <code>toggle</code>, containing a placeholder <code>div</code> element. The
@@ -484,9 +472,8 @@ allows us setting the button appearance according to the LED current state. In
 the stylesheet we have two classes, <code>.on</code> and <code>.off</code>, the former giving a bright
 red colour to the button, while the latter giving a darker shade. The value is
 passed by the line</p>
-<div class="highlight"><pre><span></span>        <span class="k">return</span> <span class="n">templ</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>        <span class="k">return</span> <span class="n">templ</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 <p>in the static method <code>main</code> of the <code>Index</code> class of <code>index.py</code>.</p>
 <h2 id="configuring-apache">Configuring Apache</h2>
@@ -497,26 +484,25 @@ making a copy of the default web site Apache2 comes with. On Raspbian, this is
 located in <code>/etc/apache2/sites-available</code> and is contained in the
 <code>000-default.conf</code> configuration file. Make a copy of this file in, say,
 <code>led.conf</code> and modify it to look like the following one.</p>
-<div class="highlight"><pre><span></span><span class="c"># File: led.conf</span><span class="w"></span>
-<span class="nt">&lt;VirtualHost</span><span class="w"> </span><span class="s">*:80</span><span class="nt">&gt;</span><span class="w"></span>
-<span class="w">  </span><span class="nb">ServerAdmin</span><span class="w"> </span>webmaster@localhost<span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c"># File: led.conf</span>
+<span class="nt">&lt;VirtualHost</span><span class="w"> </span><span class="s">*:80</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nb">ServerAdmin</span><span class="w"> </span>webmaster@localhost
 
-<span class="w">  </span><span class="c"># Required by static data storage access (e.g. css files)</span><span class="w"></span>
-<span class="w">  </span><span class="nb">DocumentRoot</span><span class="w"> </span><span class="sx">/home/pi/Projects/www</span><span class="w"></span>
+<span class="w">  </span><span class="c"># Required by static data storage access (e.g. css files)</span>
+<span class="w">  </span><span class="nb">DocumentRoot</span><span class="w"> </span><span class="sx">/home/pi/Projects/www</span>
 
-<span class="w">  </span><span class="nb">ErrorLog</span><span class="w"> </span>${APACHE_LOG_DIR}/error.log<span class="w"></span>
-<span class="w">  </span><span class="nb">CustomLog</span><span class="w"> </span>${APACHE_LOG_DIR}/access.log<span class="w"> </span>combined<span class="w"></span>
+<span class="w">  </span><span class="nb">ErrorLog</span><span class="w"> </span>${APACHE_LOG_DIR}/error.log
+<span class="w">  </span><span class="nb">CustomLog</span><span class="w"> </span>${APACHE_LOG_DIR}/access.log<span class="w"> </span>combined
 
-<span class="w">  </span><span class="c"># WSGI Configuration</span><span class="w"></span>
-<span class="w">  </span><span class="nb">WSGIScriptAlias</span><span class="w"> </span><span class="sx">/led</span><span class="w"> </span><span class="sx">/home/pi/Projects/www/led_app/bootstrap.wsgi</span><span class="w"></span>
+<span class="w">  </span><span class="c"># WSGI Configuration</span>
+<span class="w">  </span><span class="nb">WSGIScriptAlias</span><span class="w"> </span><span class="sx">/led</span><span class="w"> </span><span class="sx">/home/pi/Projects/www/led_app/bootstrap.wsgi</span>
 
-<span class="w">  </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">/home/pi/Projects/www/led_app</span><span class="nt">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="nb">Require</span><span class="w"> </span><span class="k">all</span><span class="w"> </span>granted<span class="w"></span>
-<span class="w">  </span><span class="nt">&lt;/Directory&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">/home/pi/Projects/www/led_app</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nb">Require</span><span class="w"> </span><span class="k">all</span><span class="w"> </span>granted
+<span class="w">  </span><span class="nt">&lt;/Directory&gt;</span>
 
-<span class="nt">&lt;/VirtualHost&gt;</span><span class="w"></span>
-</pre></div>
-
+<span class="nt">&lt;/VirtualHost&gt;</span>
+</code></pre></div>
 
 <p>Even though we are implementing a WSGI application, the <code>DocumentRoot
 /home/pi/Projects/www</code> is needed because we are importing a css file in
@@ -525,9 +511,8 @@ resides in the <code>/home/pi/Projects/www/led_app</code> folder. This way, stat
 can be accessed with a relative path referring to the parent folder
 <code>/home/pi/Projects/www</code>. This explains why we are importing the <code>led.css</code> file
 as</p>
-<div class="highlight"><pre><span></span>    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;led_app/led.css&quot;</span><span class="p">&gt;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;led_app/led.css&quot;</span><span class="p">&gt;</span>
+</code></pre></div>
 
 <p>The section below the <code># WSGI Configuration</code> comment is the WSGI part of the
 configuration. The first line of this section tells Apache which script to use
@@ -538,9 +523,8 @@ scripts contained in the web application folder.</p>
 <p>That's it! All we have to do now is deactivate any other website on port 80 with
 <code>a2dissite</code> (this is only required if the web sites are not named), and enable
 <code>led.conf</code> with <code>a2ensite led.conf</code>. Restart the Apache2 web server with</p>
-<div class="highlight"><pre><span></span>sudo service apache2 restart
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>service<span class="w"> </span>apache2<span class="w"> </span>restart
+</code></pre></div>
 
 <p>and point the browser on any device that is on the same local network as the Pi
 to its local IP address, append '/led' to it to start the web application (e.g.
@@ -564,68 +548,6 @@ project in it self, as I have remarked many times now, is quite simple, the post
 includes references to many topics, e.g. electronics, programming, web servers
 and applications, and it shows you how all these different aspects can be
 organically combined together to create something.</p>
-<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width < 768) ? "left" : align;
-        indent = (screen.width < 768) ? "0em" : indent;
-        linebreak = (screen.width < 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
-
-    var configscript = document.createElement('script');
-    configscript.type = 'text/x-mathjax-config';
-    configscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        availableFonts: ['STIX', 'TeX']," +
-        "        preferredFont: 'STIX'," +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-</script>
   </div><!-- /.entry-content -->
 </section>
 

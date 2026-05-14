@@ -131,7 +131,7 @@ linked <a href="https://github.com/P403n1x87/asm/tree/master/python">GitHub repo
 <h1 id="the-code">The Code</h1>
 <p>There isn't much more to say before we can see the code really, so here it is.
 This is the content of my <code>asm.asm</code> source file.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -209,87 +209,86 @@ This is the content of my <code>asm.asm</code> source file.</p>
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nf">DEFAULT</span><span class="w">                 </span><span class="nv">rel</span><span class="w"></span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">DEFAULT</span><span class="w">                 </span><span class="ow">rel</span>
 
 <span class="cp">%include                &quot;asm/python.inc&quot;</span>
 
-<span class="k">GLOBAL</span><span class="w">                  </span><span class="nv">PyInit_asm</span><span class="p">:</span><span class="nv">function</span><span class="w"></span>
+<span class="k">GLOBAL</span><span class="w">                  </span><span class="nv">PyInit_asm</span><span class="p">:</span><span class="nv">function</span>
 
 
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.rodata</span><span class="w"></span>
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.rodata</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
 
-<span class="nf">l_sayit_name</span><span class="w">            </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;sayit&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="nf">l_sayit_doc</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;This method has something important to say.&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="nf">l_sayit_msg</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;Assembly is great fun! :)&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w"></span>
-<span class="no">l_sayit_msg_len</span><span class="w">         </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">l_sayit_msg</span><span class="w"></span>
+<span class="nf">l_sayit_name</span><span class="w">            </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;sayit&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="nf">l_sayit_doc</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;This method has something important to say.&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="nf">l_sayit_msg</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;Assembly is great fun! :)&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span>
+<span class="no">l_sayit_msg_len</span><span class="w">         </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">l_sayit_msg</span>
 
-<span class="nf">l_module_name</span><span class="w">           </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;asm&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-
-
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.data</span><span class="w"></span>
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-
-<span class="nl">l_asm_methods:</span><span class="w">              </span><span class="c1">;; struct PyMethodDef[] *</span><span class="w"></span>
-<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyMethodDef</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_name</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_name</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_meth</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">asm_sayit</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_flags</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">METH_NOARGS</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_doc</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_doc</span><span class="w"></span>
-<span class="nf">IEND</span><span class="w"></span>
-<span class="nf">NullMethodDef</span><span class="w"></span>
-
-<span class="nl">l_asm_module:</span><span class="w">                </span><span class="c1">;; struct PyModuleDef *</span><span class="w"></span>
-<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyModuleDef</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_base</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">PyModuleDef_HEAD_INIT</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_name</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_module_name</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_doc</span><span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_size</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_methods</span><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_asm_methods</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_slots</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_traverse</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_clear</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_free</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="nf">IEND</span><span class="w"></span>
+<span class="nf">l_module_name</span><span class="w">           </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;asm&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
 
 
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.text</span><span class="w"></span>
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.data</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
 
-<span class="nl">asm_sayit:</span><span class="w"> </span><span class="c1">;; ----------------------------------------------------------------</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span><span class="w"></span>
+<span class="nl">l_asm_methods:</span><span class="w">              </span><span class="c1">;; struct PyMethodDef[] *</span>
+<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyMethodDef</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_name</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_name</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_meth</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">asm_sayit</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_flags</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">METH_NOARGS</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_doc</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_doc</span>
+<span class="nf">IEND</span>
+<span class="nf">NullMethodDef</span>
 
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; SYS_WRITE</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; STDOUT</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg_len</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">syscall</span><span class="w"></span>
+<span class="nl">l_asm_module:</span><span class="w">                </span><span class="c1">;; struct PyModuleDef *</span>
+<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyModuleDef</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_base</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">PyModuleDef_HEAD_INIT</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_name</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_module_name</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_doc</span><span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_size</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_methods</span><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_asm_methods</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_slots</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_traverse</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_clear</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_free</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="nf">IEND</span>
 
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">Py_None</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">inc</span><span class="w">   </span><span class="kt">QWORD</span><span class="w"> </span><span class="p">[</span><span class="nb">rax</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">PyObject.ob_refcnt</span><span class="p">]</span><span class="w"></span>
 
-<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">ret</span><span class="w"></span>
-<span class="c1">;; end asm_sayit</span><span class="w"></span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.text</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
+
+<span class="nl">asm_sayit:</span><span class="w"> </span><span class="c1">;; ----------------------------------------------------------------</span>
+<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span>
+
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; SYS_WRITE</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; STDOUT</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg_len</span>
+<span class="w">                        </span><span class="nf">syscall</span>
+
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">Py_None</span>
+<span class="w">                        </span><span class="nf">inc</span><span class="w">   </span><span class="kt">QWORD</span><span class="w"> </span><span class="p">[</span><span class="nb">rax</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">PyObject.ob_refcnt</span><span class="p">]</span>
+
+<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">ret</span>
+<span class="c1">;; end asm_sayit</span>
 
 
-<span class="nl">PyInit_asm:</span><span class="w"> </span><span class="c1">;; --------------------------------------------------------------</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span><span class="w"></span>
+<span class="nl">PyInit_asm:</span><span class="w"> </span><span class="c1">;; --------------------------------------------------------------</span>
+<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span>
 
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">PYTHON_API_VERSION</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_asm_module</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">call</span><span class="w">  </span><span class="nv">PyModule_Create2</span><span class="w"> </span><span class="ow">WRT</span><span class="w"> </span><span class="nv">..plt</span><span class="w"></span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">PYTHON_API_VERSION</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_asm_module</span>
+<span class="w">                        </span><span class="nf">call</span><span class="w">  </span><span class="nv">PyModule_Create2</span><span class="w"> </span><span class="ow">WRT</span><span class="w"> </span><span class="nv">..plt</span>
 
-<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">ret</span><span class="w"></span>
-<span class="c1">;; end PyInit_asm</span><span class="w"></span>
-</pre></div>
-</td></tr></table>
+<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">ret</span>
+<span class="c1">;; end PyInit_asm</span>
+</code></pre></div></td></tr></table></div>
 
 <p>If you have never written a C extension for Python before, this might look a bit
 mysterious to you, although the general structure, at least, should be quite
@@ -299,9 +298,8 @@ extending Python with C.</p>
 see what each block of code does.</p>
 <h2 id="shared-object">Shared Object</h2>
 <p>On the very first line of the source we see the line</p>
-<div class="highlight"><pre><span></span><span class="nf">DEFAULT</span><span class="w">                 </span><span class="nv">rel</span><span class="w"></span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="nf">DEFAULT</span><span class="w">                 </span><span class="ow">rel</span>
+</code></pre></div>
 
 <p>Our goal is to assemble and link our code into an ELF64 <em>shared object</em> file.
 Contrary to ordinary program code, shared object files are dynamically loaded
@@ -331,18 +329,17 @@ able to find the code necessary to initialise the module. In analogy with C,
 this is equivalent to declaring a non-static function.</p>
 <h2 id="immutable-strings">Immutable Strings</h2>
 <p>Next we have the read-only data section</p>
-<div class="highlight"><pre><span></span><span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.rodata</span><span class="w"></span>
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.rodata</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
 
-<span class="nf">l_sayit_name</span><span class="w">            </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;sayit&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="nf">l_sayit_doc</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;This method has something important to say.&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="nf">l_sayit_msg</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;Assembly is great fun! :)&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w"></span>
-<span class="no">l_sayit_msg_len</span><span class="w">         </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">l_sayit_msg</span><span class="w"></span>
+<span class="nf">l_sayit_name</span><span class="w">            </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;sayit&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="nf">l_sayit_doc</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;This method has something important to say.&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="nf">l_sayit_msg</span><span class="w">             </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;Assembly is great fun! :)&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span>
+<span class="no">l_sayit_msg_len</span><span class="w">         </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">l_sayit_msg</span>
 
-<span class="nf">l_module_name</span><span class="w">           </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;asm&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-</pre></div>
-
+<span class="nf">l_module_name</span><span class="w">           </span><span class="nv">db</span><span class="w"> </span><span class="s">&quot;asm&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+</code></pre></div>
 
 <p>Here we initialise the strings that we will need later on. As they won't change
 during the course of the code execution, we put them in a read-only section of
@@ -351,33 +348,32 @@ literal string that you use in C code. You will notice references to their
 address in the following section, that of (read-write) initialised data.</p>
 <h2 id="cpython-data-structures">CPython Data Structures</h2>
 <p>Next is the section of initialised data.</p>
-<div class="highlight"><pre><span></span><span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.data</span><span class="w"></span>
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.data</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
 
-<span class="nl">l_asm_methods:</span><span class="w">              </span><span class="c1">;; struct PyMethodDef[] *</span><span class="w"></span>
-<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyMethodDef</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_name</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_name</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_meth</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">asm_sayit</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_flags</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">METH_NOARGS</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_doc</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_doc</span><span class="w"></span>
-<span class="nf">IEND</span><span class="w"></span>
-<span class="nf">NullMethodDef</span><span class="w"></span>
+<span class="nl">l_asm_methods:</span><span class="w">              </span><span class="c1">;; struct PyMethodDef[] *</span>
+<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyMethodDef</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_name</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_name</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_meth</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">asm_sayit</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_flags</span><span class="w">   </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">METH_NOARGS</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyMethodDef.ml_doc</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_sayit_doc</span>
+<span class="nf">IEND</span>
+<span class="nf">NullMethodDef</span>
 
-<span class="nl">l_asm_module:</span><span class="w">               </span><span class="c1">;; struct PyModuleDef *</span><span class="w"></span>
-<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyModuleDef</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_base</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">PyModuleDef_HEAD_INIT</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_name</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_module_name</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_doc</span><span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_size</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_methods</span><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_asm_methods</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_slots</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_traverse</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_clear</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_free</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span><span class="w"></span>
-<span class="nf">IEND</span><span class="w"></span>
-</pre></div>
-
+<span class="nl">l_asm_module:</span><span class="w">               </span><span class="c1">;; struct PyModuleDef *</span>
+<span class="nf">ISTRUC</span><span class="w"> </span><span class="nv">PyModuleDef</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_base</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">PyModuleDef_HEAD_INIT</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_name</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_module_name</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_doc</span><span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_size</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_methods</span><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">l_asm_methods</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_slots</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_traverse</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_clear</span><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="nf">at</span><span class="w"> </span><span class="nv">PyModuleDef.m_free</span><span class="w">     </span><span class="p">,</span><span class="w"> </span><span class="nv">dq</span><span class="w"> </span><span class="nv">NULL</span>
+<span class="nf">IEND</span>
+</code></pre></div>
 
 <p>Here is where things start to get interesting, and the content of the
 <code>python.inc</code> file comes into play. The first two labels point to the beginning
@@ -386,21 +382,19 @@ structures. As the name suggests, each instance of this structure is used to
 hold information about a method that should be made available to the Python
 interpreter from within our module. To find out in which header file it is
 defined, we can use the command</p>
-<div class="highlight"><pre><span></span>grep -nr /usr/include/python3.6 -e <span class="s2">&quot;struct PyMethodDef&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-nr<span class="w"> </span>/usr/include/python3.6<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;struct PyMethodDef&quot;</span>
+</code></pre></div>
 
 <p>In my case, I get that the structure is defined in
 <code>/usr/include/python3.6/methodobject.h</code>, starting from line 54. Inside the
 <code>python.inc</code> we then have the equivalent structure declaration</p>
-<div class="highlight"><pre><span></span><span class="k">STRUC</span><span class="w"> </span><span class="nv">PyMethodDef</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ml_name</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ml_meth</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyCFunction</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ml_flags</span><span class="w">             </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; int</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ml_doc</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span><span class="w"></span>
-<span class="k">ENDSTRUC</span><span class="w"></span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="k">STRUC</span><span class="w"> </span><span class="nv">PyMethodDef</span>
+<span class="w">  </span><span class="nf">.ml_name</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span>
+<span class="w">  </span><span class="nf">.ml_meth</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyCFunction</span>
+<span class="w">  </span><span class="nf">.ml_flags</span><span class="w">             </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; int</span>
+<span class="w">  </span><span class="nf">.ml_doc</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span>
+<span class="k">ENDSTRUC</span>
+</code></pre></div>
 
 <p>The <code>NullMethodDef</code> is a NASM macro that conveniently defines the <em>sentinel</em>
 <code>PyMethodDef</code> structure, which is used to mark the end of the <code>PyMethodDef</code>
@@ -408,9 +402,8 @@ array pointed by <code>l_asm_methods</code>. Its definition is also in the <code
 file and, as you can see, simply initialises a new instance of the structure
 with all the fields set to <code>NULL</code> or 0, depending on their semantics, i.e.
 whether they are memory pointers or general integers.</p>
-<div class="highlight"><pre><span></span><span class="cp">%define NullMethodDef         dq NULL, NULL, 0, NULL</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="cp">%define NullMethodDef         dq NULL, NULL, 0, NULL</span>
+</code></pre></div>
 
 <blockquote>
 <p>Note that <code>NULL</code> is not a native NASM value. To align the coding conventions
@@ -425,19 +418,18 @@ contains all the relevant metadata that is then passed to CPython for correct
 initialisation and use of the module. Its definition is in the <code>moduleobject.h</code>
 header file and, at first sight, looks a bit complicated, with some references
 to other structures and C macros.</p>
-<div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">PyModuleDef</span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">PyModuleDef_Base</span><span class="w"> </span><span class="n">m_base</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m_name</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m_doc</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">Py_ssize_t</span><span class="w"> </span><span class="n">m_size</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">PyMethodDef</span><span class="w"> </span><span class="o">*</span><span class="n">m_methods</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">PyModuleDef_Slot</span><span class="o">*</span><span class="w"> </span><span class="n">m_slots</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">traverseproc</span><span class="w"> </span><span class="n">m_traverse</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">inquiry</span><span class="w"> </span><span class="n">m_clear</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">freefunc</span><span class="w"> </span><span class="n">m_free</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"> </span><span class="n">PyModuleDef</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">PyModuleDef</span><span class="p">{</span>
+<span class="w">  </span><span class="n">PyModuleDef_Base</span><span class="w"> </span><span class="n">m_base</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m_name</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m_doc</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Py_ssize_t</span><span class="w"> </span><span class="n">m_size</span><span class="p">;</span>
+<span class="w">  </span><span class="n">PyMethodDef</span><span class="w"> </span><span class="o">*</span><span class="n">m_methods</span><span class="p">;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">PyModuleDef_Slot</span><span class="o">*</span><span class="w"> </span><span class="n">m_slots</span><span class="p">;</span>
+<span class="w">  </span><span class="n">traverseproc</span><span class="w"> </span><span class="n">m_traverse</span><span class="p">;</span>
+<span class="w">  </span><span class="n">inquiry</span><span class="w"> </span><span class="n">m_clear</span><span class="p">;</span>
+<span class="w">  </span><span class="n">freefunc</span><span class="w"> </span><span class="n">m_free</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">PyModuleDef</span><span class="p">;</span>
+</code></pre></div>
 
 <p>So lets take our time to figure out what its byte content looks like. The first
 field is an instance of the <code>PyModuleDef_Base</code> structure, which is defined in
@@ -445,9 +437,8 @@ the same header file, just a few lines above. The non-trivial bit in this new
 structure is the first part, <code>PyObject_HEAD</code>, which looks like a C macro. As the
 name suggest, its definition is quite likely to be found in <code>object.h</code>. Indeed,
 there we find</p>
-<div class="highlight"><pre><span></span><span class="cp">#define PyObject_HEAD                   PyObject ob_base;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="cp">#define PyObject_HEAD                   PyObject ob_base;</span>
+</code></pre></div>
 
 <p>so our chase continues. The definition of the <code>PyObject</code> structure can be found
 a few lines below. Again, all the fields are quite simple, i.e. just integers
@@ -457,31 +448,30 @@ defined as either nothing or <code>0, 0</code>. By default, the macro <code>Py_T
 not defined, so in our case <code>_PyObject_HEAD_EXTRA</code> evaluates to nothing.
 Backtracking from our macro chase in CPython headers, we see that we can define
 the following structures in <code>python.inc</code></p>
-<div class="highlight"><pre><span></span><span class="k">STRUC</span><span class="w"> </span><span class="nv">PyObject</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ob_refcnt</span><span class="w">            </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; Py_ssize_t</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ob_type</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; struct _typeobject *</span><span class="w"></span>
-<span class="k">ENDSTRUC</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="k">STRUC</span><span class="w"> </span><span class="nv">PyObject</span>
+<span class="w">  </span><span class="nf">.ob_refcnt</span><span class="w">            </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; Py_ssize_t</span>
+<span class="w">  </span><span class="nf">.ob_type</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; struct _typeobject *</span>
+<span class="k">ENDSTRUC</span>
 
-<span class="k">STRUC</span><span class="w"> </span><span class="nv">PyModuleDef_Base</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.ob_base</span><span class="w">              </span><span class="nv">resb</span><span class="w"> </span><span class="nv">PyObject_size</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_init</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyObject *</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_index</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; Py_ssize_t</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_copy</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyObject *</span><span class="w"></span>
-<span class="k">ENDSTRUC</span><span class="w"></span>
+<span class="k">STRUC</span><span class="w"> </span><span class="nv">PyModuleDef_Base</span>
+<span class="w">  </span><span class="nf">.ob_base</span><span class="w">              </span><span class="nv">resb</span><span class="w"> </span><span class="nv">PyObject_size</span>
+<span class="w">  </span><span class="nf">.m_init</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyObject *</span>
+<span class="w">  </span><span class="nf">.m_index</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; Py_ssize_t</span>
+<span class="w">  </span><span class="nf">.m_copy</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyObject *</span>
+<span class="k">ENDSTRUC</span>
 
-<span class="k">STRUC</span><span class="w"> </span><span class="nv">PyModuleDef</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_base</span><span class="w">               </span><span class="nv">resb</span><span class="w"> </span><span class="nv">PyModuleDef_Base_size</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_name</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_doc</span><span class="w">                </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_size</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; Py_ssize_t</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_methods</span><span class="w">            </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyMethodDef *</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_slots</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; struct PyModuleDef_Slot *</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_traverse</span><span class="w">           </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; traverseproc</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_clear</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; inquiry</span><span class="w"></span>
-<span class="w">  </span><span class="nf">.m_free</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; freefunc</span><span class="w"></span>
-<span class="k">ENDSTRUC</span><span class="w"></span>
-</pre></div>
-
+<span class="k">STRUC</span><span class="w"> </span><span class="nv">PyModuleDef</span>
+<span class="w">  </span><span class="nf">.m_base</span><span class="w">               </span><span class="nv">resb</span><span class="w"> </span><span class="nv">PyModuleDef_Base_size</span>
+<span class="w">  </span><span class="nf">.m_name</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span>
+<span class="w">  </span><span class="nf">.m_doc</span><span class="w">                </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; const char *</span>
+<span class="w">  </span><span class="nf">.m_size</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; Py_ssize_t</span>
+<span class="w">  </span><span class="nf">.m_methods</span><span class="w">            </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; PyMethodDef *</span>
+<span class="w">  </span><span class="nf">.m_slots</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; struct PyModuleDef_Slot *</span>
+<span class="w">  </span><span class="nf">.m_traverse</span><span class="w">           </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; traverseproc</span>
+<span class="w">  </span><span class="nf">.m_clear</span><span class="w">              </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; inquiry</span>
+<span class="w">  </span><span class="nf">.m_free</span><span class="w">               </span><span class="nv">resq</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">; freefunc</span>
+<span class="k">ENDSTRUC</span>
+</code></pre></div>
 
 <p>As you can easily guess, NASM generates the constants <code>PyObject_size</code> etc...
 automatically so that they can be used to reserve enough memory to hold the
@@ -491,41 +481,40 @@ easy to implement in NASM.</p>
 <p>Finally we get to the actual code that will get executed by CPython when our
 module is loaded and initialised, and when the methods that it provides are
 called.</p>
-<div class="highlight"><pre><span></span><span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.text</span><span class="w"></span>
-<span class="c1">;; ---------------------------------------------------------------------------</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c1">;; ---------------------------------------------------------------------------</span>
+<span class="k">SECTION</span><span class="w">                 </span><span class="nv">.text</span>
+<span class="c1">;; ---------------------------------------------------------------------------</span>
 
-<span class="nl">asm_sayit:</span><span class="w"> </span><span class="c1">;; ----------------------------------------------------------------</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span><span class="w"></span>
+<span class="nl">asm_sayit:</span><span class="w"> </span><span class="c1">;; ----------------------------------------------------------------</span>
+<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span>
 
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; SYS_WRITE</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; STDOUT</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg_len</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">syscall</span><span class="w"></span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; SYS_WRITE</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1">; STDOUT</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">l_sayit_msg_len</span>
+<span class="w">                        </span><span class="nf">syscall</span>
 
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">Py_None</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">inc</span><span class="w">   </span><span class="kt">QWORD</span><span class="w"> </span><span class="p">[</span><span class="nb">rax</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">PyObject.ob_refcnt</span><span class="p">]</span><span class="w"></span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">Py_None</span>
+<span class="w">                        </span><span class="nf">inc</span><span class="w">   </span><span class="kt">QWORD</span><span class="w"> </span><span class="p">[</span><span class="nb">rax</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">PyObject.ob_refcnt</span><span class="p">]</span>
 
-<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">ret</span><span class="w"></span>
-<span class="c1">;; end asm_sayit</span><span class="w"></span>
+<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">ret</span>
+<span class="c1">;; end asm_sayit</span>
 
 
-<span class="nl">PyInit_asm:</span><span class="w"> </span><span class="c1">;; --------------------------------------------------------------</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span><span class="w"></span>
+<span class="nl">PyInit_asm:</span><span class="w"> </span><span class="c1">;; --------------------------------------------------------------</span>
+<span class="w">                        </span><span class="nf">push</span><span class="w">  </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rbp</span><span class="p">,</span><span class="w"> </span><span class="nb">rsp</span>
 
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">PYTHON_API_VERSION</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_asm_module</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">call</span><span class="w">  </span><span class="nv">PyModule_Create2</span><span class="w"> </span><span class="ow">WRT</span><span class="w"> </span><span class="nv">..plt</span><span class="w"></span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">PYTHON_API_VERSION</span>
+<span class="w">                        </span><span class="nf">mov</span><span class="w">   </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">l_asm_module</span>
+<span class="w">                        </span><span class="nf">call</span><span class="w">  </span><span class="nv">PyModule_Create2</span><span class="w"> </span><span class="ow">WRT</span><span class="w"> </span><span class="nv">..plt</span>
 
-<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span><span class="w"></span>
-<span class="w">                        </span><span class="nf">ret</span><span class="w"></span>
-<span class="c1">;; end PyInit_asm</span><span class="w"></span>
-</pre></div>
-
+<span class="w">                        </span><span class="nf">pop</span><span class="w">   </span><span class="nb">rbp</span>
+<span class="w">                        </span><span class="nf">ret</span>
+<span class="c1">;; end PyInit_asm</span>
+</code></pre></div>
 
 <p>In fact, we have a total of two functions, one local and one global. The first
 one, <code>asm_sayit</code>, is the only method contained in our module. All it does is to
@@ -535,20 +524,17 @@ lines 61-62. This is the idiom for any function that wishes to return <code>None
 Python. Recall that, in Python, <code>None</code> is an object instantiated by CPython. As
 such, our shared library needs to import it as an external symbol. This is why
 you will find the macro <code>PyNone</code> defined as</p>
-<div class="highlight"><pre><span></span><span class="cp">%define Py_None               _Py_NoneStruct</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="cp">%define Py_None               _Py_NoneStruct</span>
+</code></pre></div>
 
 <p>together with the line</p>
-<div class="highlight"><pre><span></span><span class="k">EXTERN</span><span class="w">    </span><span class="nv">_Py_NoneStruct</span><span class="w"></span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="k">EXTERN</span><span class="w">    </span><span class="nv">_Py_NoneStruct</span>
+</code></pre></div>
 
 <p>in the <code>python.inc</code> file. This is equivalent to the two lines</p>
-<div class="highlight"><pre><span></span><span class="n">PyAPI_DATA</span><span class="p">(</span><span class="n">PyObject</span><span class="p">)</span><span class="w"> </span><span class="n">_Py_NoneStruct</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Don&#39;t use this directly */</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="n">PyAPI_DATA</span><span class="p">(</span><span class="n">PyObject</span><span class="p">)</span><span class="w"> </span><span class="n">_Py_NoneStruct</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Don&#39;t use this directly */</span>
 <span class="cp">#define Py_None (&amp;_Py_NoneStruct)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>in the <code>object.h</code> header file, where the <code>None</code> object is defined. All of this
 explains line 61, but what about line 62? This has to do with <a href="https://docs.python.org/3/c-api/refcounting.html">Reference
@@ -585,9 +571,8 @@ with C, you might be wondering why we are calling <code>PyModule_Create2</code> 
 <code>PyModule_Create</code> (is there a typo?), and why we are passing it two arguments
 instead of one. If you are starting to smell a C macro, then you are correct!
 Long story short, <code>PyModule_Create</code> is a macro defined as</p>
-<div class="highlight"><pre><span></span><span class="cp">#define PyModule_Create(module) PyModule_Create2(module, PYTHON_API_VERSION)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="cp">#define PyModule_Create(module) PyModule_Create2(module, PYTHON_API_VERSION)</span>
+</code></pre></div>
 
 <p>with <code>PYTHON_API_VERSION</code> defined as the literal 1013. So the actual function to
 call is indeed <code>PyModule_Create2</code>, and it takes two arguments.</p>
@@ -608,15 +593,13 @@ and install our Python extension.</p>
 <h2 id="assembling-and-linking">Assembling and Linking</h2>
 <p>Once the code is ready, it needs to be assembled and linked into the final
 shared object file. The NASM assembler is invoked with minimal arguments as</p>
-<div class="highlight"><pre><span></span>nasm -f elf64 -o asm/asm.o asm/asm.asm
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>asm/asm.o<span class="w"> </span>asm/asm.asm
+</code></pre></div>
 
 <p>This creates an intermediate object file <code>asm.o</code>. To create the final shared
 object file, we use the GNU linker with the following arguments</p>
-<div class="highlight"><pre><span></span>ld -shared -o asm/asm.so asm/asm.o -I/lib64/ld-linux-x86-64.so.2
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-shared<span class="w"> </span>-o<span class="w"> </span>asm/asm.so<span class="w"> </span>asm/asm.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
+</code></pre></div>
 
 <p>Note the use of the <code>-shared</code> switch, which instructs the linker to create a
 shared object file.</p>
@@ -626,34 +609,30 @@ object file works fine with Python. For CPython to be able to find the module,
 we need to ensure that its location is included in the search path. One way is
 to add it to the <code>PYTHONPATH</code> environment variable. For example, from within the
 project folder, we can launch Python with</p>
-<div class="highlight"><pre><span></span><span class="nv">PYTHONPATH</span><span class="o">=</span>./asm python3
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>./asm<span class="w"> </span>python3
+</code></pre></div>
 
 <p>and from the interactive session we should be able to import the module with</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">asm</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">asm</span>
 <span class="o">&gt;&gt;&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Alternatively, we can add the search path to <code>sys.path</code> with these few lines of
 Python code</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./asm&quot;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">asm</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">asm</span>
 <span class="o">&gt;&gt;&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Once we have successfully imported our module in Python, we can test that its
 method <code>sayit</code> works as expected</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="o">.</span><span class="vm">__doc__</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="o">.</span><span class="vm">__doc__</span>
 <span class="s1">&#39;This method has something important to say.&#39;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="p">()</span>
 <span class="n">Assembly</span> <span class="ow">is</span> <span class="n">great</span> <span class="n">fun</span><span class="err">!</span> <span class="p">:)</span>
 <span class="o">&gt;&gt;&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>I hope that you would agree :).</p>
 <h2 id="distributing-the-module">Distributing the Module</h2>
@@ -669,42 +648,39 @@ previous section, the shared object needs to resides in one of the Python search
 paths. The easiest way to find out what these paths are on the platform that you
 are targeting is to launch the Python interpreter and print the value of
 <code>sys.path</code>. On my platform, I get the following output</p>
-<div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.6.3</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span>  <span class="mi">3</span> <span class="mi">2017</span><span class="p">,</span> <span class="mi">21</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mi">48</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">Python</span> <span class="mf">3.6.3</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Oct</span>  <span class="mi">3</span> <span class="mi">2017</span><span class="p">,</span> <span class="mi">21</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mi">48</span><span class="p">)</span>
 <span class="p">[</span><span class="n">GCC</span> <span class="mf">7.2.0</span><span class="p">]</span> <span class="n">on</span> <span class="n">linux</span>
 <span class="n">Type</span> <span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
 <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python36.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3.6&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3.6/lib-dynload&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python3.6/dist-packages&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3/dist-packages&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/lib/python3.6/dist-packages&#39;</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The Makefile could then contain the following line inside the <code>install</code> rule:</p>
-<div class="highlight"><pre><span></span>install: default
-    cp asm/asm.so /usr/lib/python<span class="si">${</span><span class="nv">PYTHON_TARGET</span><span class="si">}</span>/asm.so
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>install:<span class="w"> </span>default
+<span class="w">    </span>cp<span class="w"> </span>asm/asm.so<span class="w"> </span>/usr/lib/python<span class="si">${</span><span class="nv">PYTHON_TARGET</span><span class="si">}</span>/asm.so
+</code></pre></div>
 
 <p>with the environment variable <code>PYTHON_TARGET</code> set to <code>3.6</code>.</p>
 <p>To automate the building and testing process of the module, we could use Docker
 to build an image out of the target platform and trigger a build, and perhaps
 execute some unit tests too. A simple Dockerfile that does the minimum work to
 build and test would look something like the following</p>
-<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w">  </span><span class="s">ubuntu:latest</span>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w">  </span><span class="s">ubuntu:latest</span>
 <span class="k">USER</span><span class="w">  </span><span class="s">root</span>
-<span class="k">ADD</span><span class="w">   </span>. asm
-<span class="k">RUN</span><span class="w">   </span>apt-get update              <span class="o">&amp;&amp;</span><span class="se">\</span>
-      apt-get install -y            <span class="se">\</span>
-        nasm                        <span class="se">\</span>
-        python3-pytest              <span class="se">\</span>
-        build-essential
+<span class="k">ADD</span><span class="w">   </span>.<span class="w"> </span>asm
+<span class="k">RUN</span><span class="w">   </span>apt-get<span class="w"> </span>update<span class="w">              </span><span class="o">&amp;&amp;</span><span class="se">\</span>
+<span class="w">      </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w">            </span><span class="se">\</span>
+<span class="w">        </span>nasm<span class="w">                        </span><span class="se">\</span>
+<span class="w">        </span>python3-pytest<span class="w">              </span><span class="se">\</span>
+<span class="w">        </span>build-essential
 <span class="k">ENV</span><span class="w">   </span><span class="nv">PYTHON_TARGET</span><span class="o">=</span><span class="m">3</span>.5
-<span class="k">RUN</span><span class="w">   </span><span class="nb">cd</span> asm                      <span class="o">&amp;&amp;</span><span class="se">\</span>
-      make                        <span class="o">&amp;&amp;</span><span class="se">\</span>
-      make install                <span class="o">&amp;&amp;</span><span class="se">\</span>
-      python3 -m pytest -s
-</pre></div>
-
+<span class="k">RUN</span><span class="w">   </span><span class="nb">cd</span><span class="w"> </span>asm<span class="w">                      </span><span class="o">&amp;&amp;</span><span class="se">\</span>
+<span class="w">      </span>make<span class="w">                        </span><span class="o">&amp;&amp;</span><span class="se">\</span>
+<span class="w">      </span>make<span class="w"> </span>install<span class="w">                </span><span class="o">&amp;&amp;</span><span class="se">\</span>
+<span class="w">      </span>python3<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-s
+</code></pre></div>
 
 <p>As you can see, we are targeting the latest stable version of Ubuntu, which
 comes with <code>python3.5</code>. We make sure we install all the required dependencies,
@@ -713,13 +689,12 @@ perform unit testing once our module builds successfully.</p>
 <p>The bare minimum that we can test is that the import of the module works fine
 and that we can call its method. So a possible <code>test_asm.py</code> test script would
 look like</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asm</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asm</span>
 
 
-<span class="k">def</span> <span class="nf">test_asm</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_asm</span><span class="p">():</span>
     <span class="n">asm</span><span class="o">.</span><span class="n">sayit</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <h1 id="conclusions">Conclusions</h1>
 <p>Whilst I appreciate that the cases where you'd want to seriously consider

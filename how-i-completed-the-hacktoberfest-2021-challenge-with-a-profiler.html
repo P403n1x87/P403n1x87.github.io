@@ -102,15 +102,14 @@ in the command line used to start the tests to get the data that I needed.</p>
 performance regression in <a href="https://github.com/bee-san/pyWhat">pyWhat</a>. I forked the repository, made a
 local clone and looked at how the test suite is run. Peeking at the GitHub
 Actions I could see the test suite was triggered with <code>nox</code></p>
-<div class="highlight"><pre><span></span>python -m nox
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>nox
+</code></pre></div>
 
 <p>Inside the <code>noxfile.py</code> we can find the <code>tests</code> session, which is the one we are
 interested in</p>
-<div class="highlight"><pre><span></span><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
-<span class="k">def</span> <span class="nf">tests</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Run the test suite.&quot;&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tests</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the test suite.&quot;&quot;&quot;</span>
     <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;poetry&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-dev&quot;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">install_with_constraints</span><span class="p">(</span>
         <span class="n">session</span><span class="p">,</span>
@@ -124,15 +123,14 @@ interested in</p>
         <span class="s2">&quot;types-orjson&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;pytest&quot;</span><span class="p">,</span> <span class="s2">&quot;-vv&quot;</span><span class="p">,</span> <span class="s2">&quot;--cov=./&quot;</span><span class="p">,</span> <span class="s2">&quot;--cov-report=xml&quot;</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>So let's create a <code>profile</code> session where we run the test suite through Austin.
 All we have to do is add <code>austin</code> at the right place in the arguments to
 <code>session.run</code>, plus some additional options, e.g.:</p>
-<div class="highlight"><pre><span></span><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
-<span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Profile the test suite.&quot;&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">profile</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Profile the test suite.&quot;&quot;&quot;</span>
     <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;poetry&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-dev&quot;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">profile_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AUSTIN_FILE&quot;</span><span class="p">,</span> <span class="s2">&quot;tests.austin&quot;</span><span class="p">)</span>
     <span class="n">install_with_constraints</span><span class="p">(</span>
@@ -147,8 +145,7 @@ All we have to do is add <code>austin</code> at the right place in the arguments
         <span class="s2">&quot;types-orjson&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;austin&quot;</span><span class="p">,</span> <span class="s2">&quot;-so&quot;</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="s2">&quot;1ms&quot;</span><span class="p">,</span> <span class="s2">&quot;pytest&quot;</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Here I've actually removed options to <code>pytest</code> which I don't care about, like
 code coverage, as it's not what I want to profile this time. The <code>-s</code> option
@@ -157,10 +154,9 @@ of CPU time. I'm also allowing the Austin output file to be specified from the
 environment via the <code>AUSTIN_FILE</code> variable. This means that, if I want to
 profile the tests and save the results to <code>tests.austin</code>, all I have to do is
 invoke</p>
-<div class="highlight"><pre><span></span>pipx install nox  <span class="c1"># if not installed already</span>
-<span class="nv">AUSTIN_FILE</span><span class="o">=</span>tests.austin nox -rs profile
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>pipx<span class="w"> </span>install<span class="w"> </span>nox<span class="w">  </span><span class="c1"># if not installed already</span>
+<span class="nv">AUSTIN_FILE</span><span class="o">=</span>tests.austin<span class="w"> </span>nox<span class="w"> </span>-rs<span class="w"> </span>profile
+</code></pre></div>
 
 <p>Once this completes, the profiling data will be sitting in <code>tests.austin</code>, ready
 to be analysed. With VS Code open on my local copy of <code>pyWhat</code>, I've used the

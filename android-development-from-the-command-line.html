@@ -172,9 +172,8 @@ by the Java Development Kit, the Android SDK Tools and Gradle. More details in
 due time.</p>
 <p>The JDK is usually available from your distro's repositories. On Ubuntu, it can
 be installed with, e.g.</p>
-<div class="highlight"><pre><span></span>sudo apt install openjdk-9-jdk
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>openjdk-9-jdk
+</code></pre></div>
 
 <p>The Android SDK might not be available from the official repositories. In
 principle the could be installed along with Android Studio, but if you are not
@@ -188,11 +187,10 @@ Android SDK into different steps.</p>
 update your <code>.bashrc</code> file to define the <code>ANDROID_HOME</code> environment variable and
 include the SDK tools binaries in the <code>PATH</code> variable by adding the following
 lines</p>
-<div class="highlight"><pre><span></span><span class="c1"># Android SDK Tools</span>
-<span class="nb">export</span> <span class="nv">ANDROID_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.android/sdk
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/tools:<span class="nv">$ANDROID_HOME</span>/tools/bin
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="c1"># Android SDK Tools</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.android/sdk
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/tools:<span class="nv">$ANDROID_HOME</span>/tools/bin
+</code></pre></div>
 
 <p>Note that most of the tools installed in <code>$ANDROID_HOME/tools</code> are deprecated
 and one should use the dedicated ones provided in the <code>$ANDROID_HOME/tools/bin</code>
@@ -210,17 +208,15 @@ testing on an actual Android device. In order to connect to the device and look
 at the log you will need the Android Debug Bridge, which is provided with the
 Android Platform Tools. To install them we can use the <code>sdkmanager</code> CLI tool to
 pull the latest released version with the following command</p>
-<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;platform-tools&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span><span class="s2">&quot;platform-tools&quot;</span>
+</code></pre></div>
 
 <p>This will install the Platform Tools into the <code>$ANDROID_HOME/platform-tools</code>
 folder. We can then add it to the <code>PATH</code> variable for easy invocation by simply
 adding the following lines to <code>.bashrc</code></p>
-<div class="highlight"><pre><span></span><span class="c1"># Android Platform Tools</span>
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/platform-tools
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="c1"># Android Platform Tools</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/platform-tools
+</code></pre></div>
 
 <h2 id="android-sdk-platforms">Android SDK Platforms</h2>
 <p>In order to compile a project we need a certain API revision to be installed.
@@ -230,29 +226,25 @@ For example, if our project targets Marshmallow, then we need to install the
 Android SDK Platform API Level 23. You can find out more at <a href="https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels">this
 page</a>.
 To find out about all the packages available to download we can use the command</p>
-<div class="highlight"><pre><span></span>sdkmanager --list --verbose
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span>--list<span class="w"> </span>--verbose
+</code></pre></div>
 
 <p>At the moment we are interested in Android platforms, i.e. those packages that
 are prefixed with <code>platforms;</code>, so we can filter the output of the above command
 as follows</p>
-<div class="highlight"><pre><span></span>sdkmanager --list --verbose <span class="p">|</span> grep -A <span class="m">3</span> platforms<span class="se">\;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span>--list<span class="w"> </span>--verbose<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span>platforms<span class="se">\;</span>
+</code></pre></div>
 
 <p>Among the matching results, you should see something similar to the following</p>
-<div class="highlight"><pre><span></span>platforms;android-23
+<div class="highlight"><pre><span></span><code>platforms;android-23
     Description:        Android SDK Platform 23
     Version:            3
-</pre></div>
-
+</code></pre></div>
 
 <p>We can then proceed to installing the Android SDK Platform API Level 23 with the
 command</p>
-<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;platforms;android-23&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span><span class="s2">&quot;platforms;android-23&quot;</span>
+</code></pre></div>
 
 <blockquote>
 <p>When you use the <code>sdkmanager</code> tool, you might see the following warning message</p>
@@ -269,15 +261,13 @@ Gradle.</p>
 Guide</a>
 recommends that you keep the build tools updated to the latest version. To find
 out all the versions available for download, run the following command</p>
-<div class="highlight"><pre><span></span>sdkmanager --list --verbose <span class="p">|</span> grep -A <span class="m">3</span> build-tools<span class="se">\;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span>--list<span class="w"> </span>--verbose<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span>build-tools<span class="se">\;</span>
+</code></pre></div>
 
 <p>and locate the latest version. At the moment of writing this is 26.0.1, so the
 command to use in this case is</p>
-<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;build-tools;26.0.1&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span><span class="s2">&quot;build-tools;26.0.1&quot;</span>
+</code></pre></div>
 
 <h2 id="android-emulator">Android Emulator</h2>
 <p>The installation of the Android Emulator package is not mandatory, as you can
@@ -287,27 +277,24 @@ huge variety of Android devices, differing not only in physical size, but also
 in the API version (Kit Kat, Lollipop, Marshmallow, just to name a few of the
 most recent code-names). The package can be installed through the <code>sdkmanger</code>
 with the command</p>
-<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;emulator&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span><span class="s2">&quot;emulator&quot;</span>
+</code></pre></div>
 
 <p>Again, we can add the emulator folder to the <code>PATH</code> variable for easy access.
 However, the Android SDK Tools provides a deprecated set of tools, <code>emulator</code>
 and <code>emulator-check</code>, that would collide with the ones we have just installed.
 To solve this problem we can rename the deprecated executables with</p>
-<div class="highlight"><pre><span></span>chmod -x <span class="nv">$ANDROID_HOME</span>/tools/emulator
-chmod -x <span class="nv">$ANDROID_HOME</span>/tools/emulator-check
-mv <span class="nv">$ANDROID_HOME</span>/tools/emulator <span class="nv">$ANDROID_HOME</span>/tools/emulator.dep
-mv <span class="nv">$ANDROID_HOME</span>/tools/emulator-check <span class="nv">$ANDROID_HOME</span>/tools/emulator-check.dep
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>-x<span class="w"> </span><span class="nv">$ANDROID_HOME</span>/tools/emulator
+chmod<span class="w"> </span>-x<span class="w"> </span><span class="nv">$ANDROID_HOME</span>/tools/emulator-check
+mv<span class="w"> </span><span class="nv">$ANDROID_HOME</span>/tools/emulator<span class="w"> </span><span class="nv">$ANDROID_HOME</span>/tools/emulator.dep
+mv<span class="w"> </span><span class="nv">$ANDROID_HOME</span>/tools/emulator-check<span class="w"> </span><span class="nv">$ANDROID_HOME</span>/tools/emulator-check.dep
+</code></pre></div>
 
 <p>and then add the others to the <code>PATH</code> variables by appending the following lines
 to the <code>~/.bashrc</code> file</p>
-<div class="highlight"><pre><span></span><span class="c1"># Android Emulator</span>
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/emulator
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="c1"># Android Emulator</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ANDROID_HOME</span>/emulator
+</code></pre></div>
 
 <h2 id="gradle">Gradle</h2>
 <p>Let's now proceed to the installation of Gradle, a build automation system that
@@ -341,10 +328,9 @@ repositories. On Ubuntu 17.04 though, a quite old version of Gradle is available
 from them, so I would recommend that you add <a href="https://launchpad.net/~cwchien/+archive/ubuntu/gradle">Cheng-Wei Chien's
 PPA</a> to your software
 sources and install Gradle from there</p>
-<div class="highlight"><pre><span></span>sudo add-apt-repository ppa:cwchien/gradle
-sudo apt update <span class="o">&amp;&amp;</span> sudo apt install gradle
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>add-apt-repository<span class="w"> </span>ppa:cwchien/gradle
+sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gradle
+</code></pre></div>
 
 <p>Gradle is quite a powerful tool, but you might find that it has a rather steep
 learning curve to master all of its features, especially if you are not familiar
@@ -360,9 +346,8 @@ setting up a directory structure in the project's parent folder and creating the
 Gradle build script <code>build.gradle</code>. With Gradle installed, these steps can be
 automated with the
 <a href="https://docs.gradle.org/current/userguide/build_init_plugin.html"><code>init</code></a> task</p>
-<div class="highlight"><pre><span></span>gradle init --type java-library
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>gradle<span class="w"> </span>init<span class="w"> </span>--type<span class="w"> </span>java-library
+</code></pre></div>
 
 <p>If you are contributing to a project that is the work of many hands, it will
 probably be the case that everybody is using the same build tools. As everybody
@@ -377,9 +362,8 @@ versions. Even though this is a sample project, we will nonetheless create and
 use a Gradle wrapper to build our project. The previous command should have
 created a <code>gradlew</code> shell script in the project's folder. If not, run the
 following command</p>
-<div class="highlight"><pre><span></span>gradle wrapper
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>gradle<span class="w"> </span>wrapper
+</code></pre></div>
 
 <p>You should also have a folder <code>src/</code> containing all the sub-folders where Gradle
 expects the sources and the resources that make up your project. But, most
@@ -392,23 +376,22 @@ project as a module, and configure the global build settings. For the case at
 hand, we could to without this nested structure and only define a single build
 script, since our project is made up of only one module.</p>
 <p>The following is the content of the <code>build.gradle</code> file.</p>
-<div class="highlight"><pre><span></span><span class="n">buildscript</span> <span class="o">{</span>
-    <span class="n">repositories</span> <span class="o">{</span>
-        <span class="n">jcenter</span><span class="o">()</span>
-    <span class="o">}</span>
-    <span class="n">dependencies</span> <span class="o">{</span>
-        <span class="n">classpath</span> <span class="s1">&#39;com.android.tools.build:gradle:2.3.3&#39;</span>
-    <span class="o">}</span>
+<div class="highlight"><pre><span></span><code><span class="n">buildscript</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">repositories</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="n">jcenter</span><span class="o">()</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">    </span><span class="n">dependencies</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="n">classpath</span><span class="w"> </span><span class="s1">&#39;com.android.tools.build:gradle:2.3.3&#39;</span>
+<span class="w">    </span><span class="o">}</span>
 <span class="o">}</span>
 
-<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;com.android.application&#39;</span>
+<span class="n">apply</span><span class="w"> </span><span class="nl">plugin:</span><span class="w"> </span><span class="s1">&#39;com.android.application&#39;</span>
 
-<span class="n">android</span> <span class="o">{</span>
-    <span class="n">compileSdkVersion</span> <span class="mi">23</span>
-    <span class="n">buildToolsVersion</span> <span class="s1">&#39;26.0.1&#39;</span>
+<span class="n">android</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">compileSdkVersion</span><span class="w"> </span><span class="mi">23</span>
+<span class="w">    </span><span class="n">buildToolsVersion</span><span class="w"> </span><span class="s1">&#39;26.0.1&#39;</span>
 <span class="o">}</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>You can find a detailed explanation of the meaning of each closure in the
 <a href="https://developer.android.com/studio/build/index.html#top-level">Configure Your
@@ -424,9 +407,8 @@ the version <code>26.0.1</code> of the build tools.</p>
 settings, such as the Gradle daemon's maximum heap size. In fact, this is all we
 will use it for in our case. Open it with your text editor and put the following
 content in it</p>
-<div class="highlight"><pre><span></span><span class="n">org</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">jvmargs</span><span class="o">=-</span><span class="n">Xmx1536m</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">org</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">jvmargs</span><span class="o">=-</span><span class="n">Xmx1536m</span>
+</code></pre></div>
 
 <p>This is our Gradle project created and configured! All the magic of the building
 process is hidden from us by the Android Gradle plugin so that we don't have to
@@ -443,7 +425,7 @@ of the Java package, the activities provided, the permissions required, the
 minimum SDK version supported etc... . Within a Gradle project, this file must
 be located in the <code>src/main</code> folder and named rigorously <code>AndroidManifest.xml</code>.
 In our case, this is what such manifest file would look like</p>
-<div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
 <span class="p">&lt;</span><span class="nt">manifest</span> <span class="na">xmlns:android</span><span class="o">=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
   <span class="na">package</span><span class="o">=</span><span class="s">&quot;com.p403n1x87.androtest&quot;</span><span class="p">&gt;</span>
 
@@ -463,8 +445,7 @@ In our case, this is what such manifest file would look like</p>
     <span class="p">&lt;/</span><span class="nt">activity</span><span class="p">&gt;</span>
   <span class="p">&lt;/</span><span class="nt">application</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">manifest</span><span class="p">&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The structure of the Android Application Manifest file is described <a href="https://developer.android.com/guide/topics/manifest/manifest-intro.html#filestruct">on the
 developer
@@ -491,7 +472,7 @@ the main Java code should reside in the <code>src/main/java</code> folder. Since
 package name is <code>com.p403n1x87.androtest</code>, the <code>MainActivity.java</code> source file
 should be created within the <code>src/main/java/com/p403n1x87/androtest</code> folder.
 Here is the code</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -567,85 +548,84 @@ Here is the code</p>
 <span class="normal">74</span>
 <span class="normal">75</span>
 <span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">com.p403n1x87.androtest</span><span class="p">;</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.p403n1x87.androtest</span><span class="p">;</span>
 
-<span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.app.Activity</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.os.Bundle</span><span class="p">;</span>
 
-<span class="kn">import</span> <span class="nn">android.content.Context</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.content.Context</span><span class="p">;</span>
 
-<span class="kn">import</span> <span class="nn">android.hardware.Sensor</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">android.hardware.SensorEvent</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">android.hardware.SensorEventListener</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">android.hardware.SensorManager</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.hardware.Sensor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.hardware.SensorEvent</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.hardware.SensorEventListener</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.hardware.SensorManager</span><span class="p">;</span>
 
-<span class="kn">import</span> <span class="nn">android.view.ViewGroup.LayoutParams</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.view.ViewGroup.LayoutParams</span><span class="p">;</span>
 
-<span class="kn">import</span> <span class="nn">android.widget.TextView</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">android.widget.LinearLayout</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.widget.TextView</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">android.widget.LinearLayout</span><span class="p">;</span>
 
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
-<span class="kn">import static</span> <span class="nn">java.lang.Math.sqrt</span><span class="p">;</span>
+<span class="kn">import static</span><span class="w"> </span><span class="nn">java.lang.Math.sqrt</span><span class="p">;</span>
 
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MainActivity</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Activity</span>
 <span class="p">{</span>
-  <span class="kd">private</span> <span class="n">SensorManager</span> <span class="n">mSensorManager</span><span class="p">;</span>
-  <span class="kd">private</span> <span class="n">Sensor</span>        <span class="n">mSensor</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">SensorManager</span><span class="w"> </span><span class="n">mSensorManager</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">Sensor</span><span class="w">        </span><span class="n">mSensor</span><span class="p">;</span>
 
-  <span class="kd">private</span> <span class="n">TextView</span>      <span class="n">text</span>       <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-  <span class="kd">private</span> <span class="n">LinearLayout</span>  <span class="n">layoutMain</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">TextView</span><span class="w">      </span><span class="n">text</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">LinearLayout</span><span class="w">  </span><span class="n">layoutMain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
 
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">);</span>
+<span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span><span class="w"> </span><span class="n">savedInstanceState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">);</span>
 
-    <span class="c1">// UI</span>
-    <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">layout</span><span class="p">.</span><span class="na">main_layout</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">text</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span>       <span class="n">text</span>       <span class="o">=</span> <span class="p">(</span><span class="n">TextView</span><span class="p">)</span>     <span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">text</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">layoutMain</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="n">layoutMain</span> <span class="o">=</span> <span class="p">(</span><span class="n">LinearLayout</span><span class="p">)</span> <span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">layout_main</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// UI</span>
+<span class="w">    </span><span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">layout</span><span class="p">.</span><span class="na">main_layout</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">       </span><span class="n">text</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">TextView</span><span class="p">)</span><span class="w">     </span><span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">text</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">layoutMain</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">layoutMain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">LinearLayout</span><span class="p">)</span><span class="w"> </span><span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">layout_main</span><span class="p">);</span>
 
-    <span class="c1">// Sensors</span>
-    <span class="n">mSensorManager</span> <span class="o">=</span> <span class="p">(</span><span class="n">SensorManager</span><span class="p">)</span> <span class="n">getSystemService</span><span class="p">(</span><span class="n">Context</span><span class="p">.</span><span class="na">SENSOR_SERVICE</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">mSensorManager</span><span class="p">.</span><span class="na">getDefaultSensor</span><span class="p">(</span><span class="n">Sensor</span><span class="p">.</span><span class="na">TYPE_GRAVITY</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">){</span>
-      <span class="n">List</span><span class="o">&lt;</span><span class="n">Sensor</span><span class="o">&gt;</span> <span class="n">gravSensors</span> <span class="o">=</span> <span class="n">mSensorManager</span><span class="p">.</span><span class="na">getSensorList</span><span class="p">(</span><span class="n">Sensor</span><span class="p">.</span><span class="na">TYPE_GRAVITY</span><span class="p">);</span>
-      <span class="kt">int</span> <span class="n">nSensors</span> <span class="o">=</span> <span class="n">gravSensors</span><span class="p">.</span><span class="na">size</span><span class="p">();</span>
-      <span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Detected gravity sensors: &quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">nSensors</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// Sensors</span>
+<span class="w">    </span><span class="n">mSensorManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">SensorManager</span><span class="p">)</span><span class="w"> </span><span class="n">getSystemService</span><span class="p">(</span><span class="n">Context</span><span class="p">.</span><span class="na">SENSOR_SERVICE</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mSensorManager</span><span class="p">.</span><span class="na">getDefaultSensor</span><span class="p">(</span><span class="n">Sensor</span><span class="p">.</span><span class="na">TYPE_GRAVITY</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">){</span>
+<span class="w">      </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Sensor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">gravSensors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mSensorManager</span><span class="p">.</span><span class="na">getSensorList</span><span class="p">(</span><span class="n">Sensor</span><span class="p">.</span><span class="na">TYPE_GRAVITY</span><span class="p">);</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">nSensors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gravSensors</span><span class="p">.</span><span class="na">size</span><span class="p">();</span>
+<span class="w">      </span><span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Detected gravity sensors: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">nSensors</span><span class="p">));</span>
 
-      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nSensors</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">final</span> <span class="n">TextView</span> <span class="n">tvSensor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextView</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-        <span class="kd">final</span> <span class="kt">int</span>      <span class="n">j</span>        <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nSensors</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">final</span><span class="w"> </span><span class="n">TextView</span><span class="w"> </span><span class="n">tvSensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextView</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w">      </span><span class="n">j</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 
-        <span class="n">tvSensor</span><span class="p">.</span><span class="na">setLayoutParams</span><span class="p">(</span><span class="k">new</span> <span class="n">LayoutParams</span><span class="p">(</span><span class="n">LayoutParams</span><span class="p">.</span><span class="na">WRAP_CONTENT</span><span class="p">,</span> <span class="n">LayoutParams</span><span class="p">.</span><span class="na">WRAP_CONTENT</span><span class="p">));</span>
+<span class="w">        </span><span class="n">tvSensor</span><span class="p">.</span><span class="na">setLayoutParams</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LayoutParams</span><span class="p">(</span><span class="n">LayoutParams</span><span class="p">.</span><span class="na">WRAP_CONTENT</span><span class="p">,</span><span class="w"> </span><span class="n">LayoutParams</span><span class="p">.</span><span class="na">WRAP_CONTENT</span><span class="p">));</span>
 
-        <span class="n">mSensor</span> <span class="o">=</span> <span class="n">gravSensors</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-        <span class="n">mSensorManager</span><span class="p">.</span><span class="na">registerListener</span><span class="p">(</span><span class="k">new</span> <span class="n">SensorEventListener</span><span class="p">()</span> <span class="p">{</span>
-          <span class="nd">@Override</span>
-          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSensorChanged</span><span class="p">(</span><span class="kd">final</span> <span class="n">SensorEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-                <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
-                <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
-                <span class="kt">float</span> <span class="n">z</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
-                <span class="kt">float</span> <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">);</span>
+<span class="w">        </span><span class="n">mSensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gravSensors</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="w">        </span><span class="n">mSensorManager</span><span class="p">.</span><span class="na">registerListener</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SensorEventListener</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nd">@Override</span>
+<span class="w">          </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onSensorChanged</span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="n">SensorEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
+<span class="w">                </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+<span class="w">                </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
+<span class="w">                </span><span class="kt">float</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">);</span>
 
-            <span class="n">tvSensor</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="n">String</span><span class="p">.</span><span class="na">format</span><span class="p">(</span><span class="s">&quot;Sensor %d: %f m/s^2&quot;</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">g</span><span class="p">));</span>
-          <span class="p">}</span>
+<span class="w">            </span><span class="n">tvSensor</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="n">String</span><span class="p">.</span><span class="na">format</span><span class="p">(</span><span class="s">&quot;Sensor %d: %f m/s^2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">));</span>
+<span class="w">          </span><span class="p">}</span>
 
-          <span class="nd">@Override</span>
-          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onAccuracyChanged</span><span class="p">(</span><span class="n">Sensor</span> <span class="n">sensor</span><span class="p">,</span> <span class="kt">int</span> <span class="n">a</span><span class="p">)</span> <span class="p">{}</span>
-        <span class="p">},</span> <span class="n">mSensor</span><span class="p">,</span> <span class="n">SensorManager</span><span class="p">.</span><span class="na">SENSOR_DELAY_NORMAL</span><span class="p">);</span>
+<span class="w">          </span><span class="nd">@Override</span>
+<span class="w">          </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onAccuracyChanged</span><span class="p">(</span><span class="n">Sensor</span><span class="w"> </span><span class="n">sensor</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="p">},</span><span class="w"> </span><span class="n">mSensor</span><span class="p">,</span><span class="w"> </span><span class="n">SensorManager</span><span class="p">.</span><span class="na">SENSOR_DELAY_NORMAL</span><span class="p">);</span>
 
-        <span class="n">layoutMain</span><span class="p">.</span><span class="na">addView</span><span class="p">(</span><span class="n">tvSensor</span><span class="p">);</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="p">{</span>
-      <span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;We DO NOT have gravity! :(&quot;</span><span class="p">);</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
+<span class="w">        </span><span class="n">layoutMain</span><span class="p">.</span><span class="na">addView</span><span class="p">(</span><span class="n">tvSensor</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;We DO NOT have gravity! :(&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="p">}</span>
-</pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 
 <p>The code is fairly simple and quite self-explanatory. We override the <code>onCreate</code>
 method of the <code>Activity</code> class, from which <code>MainActivity</code> inherits, to set up
@@ -660,9 +640,8 @@ Gradle, and the Android Gradle plugin, would expect them. Files placed in the
 <code>src/main/res</code> folder are treated as resources and can be referenced in the way
 described at the Android Developer portal. In the previous code block, on line
 36 we have</p>
-<div class="highlight"><pre><span></span>    <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">layout</span><span class="p">.</span><span class="na">main_layout</span><span class="p">);</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">layout</span><span class="p">.</span><span class="na">main_layout</span><span class="p">);</span>
+</code></pre></div>
 
 <p>The expression <code>R.layout.main_layout</code> refers to the resource <code>main_layout.xml</code>
 located in the <code>layout</code> sub-folder of <code>src/main/res</code>. The various grouping of
@@ -671,7 +650,7 @@ Resources</a>.</p>
 <p>Later on, in dealing with the output of the <code>lint</code> task, we will have the chance
 to look at the <code>strings.xml</code> resources in the <code>values</code> sub-folder. For the time
 being, let's have a look at what the <code>main_layout.xml</code> looks like in this case:</p>
-<div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
 <span class="p">&lt;</span><span class="nt">LinearLayout</span> <span class="na">xmlns:android</span><span class="o">=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
               <span class="na">android:id</span><span class="o">=</span><span class="s">&quot;@+id/layout_main&quot;</span>
               <span class="na">android:layout_width</span><span class="o">=</span><span class="s">&quot;match_parent&quot;</span>
@@ -692,8 +671,7 @@ being, let's have a look at what the <code>main_layout.xml</code> looks like in 
 <span class="cm">  --&gt;</span>
 
 <span class="p">&lt;/</span><span class="nt">LinearLayout</span><span class="p">&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This is a rather simple layout. We create a vertical <code>LinearLayout</code> container to
 display a vertical stack of <code>TextView</code> elements. The first one, statically
@@ -723,13 +701,12 @@ project, you can refer to these two references for more details:</p>
 </ul>
 <p>This being said, let's see how to build our sample project with Gradle. We can
 list all the available tasks with</p>
-<div class="highlight"><pre><span></span>./gradlew tasks --all
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>tasks<span class="w"> </span>--all
+</code></pre></div>
 
 <p>Among all the tasks listed by the previous command, we should see the following
 ones</p>
-<div class="highlight"><pre><span></span><span class="gh">Build tasks</span>
+<div class="highlight"><pre><span></span><code><span class="gh">Build tasks</span>
 <span class="gh">-----------</span>
 assemble - Assembles all variants of all applications and secondary packages.
 assembleAndroidTest - Assembles all the Test applications.
@@ -746,15 +723,13 @@ compileDebugUnitTestSources
 compileReleaseSources
 compileReleaseUnitTestSources
 mockableAndroidJar - Creates a version of android.jar that&#39;s suitable for unit tests.
-</pre></div>
-
+</code></pre></div>
 
 <p>We could decide to <code>assemble</code> our project, or <code>build</code> it in case we also wrote
 tests and want them built too. As it doesn't make much of a difference in our
 case, we can run the <code>build</code> task with</p>
-<div class="highlight"><pre><span></span>./gradlew build
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>build
+</code></pre></div>
 
 <blockquote>
 <p>The <code>build</code> task actually does a bit more than assemble and execute tests. It
@@ -771,29 +746,25 @@ way is probably to make use of a <em>virtual device</em>. If you have installed 
 with the following commands. But first we need to install a <em>system image</em>, for
 example the <strong>Intel x86 Atom_64 System Image</strong>. Since our application doesn't
 make use of the Google APIs we can opt for the default image:</p>
-<div class="highlight"><pre><span></span>sdkmanager <span class="s2">&quot;system-images;android-23;default;x86_64&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sdkmanager<span class="w"> </span><span class="s2">&quot;system-images;android-23;default;x86_64&quot;</span>
+</code></pre></div>
 
 <p>The download and installation might take some time, so just wait for
 <code>sdkmanager</code> to complete. You can then proceed to creating a virtual device with</p>
-<div class="highlight"><pre><span></span>avdmanager create avd -n <span class="nb">test</span> -k <span class="s2">&quot;system-images;android-23;default;x86_64&quot;</span> -d <span class="m">8</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>avdmanager<span class="w"> </span>create<span class="w"> </span>avd<span class="w"> </span>-n<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;system-images;android-23;default;x86_64&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">8</span>
+</code></pre></div>
 
 <p>This will create a virtual device named <code>test</code> with the system image that we
 have just downloaded. The <code>-d</code> switch specifies which device we want to emulate.
 In this case the value 8 represents a "Nexus 5" device. A complete list of the
 devices that can be emulated may be found with</p>
-<div class="highlight"><pre><span></span>avdmanager list device
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>avdmanager<span class="w"> </span>list<span class="w"> </span>device
+</code></pre></div>
 
 <p>Finally, to run the newly created virtual device we use the <code>emulator</code> tool,
 just like this:</p>
-<div class="highlight"><pre><span></span>emulator @test -skin 768x1280
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>emulator<span class="w"> </span>@test<span class="w"> </span>-skin<span class="w"> </span>768x1280
+</code></pre></div>
 
 <p>where <code>@test</code> specified the name of the virtual device we want to run, and the
 <code>-skin</code> switch defines the resolution we want to run the emulator at. Note that
@@ -809,7 +780,7 @@ via a Gradle task, and the other is more manual and involves the Android Debug
 Bridge tool <code>adb</code>. Let's have a look at both.</p>
 <p>From the previous run of the <code>./gradlew tasks --all</code>, you should have seen the
 following tasks</p>
-<div class="highlight"><pre><span></span><span class="gh">Install tasks</span>
+<div class="highlight"><pre><span></span><code><span class="gh">Install tasks</span>
 <span class="gh">-------------</span>
 installDebug - Installs the Debug build.
 installDebugAndroidTest - Installs the android (on device) tests for the Debug build.
@@ -817,8 +788,7 @@ uninstallAll - Uninstall all applications.
 uninstallDebug - Uninstalls the Debug build.
 uninstallDebugAndroidTest - Uninstalls the android (on device) tests for the Debug build.
 uninstallRelease - Uninstalls the Release build.
-</pre></div>
-
+</code></pre></div>
 
 <p>The <code>installDebug</code> task will look for all the Android devices in debugging mode
 connected to your machine and attempt to install the APK on <em>all</em> of them. For
@@ -828,22 +798,20 @@ APK on both of them.</p>
 <p>If you want to install the APK on only one of the currently connected devices,
 you can do so with the <code>adb</code> tool. First of all, determine the identifier of
 each of the connected devices with</p>
-<div class="highlight"><pre><span></span>$ adb devices
-List of devices attached
-* daemon not running. starting it now at tcp:5037 *
-* daemon started successfully *
-05426e2409d30434    device
-emulator-5554   device
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>adb<span class="w"> </span>devices
+List<span class="w"> </span>of<span class="w"> </span>devices<span class="w"> </span>attached
+*<span class="w"> </span>daemon<span class="w"> </span>not<span class="w"> </span>running.<span class="w"> </span>starting<span class="w"> </span>it<span class="w"> </span>now<span class="w"> </span>at<span class="w"> </span>tcp:5037<span class="w"> </span>*
+*<span class="w"> </span>daemon<span class="w"> </span>started<span class="w"> </span>successfully<span class="w"> </span>*
+05426e2409d30434<span class="w">    </span>device
+emulator-5554<span class="w">   </span>device
+</code></pre></div>
 
 <p>The device with ID <code>05426e2409d30434</code> is a physical Nexus 5 in debug mode
 connected via USB to my laptop, while <code>emulator-5554</code>, as the name indicates, is
 a running instance of the <code>test</code> virtual device we created before. We can
 install the APK on e.g. the emulator with</p>
-<div class="highlight"><pre><span></span>adb -s <span class="s2">&quot;emulator-5554&quot;</span> install build/outputs/apk/androtest-debug.apk
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>adb<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;emulator-5554&quot;</span><span class="w"> </span>install<span class="w"> </span>build/outputs/apk/androtest-debug.apk
+</code></pre></div>
 
 <p>which will now be ready to be executed on the virtual device.</p>
 <h2 id="the-lint-tasks">The lint tasks</h2>
@@ -854,7 +822,7 @@ editor of your choice, we can remedy by using the lint tool provided by the
 Android SDK. A convenient way to invoke it is through a dedicated Gradle task.
 From the output of <code>./gradlew tasks --all</code> you should also see the following
 tasks</p>
-<div class="highlight"><pre><span></span><span class="gh">Verification tasks</span>
+<div class="highlight"><pre><span></span><code><span class="gh">Verification tasks</span>
 <span class="gh">------------------</span>
 check - Runs all checks.
 connectedAndroidTest - Installs and runs instrumentation tests for all flavors on connected devices.
@@ -868,31 +836,28 @@ lintRelease - Runs lint on the Release build.
 test - Run unit tests for all variants.
 testDebugUnitTest - Run unit tests for the debug build.
 testReleaseUnitTest - Run unit tests for the release build.
-</pre></div>
-
+</code></pre></div>
 
 <p>Notice how we can invoke the lint tool in multiple ways. As we saw before, the
 <code>build</code> task, as opposed to <code>assemble</code>, will also run the lint tool. But we can
 also choose to run it as part of a full check with the <code>check</code> task, or just on
 its own, on every variant of our project or simply on the debug build. As an
 example, let's run the <code>lint</code> task with</p>
-<div class="highlight"><pre><span></span>./gradlew lint
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>lint
+</code></pre></div>
 
 <p>The output should contain something that looks like the following</p>
-<div class="highlight"><pre><span></span><span class="o">...</span><span class="w"></span>
-<span class="o">&gt;</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="p">:</span><span class="n">lint</span><span class="w"></span>
-<span class="n">Ran</span><span class="w"> </span><span class="n">lint</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">debug</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="n">issues</span><span class="w"> </span><span class="n">found</span><span class="w"></span>
-<span class="n">Ran</span><span class="w"> </span><span class="n">lint</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">release</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="n">issues</span><span class="w"> </span><span class="n">found</span><span class="w"></span>
-<span class="n">Wrote</span><span class="w"> </span><span class="n">HTML</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">html</span><span class="w"></span>
-<span class="n">Wrote</span><span class="w"> </span><span class="n">XML</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">xml</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="p">:</span><span class="n">lint</span>
+<span class="n">Ran</span><span class="w"> </span><span class="n">lint</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">debug</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="n">issues</span><span class="w"> </span><span class="n">found</span>
+<span class="n">Ran</span><span class="w"> </span><span class="n">lint</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">release</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="n">issues</span><span class="w"> </span><span class="n">found</span>
+<span class="n">Wrote</span><span class="w"> </span><span class="n">HTML</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">html</span>
+<span class="n">Wrote</span><span class="w"> </span><span class="n">XML</span><span class="w"> </span><span class="n">report</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">home</span><span class="o">/</span><span class="n">gabriele</span><span class="o">/</span><span class="n">Projects</span><span class="o">/</span><span class="n">androtest</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">reports</span><span class="o">/</span><span class="n">lint</span><span class="o">-</span><span class="n">results</span><span class="o">.</span><span class="n">xml</span>
 
 
-<span class="n">BUILD</span><span class="w"> </span><span class="n">SUCCESSFUL</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="mi">1</span><span class="n">s</span><span class="w"></span>
-<span class="mi">25</span><span class="w"> </span><span class="n">actionable</span><span class="w"> </span><span class="n">tasks</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">executed</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="n">up</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">date</span><span class="w"></span>
-</pre></div>
-
+<span class="n">BUILD</span><span class="w"> </span><span class="n">SUCCESSFUL</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="mi">1</span><span class="n">s</span>
+<span class="mi">25</span><span class="w"> </span><span class="n">actionable</span><span class="w"> </span><span class="n">tasks</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">executed</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="n">up</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">date</span>
+</code></pre></div>
 
 <p>This tells us that the lint tool has found 13 issues on both the debug and the
 release build of our project, and that a report is available as both an HTML and
@@ -914,17 +879,15 @@ placeholders rather than concatenation. So let's create a <a href="https://devel
 resource</a>
 file. Recall from before that this should go in an XML file, say <code>strings.xml</code>,
 within the <code>src/main/res/values</code> folder.</p>
-<div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
 <span class="p">&lt;</span><span class="nt">resources</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">string</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;sensors_no&quot;</span><span class="p">&gt;</span>Detected gravity sensors: %d<span class="p">&lt;/</span><span class="nt">string</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">resources</span><span class="p">&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>We can now replace line 44 in <code>MainActivity.java</code> with</p>
-<div class="highlight"><pre><span></span>      <span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="n">getString</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">string</span><span class="p">.</span><span class="na">sensors_no</span><span class="p">,</span> <span class="n">nSensors</span><span class="p">));</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="n">text</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="n">getString</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">string</span><span class="p">.</span><span class="na">sensors_no</span><span class="p">,</span><span class="w"> </span><span class="n">nSensors</span><span class="p">));</span>
+</code></pre></div>
 
 <p>Run the lint task again, and the count should now be down to only 9 issues. This
 should give you the idea of how to continue fixing the remaining findings.</p>

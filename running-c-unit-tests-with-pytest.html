@@ -110,39 +110,35 @@ few more that might convince you to use pytest for your C unit tests too!</p>
 code from the interpreter. Thankfully, the Python standard library comes with
 the <a href="https://docs.python.org/3/library/ctypes.html"><code>ctypes</code></a> module that allows us to do just that! So let's start
 looking at some C code, for instance,</p>
-<div class="highlight"><pre><span></span><span class="cp"># file: fact.c</span>
+<div class="highlight"><pre><span></span><code><span class="cp"># file: fact.c</span>
 
-<span class="kt">long</span><span class="w"> </span><span class="nf">fact</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="kt">long</span><span class="w"> </span><span class="nf">fact</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>which we want to compile as a shared object, e.g. with</p>
-<div class="highlight"><pre><span></span>gcc -shared -o fact.so fact.c
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>gcc<span class="w"> </span>-shared<span class="w"> </span>-o<span class="w"> </span>fact.so<span class="w"> </span>fact.c
+</code></pre></div>
 
 <p>How do we test the <code>fact</code> function from Python? Easy peasy!</p>
-<div class="highlight"><pre><span></span><span class="c1"># file: fact.py</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># file: fact.py</span>
 
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
 
 <span class="n">libfact</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;./fact.so&quot;</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">==</span> <span class="mi">720</span>
 <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
 <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Assuming we are in the directory where both <code>fact.so</code> and <code>fact.py</code> reside, we
 can test the <code>fact</code> function inside <code>fact.c</code> simply with</p>
-<div class="highlight"><pre><span></span>python3 fact.py
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>fact.py
+</code></pre></div>
 
 <p>If the test succeeds, the script's return code will be 0.</p>
 <blockquote>
@@ -152,26 +148,25 @@ can test the <code>fact</code> function inside <code>fact.c</code> simply with</
 <p>We are not here to just play around with bare <code>assert</code>s. I promised you the full
 power of Python and <code>pytest</code>, so we can't settle with just this simple
 example. Let's add <code>pytest</code> to our test dependencies and do this instead</p>
-<div class="highlight"><pre><span></span><span class="c1"># file: test_fact.py</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># file: test_fact.py</span>
 
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">libfact</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">libfact</span><span class="p">():</span>
     <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;./fact.so&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">test_fact</span><span class="p">(</span><span class="n">libfact</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_fact</span><span class="p">(</span><span class="n">libfact</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">==</span> <span class="mi">720</span>
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Now run <code>pytest</code> to get</p>
-<div class="highlight"><pre><span></span>$ pytest
+<div class="highlight"><pre><span></span><code>$ pytest
 =========================== test session starts ============================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0
 rootdir: /tmp
@@ -180,32 +175,30 @@ collected 1 item
 test_fact.py .                                                       [100%]
 
 ============================ 1 passed in 0.00s =============================
-</pre></div>
-
+</code></pre></div>
 
 <p>That's some more informative output than what a plain Python test script would
 give us! How about starting to leverage some of the other <code>pytest</code> features,
 like parametrised tests? Let's rewrite our test case like so</p>
-<div class="highlight"><pre><span></span><span class="c1"># file: test_fact.py</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># file: test_fact.py</span>
 
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">libfact</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">libfact</span><span class="p">():</span>
     <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;./fact.so&quot;</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;n,e&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">720</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
-<span class="k">def</span> <span class="nf">test_fact</span><span class="p">(</span><span class="n">libfact</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_fact</span><span class="p">(</span><span class="n">libfact</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="n">e</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Let's run this again with <code>pytest</code>, this time with a more verbose output:</p>
-<div class="highlight"><pre><span></span>pytest -vv
+<div class="highlight"><pre><span></span><code>pytest -vv
 =========================== test session starts ============================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /tmp/.venv/bin/python3.10
 cachedir: .pytest_cache
@@ -217,8 +210,7 @@ test_fact.py::test_fact[0-1] PASSED                                  [ 66%]
 test_fact.py::test_fact[-42-1] PASSED                                [100%]
 
 ============================ 3 passed in 0.01s =============================
-</pre></div>
-
+</code></pre></div>
 
 <p>Sweet! 🍯</p>
 <h1 id="in-the-wild">In the wild</h1>
@@ -226,7 +218,7 @@ test_fact.py::test_fact[-42-1] PASSED                                [100%]
 simple tests that we can run with <code>pytest</code> while also leveraging features like
 fixtures and parametrised tests. Let us now step this up a notch and consider
 the organisation of sources within an <em>actual</em> C project, for instance</p>
-<div class="highlight"><pre><span></span>my-c-project/
+<div class="highlight"><pre><span></span><code>my-c-project/
 ├── docs/
 ├── src/    &lt;- All *.c and *.h sources, perhaps organised into sub-folders
 ├── tests/  &lt;- Our test sources, obviously!
@@ -236,8 +228,7 @@ the organisation of sources within an <em>actual</em> C project, for instance</p
 ├── Makefile.am
 ├── README
 ...
-</pre></div>
-
+</code></pre></div>
 
 <p>In the previous example, we built the shared object <code>fact.so</code> by hand, but in a
 CI environment we would probably want to automate that step too. What should we
@@ -245,183 +236,181 @@ use for that? A bash script? A makefile? Python, of course! What else?!? 😀</p
 <p>Let's make our sample C sources slightly more interesting. For example, we could
 borrow a few parts of the <code>cache.c</code> and <code>cache.h</code> sources from <a href="https://github.com/p403n1x87/austin">Austin</a>,
 which implement a simple LRU cache. This is part of the spec</p>
-<div class="highlight"><pre><span></span><span class="c1">// file: src/cache.h</span>
+<div class="highlight"><pre><span></span><code><span class="c1">// file: src/cache.h</span>
 
 <span class="cp">#ifndef CACHE_H</span>
 <span class="cp">#define CACHE_H</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
 
-<span class="k">typedef</span><span class="w"> </span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">key_dt</span><span class="p">;</span><span class="w"></span>
-<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">value_t</span><span class="p">;</span><span class="w"></span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">key_dt</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">value_t</span><span class="p">;</span>
 
-<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">queue_item_t</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">prev</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">key_dt</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w"></span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">queue_item_t</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">prev</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="w">    </span><span class="n">key_dt</span><span class="w"> </span><span class="n">key</span><span class="p">;</span>
 <span class="w">    </span><span class="n">value_t</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"> </span><span class="c1">// Takes ownership of a free-able object</span>
-<span class="p">}</span><span class="w"> </span><span class="n">queue_item_t</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="n">queue_item_t</span><span class="p">;</span>
 
-<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">queue_t</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">front</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">rear</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">deallocator</span><span class="p">)(</span><span class="n">value_t</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"> </span><span class="n">queue_t</span><span class="p">;</span><span class="w"></span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">queue_t</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span>
+<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">front</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">rear</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">deallocator</span><span class="p">)(</span><span class="n">value_t</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="n">queue_t</span><span class="p">;</span>
 
-<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="nf">queue_item_new</span><span class="p">(</span><span class="n">value_t</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="p">);</span><span class="w"></span>
+<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">queue_item_new</span><span class="p">(</span><span class="n">value_t</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="p">);</span>
 
-<span class="kt">void</span><span class="w"></span>
-<span class="nf">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">value_t</span><span class="p">));</span><span class="w"></span>
+<span class="kt">void</span>
+<span class="nf">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">value_t</span><span class="p">));</span>
 
-<span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="nf">queue_new</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">value_t</span><span class="p">));</span><span class="w"></span>
+<span class="n">queue_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">queue_new</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">value_t</span><span class="p">));</span>
 
-<span class="kt">int</span><span class="w"></span>
-<span class="nf">queue__is_full</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span>
+<span class="nf">queue__is_full</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
 
-<span class="kt">int</span><span class="w"></span>
-<span class="nf">queue__is_empty</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span>
+<span class="nf">queue__is_empty</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
 
-<span class="n">value_t</span><span class="w"></span>
-<span class="nf">queue__dequeue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span><span class="w"></span>
+<span class="n">value_t</span>
+<span class="nf">queue__dequeue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
 
-<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="nf">queue__enqueue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">value_t</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="p">);</span><span class="w"></span>
+<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">queue__enqueue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">value_t</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="p">);</span>
 
-<span class="kt">void</span><span class="w"></span>
-<span class="nf">queue__destroy</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-
+<span class="kt">void</span>
+<span class="nf">queue__destroy</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+</code></pre></div>
 
 <p>and this is the corresponding part of the implementation</p>
-<div class="highlight"><pre><span></span><span class="c1">// file: src/cache.c</span>
+<div class="highlight"><pre><span></span><code><span class="c1">// file: src/cache.c</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdbool.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdbool.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;cache.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;cache.h&quot;</span>
 
 <span class="cp">#define isvalid(x) ((x) != NULL)</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="nf">queue_item_new</span><span class="p">(</span><span class="n">value_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">queue_item_t</span><span class="p">));</span><span class="w"></span>
+<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">queue_item_new</span><span class="p">(</span><span class="n">value_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="w"> </span><span class="n">key</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">queue_item_t</span><span class="p">));</span>
 
-<span class="w">    </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="w">    </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">key</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">item</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-
-<span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="kt">void</span><span class="w"></span>
-<span class="nf">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">deallocator</span><span class="p">)(</span><span class="n">value_t</span><span class="p">))</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isvalid</span><span class="p">(</span><span class="n">self</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">deallocator</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">);</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">item</span><span class="p">;</span>
+<span class="p">}</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="nf">queue_new</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">deallocator</span><span class="p">)(</span><span class="n">value_t</span><span class="p">))</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">queue_t</span><span class="p">));</span><span class="w"></span>
+<span class="kt">void</span>
+<span class="nf">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">deallocator</span><span class="p">)(</span><span class="n">value_t</span><span class="p">))</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isvalid</span><span class="p">(</span><span class="n">self</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
 
-<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">deallocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deallocator</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">deallocator</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">queue</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-
-<span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="kt">int</span><span class="w"></span>
-<span class="nf">queue__is_full</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
+<span class="p">}</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="kt">int</span><span class="w"></span>
-<span class="nf">queue__is_empty</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="n">queue_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">queue_new</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">deallocator</span><span class="p">)(</span><span class="n">value_t</span><span class="p">))</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">queue_t</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span>
+<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">deallocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deallocator</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">queue</span><span class="p">;</span>
+<span class="p">}</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="n">value_t</span><span class="w"></span>
-<span class="nf">queue__dequeue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue__is_empty</span><span class="p">(</span><span class="n">queue</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="o">-&gt;</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">temp</span><span class="p">);</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">count</span><span class="o">--</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span>
+<span class="nf">queue__is_full</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">;</span>
+<span class="p">}</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="nf">queue__enqueue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">value_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue__is_full</span><span class="p">(</span><span class="n">self</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue_item_new</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">temp</span><span class="o">-&gt;</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue__is_empty</span><span class="p">(</span><span class="n">self</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">rear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">else</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="o">-&gt;</span><span class="n">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span>
+<span class="nf">queue__is_empty</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
-<span class="kt">void</span><span class="w"></span>
-<span class="nf">queue__destroy</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isvalid</span><span class="p">(</span><span class="n">self</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
+<span class="n">value_t</span>
+<span class="nf">queue__dequeue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">queue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue__is_empty</span><span class="p">(</span><span class="n">queue</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
 
-<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="p">;</span><span class="w"> </span><span class="n">isvalid</span><span class="p">(</span><span class="n">item</span><span class="p">);</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">next</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">queue_item__destroy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">deallocator</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="p">)</span>
+<span class="w">        </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
 
-<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
+<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="p">;</span>
+<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="o">-&gt;</span><span class="n">prev</span><span class="p">;</span>
 
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="p">)</span>
+<span class="w">        </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">rear</span><span class="o">-&gt;</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">;</span>
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">temp</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">count</span><span class="o">--</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// ----------------------------------------------------------------------------</span>
+<span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">queue__enqueue</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">value_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">key_dt</span><span class="w"> </span><span class="n">key</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue__is_full</span><span class="p">(</span><span class="n">self</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue_item_new</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+<span class="w">    </span><span class="n">temp</span><span class="o">-&gt;</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">queue__is_empty</span><span class="p">(</span><span class="n">self</span><span class="p">))</span>
+<span class="w">        </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">rear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="o">-&gt;</span><span class="n">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span>
+<span class="w">        </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">count</span><span class="o">++</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// ----------------------------------------------------------------------------</span>
+<span class="kt">void</span>
+<span class="nf">queue__destroy</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isvalid</span><span class="p">(</span><span class="n">self</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">queue_item_t</span><span class="w"> </span><span class="o">*</span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">front</span><span class="p">;</span><span class="w"> </span><span class="n">isvalid</span><span class="p">(</span><span class="n">item</span><span class="p">);</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">next</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+<span class="w">        </span><span class="n">queue_item__destroy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="o">-&gt;</span><span class="n">deallocator</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>It's quite a fair bit of code; however, we are not interested in how the data
 structures are implemented, but rather to what it actually implements. This
@@ -430,8 +419,8 @@ already gives us plenty to play with.</p>
 in <code>cache.c</code> and we want to unit-test it. Before we can run any actual tests, we
 need to build a binary object that we can invoke from Python. So let's put this
 code in <code>tests/cunit/__init__.py</code></p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">run</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">run</span>
 
 <span class="n">HERE</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">TEST</span> <span class="o">=</span> <span class="n">HERE</span><span class="o">.</span><span class="n">parent</span>
@@ -439,11 +428,11 @@ code in <code>tests/cunit/__init__.py</code></p>
 <span class="n">SRC</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;src&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CompilationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompilationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
-<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">binary</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span>
@@ -457,36 +446,34 @@ code in <code>tests/cunit/__init__.py</code></p>
         <span class="k">return</span>
 
     <span class="k">raise</span> <span class="n">CompilationError</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This simply defines the <code>compile</code> utility that allows us to invoke <code>gcc</code> to
 compile a source and generate the <code>.so</code> shared object. We can then use it in our
 test source this way</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">tests.cunit</span> <span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="nb">compile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="nb">compile</span>
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.so.6&quot;</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">cache</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">():</span>
     <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">&quot;cache.c&quot;</span>
     <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
 
 
-<span class="k">def</span> <span class="nf">test_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
     <span class="n">lru_cache</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">lru_cache_new</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">lru_cache</span>
     <span class="n">cache</span><span class="o">.</span><span class="n">lru_cache__destroy</span><span class="p">(</span><span class="n">lru_cache</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>At this point, your project folder should have the following structure</p>
-<div class="highlight"><pre><span></span>my-c-project/
+<div class="highlight"><pre><span></span><code>my-c-project/
 ...
 ├── src/
 |   ├── cache.c
@@ -497,8 +484,7 @@ test source this way</p>
 |   |   └── test_cache.py
 |   └── __init__.py
 ...
-</pre></div>
-
+</code></pre></div>
 
 <p>and when you run <code>pytest</code> again, this time the C source would be compiled at
 runtime using <code>gcc</code>. The tests then run as before, which should produce the same
@@ -508,16 +494,16 @@ output we saw earlier.</p>
 too. So let's test a bit more of the functions exported by the caching
 component. Let's make a test case for the <code>queue_item_t</code> and <code>queue_t</code> objects,
 like so</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">tests.cunit</span> <span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="nb">compile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="nb">compile</span>
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.so.6&quot;</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">cache</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">():</span>
     <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">&quot;cache.c&quot;</span>
     <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
@@ -526,7 +512,7 @@ like so</p>
 <span class="n">NULL</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<span class="k">def</span> <span class="nf">test_queue_item</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_queue_item</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
     <span class="n">value</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">queue_item</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">queue_item_new</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">queue_item</span>
@@ -535,7 +521,7 @@ like so</p>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;qsize&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">test_queue</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">qsize</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_queue</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">qsize</span><span class="p">):</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">queue_new</span><span class="p">(</span><span class="n">qsize</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">cache</span><span class="o">.</span><span class="n">queue__is_empty</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
@@ -554,11 +540,10 @@ like so</p>
     <span class="k">assert</span> <span class="n">cache</span><span class="o">.</span><span class="n">queue__enqueue</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NULL</span>
 
     <span class="k">assert</span> <span class="n">values</span> <span class="o">==</span> <span class="p">[</span><span class="n">cache</span><span class="o">.</span><span class="n">queue__dequeue</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">qsize</span><span class="p">)]</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Let's run the new tests with <code>pytest -vv</code> and</p>
-<div class="highlight"><pre><span></span>=============================== test session starts ===============================
+<div class="highlight"><pre><span></span><code>=============================== test session starts ===============================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
 cachedir: .pytest_cache
 rootdir: /home/gabriele/Projects/cunit
@@ -600,8 +585,7 @@ Current thread 0x00007f4016e4f740 (most recent call first):
   File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/config/__init__.py&quot;, line 188 in console_main
   File &quot;/home/gabriele/Projects/cunit/.venv/bin/pytest&quot;, line 8 in &lt;module&gt;
 [1]    337951 segmentation fault  .venv/bin/pytest -vv
-</pre></div>
-
+</code></pre></div>
 
 <p>Wait, what?! Where are our tests? A segmentation fault?!? Where did that come
 from? Well, there goes all this <code>pytest</code> hype! 😡</p>
@@ -609,9 +593,8 @@ from? Well, there goes all this <code>pytest</code> hype! 😡</p>
 the story? </p>
 <p>If you want to figure out for yourself where the problem is, pause here. When
 you are ready to carry on, change line 20 to</p>
-<div class="highlight"><pre><span></span><span class="n">value</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">value</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+</code></pre></div>
 
 <p>and now the tests will all be happy! However, we really want to avoid crashing
 the <code>pytest</code> process when we run into a segmentation fault, which is not so rare
@@ -622,23 +605,23 @@ configuration API</a>. How do we use it to not crash the test runner?
 The idea is to spawn another <code>pytest</code> process that runs just <em>a</em> test. Now, if
 that test causes a segmentation fault, the parent process will keep running the
 other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
-<div class="highlight"><pre><span></span><span class="c1"># file: tests/cunit/conftest.py</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># file: tests/cunit/conftest.py</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">run</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
 
 
-<span class="k">class</span> <span class="nc">SegmentationFault</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SegmentationFault</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
-<span class="k">class</span> <span class="nc">CUnitTestFailure</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CUnitTestFailure</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
-<span class="k">def</span> <span class="nf">pytest_pycollect_makeitem</span><span class="p">(</span><span class="n">collector</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pytest_pycollect_makeitem</span><span class="p">(</span><span class="n">collector</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">)</span>
         <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span>
@@ -647,8 +630,8 @@ other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
         <span class="n">obj</span><span class="o">.</span><span class="n">__cunit__</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">collector</span><span class="o">.</span><span class="n">fspath</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">cunit</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cunit</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
         <span class="n">test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">env</span><span class="p">[</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_name</span>
@@ -663,7 +646,7 @@ other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
     <span class="k">return</span> <span class="n">_</span>
 
 
-<span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">test_name</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">):</span>
         <span class="c1"># We are inside the sandbox process. We select the only test we care</span>
         <span class="n">items</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">_</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">test_name</span><span class="p">]</span>
@@ -672,11 +655,10 @@ other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;__cunit__&quot;</span><span class="p">):</span>
             <span class="n">item</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">cunit</span><span class="p">(</span><span class="o">*</span><span class="n">item</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">__cunit__</span><span class="p">,</span> <span class="n">full_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Let's re-run our broken test suite and see what happens this time:</p>
-<div class="highlight"><pre><span></span>================================ test session starts =================================
+<div class="highlight"><pre><span></span><code>================================ test session starts =================================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
 cachedir: .pytest_cache
 rootdir: /home/gabriele/Projects/cunit
@@ -721,8 +703,7 @@ tests/cunit/conftest.py:49: CUnitTestFailure
 ============================== short test summary info ===============================
 FAILED tests/cunit/test_cache.py::test_queue_item - tests.cunit.conftest.CUnitTestF...
 ============================ 1 failed, 4 passed in 1.21s =============================
-</pre></div>
-
+</code></pre></div>
 
 <p>How do we like this better? Now the first test fails with the segmentation
 fault, but the rest of the test suite still runs and we can see the reason of
@@ -769,11 +750,11 @@ will be generated in the working directory every time a segmentation fault
 occurs. We can then run <code>gdb</code> in batch mode to print a nice traceback that will
 hopefully help us investigate the problem. So let's add these helpers to the
 <code>conftest.py</code> file</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">check_output</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">check_output</span>
 
 
-<span class="k">def</span> <span class="nf">gdb</span><span class="p">(</span><span class="n">cmds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gdb</span><span class="p">(</span><span class="n">cmds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">check_output</span><span class="p">(</span>
         <span class="p">[</span><span class="s2">&quot;gdb&quot;</span><span class="p">,</span> <span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;-batch&quot;</span><span class="p">]</span>
         <span class="o">+</span> <span class="p">[</span><span class="n">_</span> <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;-ex&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>
@@ -782,19 +763,18 @@ hopefully help us investigate the problem. So let's add these helpers to the
     <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">bt</span><span class="p">(</span><span class="n">binary</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bt</span><span class="p">(</span><span class="n">binary</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">gdb</span><span class="p">([</span><span class="s2">&quot;bt full&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="s2">&quot;core&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;No core dump available.&quot;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>and improve the <code>cunit</code> decorator like so</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tests.cunit</span> <span class="kn">import</span> <span class="n">SRC</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span>
 
 
-<span class="k">def</span> <span class="nf">cunit</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cunit</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
         <span class="n">test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">env</span><span class="p">[</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_name</span>
@@ -812,11 +792,10 @@ hopefully help us investigate the problem. So let's add these helpers to the
         <span class="k">raise</span> <span class="n">CUnitTestFailure</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 
     <span class="k">return</span> <span class="n">_</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Now, when we run our broken test suite we should get this more verbose output</p>
-<div class="highlight"><pre><span></span>================================ test session starts =================================
+<div class="highlight"><pre><span></span><code>================================ test session starts =================================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
 cachedir: .pytest_cache
 rootdir: /home/gabriele/Projects/cunit
@@ -951,24 +930,21 @@ tests/cunit/conftest.py:56: SegmentationFault
 ============================== short test summary info ===============================
 FAILED tests/cunit/test_cache.py::test_queue_item - tests.cunit.conftest.Segmentati...
 ============================ 1 failed, 4 passed in 1.73s =============================
-</pre></div>
-
+</code></pre></div>
 
 <p>Hmm, Still not that useful. What if we compile with debug symbols? Let's change
 the <code>cache</code> fixture in <code>test_cache.py</code> so that it compiles the caching sources
 with the <code>-g</code> option</p>
-<div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">cache</span><span class="p">():</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">():</span>
     <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">&quot;cache.c&quot;</span>
     <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">])</span>
     <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Now that's much, <em>much</em> better!</p>
-<div class="highlight"><pre><span></span>E               #3  0x00007ff51cf8b40a in queue_item__destroy (self=0x104ac60, deallocator=0x7ff51cc68850 &lt;__GI___libc_free&gt;) at /home/gabriele/Projects/cunit/src/cache.c:37
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>E               #3  0x00007ff51cf8b40a in queue_item__destroy (self=0x104ac60, deallocator=0x7ff51cc68850 &lt;__GI___libc_free&gt;) at /home/gabriele/Projects/cunit/src/cache.c:37
+</code></pre></div>
 
 <p>This tells us <em>exactly</em> where the problem occurred. Now that we have this
 information we can fix the test and make the test suite happy again! 🎉</p>
@@ -984,64 +960,59 @@ do things like <code>from cache import queue_item_new</code> etc... and sweep al
 <code>ctypes</code> business under the carpet? Well, let's give this a try, shall we?</p>
 <p>Back in <code>tests/cunit/__init__.py</code>, let's add the following subtype of
 <code>ModuleType</code>:</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
 
 
-<span class="k">class</span> <span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.c&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
         <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.c&quot;</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Now create <code>tests/cunit/cache.py</code> with the following content</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">tests.cunit</span> <span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="n">CModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="n">CModule</span>
 
 <span class="n">CFLAGS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">]</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">CModule</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">SRC</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="n">CFLAGS</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>and get rid of the <code>cache</code> fixture in <code>test_cache.py</code> (make sure to remove it
 also from the test arguments!). Instead, add</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tests.cunit.cache</span> <span class="k">as</span> <span class="nn">cache</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tests.cunit.cache</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cache</span>
+</code></pre></div>
 
 <p><em>et voilà</em>! Now <code>cache</code> feels like a Python module that exports ordinary
 functions that we can call like any other Python function.</p>
 <p>Now, what about this code</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_queue_item</span><span class="p">():</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_queue_item</span><span class="p">():</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
     <span class="n">queue_item</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">queue_item_new</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">queue_item</span>
 
     <span class="n">cache</span><span class="o">.</span><span class="n">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Clearly <code>cache.queue_item_new</code> is creating a new object. The Pythonic way of
 writing something like this would be</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_queue_item</span><span class="p">():</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_queue_item</span><span class="p">():</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
     <span class="n">queue_item</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">QueueItem</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">queue_item</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>and we don't even care about destroying the object as we'd love the garbage
 collector to take care of that for us. Now that's a more Pythonic way of going
@@ -1059,21 +1030,21 @@ infer their definitions. That's why our next step is to add <code>pycparser</cod
 test dependencies and implement a C AST visitor that can collect all the
 relevant type and method declarations that we can use to build the spec for
 Python types. Here is what it might look like</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_char_p</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">c_char_p</span>
 
-<span class="kn">from</span> <span class="nn">pycparser</span> <span class="kn">import</span> <span class="n">c_ast</span><span class="p">,</span> <span class="n">c_parser</span>
-<span class="kn">from</span> <span class="nn">pycparser.plyparser</span> <span class="kn">import</span> <span class="n">ParseError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pycparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">c_ast</span><span class="p">,</span> <span class="n">c_parser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pycparser.plyparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParseError</span>
 
-<span class="k">class</span> <span class="nc">DeclCollector</span><span class="p">(</span><span class="n">c_ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeclCollector</span><span class="p">(</span><span class="n">c_ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">types</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">functions</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)]</span>
 
-    <span class="k">def</span> <span class="nf">visit_Typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_Typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">Struct</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">declname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span>
             <span class="s2">&quot;_t&quot;</span>
         <span class="p">):</span>
@@ -1083,7 +1054,7 @@ Python types. Here is what it might look like</p>
                 <span class="p">[</span><span class="n">decl</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">decl</span> <span class="ow">in</span> <span class="n">struct</span><span class="o">.</span><span class="n">decls</span><span class="p">],</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">visit_Decl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_Decl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;extern&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -1113,7 +1084,7 @@ Python types. Here is what it might look like</p>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CFunctionDef</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decl</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decl</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">c_parser</span><span class="o">.</span><span class="n">CParser</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&lt;preprocessed&gt;&quot;</span><span class="p">)</span>
@@ -1136,8 +1107,7 @@ Python types. Here is what it might look like</p>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CTypeDef</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">constructor</span>
         <span class="p">}</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This is also a handful, but the behaviour is very simple. We define an AST
 visitor that listens to <code>typedef</code>s and declarations. For the former, we single
@@ -1146,25 +1116,24 @@ instance of the custom <code>CTypeDef</code> dataclass; as for the latter, we on
 function declaration (plus a special handling for those functions that return
 <code>char *</code>). The two intermediate dataclasses <code>CTypeDef</code> and <code>CFunctionDef</code> are
 merely defined as (up to you to use the more elegant <code>@dataclass</code> decorator)</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CFunctionDef</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CFunctionDef</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span> <span class="o">=</span> <span class="n">rtype</span>
 
 
-<span class="k">class</span> <span class="nc">CTypeDef</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CTypeDef</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="kc">False</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Armed with these definitions we can enhance our <code>CModule</code> class like so</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.c&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">))</span>
 
@@ -1187,16 +1156,15 @@ merely defined as (up to you to use the more elegant <code>@dataclass</code> dec
                 <span class="k">pass</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
         <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.c&quot;</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>That is, we add the collected types and functions as attributes to the C module.
 This is the C type metaclass that we use as a C type factory</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CMetaType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Structure</span><span class="p">)):</span>
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cmodule</span><span class="p">,</span> <span class="n">ctypedef</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CMetaType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Structure</span><span class="p">)):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cmodule</span><span class="p">,</span> <span class="n">ctypedef</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">ctype</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -1215,14 +1183,13 @@ This is the C type metaclass that we use as a C type factory</p>
         <span class="n">ctype</span><span class="o">.</span><span class="n">__cname__</span> <span class="o">=</span> <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span>
 
         <span class="k">return</span> <span class="n">ctype</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This is responsible for creating a new C type as a Python type, with all the
 methods added as appropriate instances of wrappers around the C functions (note
 the special handling of the <code>_new</code> method!):</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CFunction</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CFunction</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">cfuncdef</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__args__</span> <span class="o">=</span> <span class="n">cfuncdef</span><span class="o">.</span><span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cfunc__</span> <span class="o">=</span> <span class="n">cfunc</span>
@@ -1231,7 +1198,7 @@ the special handling of the <code>_new</code> method!):</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_posonly</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">_</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posonly</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes only positional arguments&quot;</span><span class="p">)</span>
 
@@ -1241,21 +1208,21 @@ the special handling of the <code>_new</code> method!):</p>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes exactly </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="n">nargs</span><span class="si">}</span><span class="s2"> given)&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cfunc__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CFunction &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span> <span class="o">=</span> <span class="n">ctype</span>
 
-    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">cargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">__cself__</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_args</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
@@ -1265,41 +1232,39 @@ the special handling of the <code>_new</code> method!):</p>
 
         <span class="k">return</span> <span class="n">_</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CStaticMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CStaticMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span> <span class="o">=</span> <span class="n">ctype</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CStaticMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The <code>CType</code> class implementation tries to mimic the behaviour of Python classes,
 with <code>__cself__</code> playing the role of the C analogue of <code>self</code>:</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CType</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CType</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="o">.</span><span class="n">__cmethod__</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> CObject at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>We also handle the destructor by overriding the <code>__del__</code> special method so that
 the garbage collector can take care of freeing memory for us.</p>
 <p>In general, we would need to preprocess sources, especially headers, before we
 can parse them concretely with <code>pycparser</code>. That's why we also need to define
 something like</p>
-<div class="highlight"><pre><span></span><span class="n">restrict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;__restrict \w+&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">restrict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;__restrict \w+&quot;</span><span class="p">)</span>
 
 <span class="n">_header_head</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">#define __attribute__(x)</span>
@@ -1317,7 +1282,7 @@ something like</p>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">source</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">_header_head</span> <span class="o">+</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">restrict_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
@@ -1329,24 +1294,23 @@ something like</p>
                 <span class="n">cwd</span><span class="o">=</span><span class="n">SRC</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
         <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The <code>_header_head</code> and the <code>restrict_re</code> are needed to take care of GCC
 extensions, which are not supported by <code>pycparser</code>. But apart from them, all we
 do is invoke the <code>gcc</code> preprocessor on the C sources. Putting everything
 together inside <code>tests/cunit/__init__.py</code> we would then have something that
 looks like</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ctypes</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">cast</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">run</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">pycparser</span> <span class="kn">import</span> <span class="n">c_ast</span><span class="p">,</span> <span class="n">c_parser</span>
-<span class="kn">from</span> <span class="nn">pycparser.plyparser</span> <span class="kn">import</span> <span class="n">ParseError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pycparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">c_ast</span><span class="p">,</span> <span class="n">c_parser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pycparser.plyparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParseError</span>
 
 <span class="n">HERE</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">TEST</span> <span class="o">=</span> <span class="n">HERE</span><span class="o">.</span><span class="n">parent</span>
@@ -1372,7 +1336,7 @@ looks like</p>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">source</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">_header_head</span> <span class="o">+</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">restrict_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
@@ -1386,7 +1350,7 @@ looks like</p>
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">binary</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span>
@@ -1405,35 +1369,35 @@ looks like</p>
 <span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.so.6&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">CFunctionDef</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CFunctionDef</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span> <span class="o">=</span> <span class="n">rtype</span>
 
 
-<span class="k">class</span> <span class="nc">CTypeDef</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CTypeDef</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<span class="k">class</span> <span class="nc">CType</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CType</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="o">.</span><span class="n">__cmethod__</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> CObject at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CFunction</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CFunction</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">cfuncdef</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__args__</span> <span class="o">=</span> <span class="n">cfuncdef</span><span class="o">.</span><span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cfunc__</span> <span class="o">=</span> <span class="n">cfunc</span>
@@ -1442,7 +1406,7 @@ looks like</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_posonly</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">_</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posonly</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes only positional arguments&quot;</span><span class="p">)</span>
 
@@ -1452,21 +1416,21 @@ looks like</p>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes exactly </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="n">nargs</span><span class="si">}</span><span class="s2"> given)&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cfunc__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CFunction &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span> <span class="o">=</span> <span class="n">ctype</span>
 
-    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">cargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">__cself__</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_args</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
@@ -1476,21 +1440,21 @@ looks like</p>
 
         <span class="k">return</span> <span class="n">_</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CStaticMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CStaticMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">ctype</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfuncdef</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span> <span class="o">=</span> <span class="n">ctype</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CStaticMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">CMetaType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Structure</span><span class="p">)):</span>
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cmodule</span><span class="p">,</span> <span class="n">ctypedef</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CMetaType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Structure</span><span class="p">)):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cmodule</span><span class="p">,</span> <span class="n">ctypedef</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">ctype</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -1511,16 +1475,16 @@ looks like</p>
         <span class="k">return</span> <span class="n">ctype</span>
 
 
-<span class="k">class</span> <span class="nc">DeclCollector</span><span class="p">(</span><span class="n">c_ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeclCollector</span><span class="p">(</span><span class="n">c_ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">types</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">functions</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)]</span>
 
-    <span class="k">def</span> <span class="nf">visit_Typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_Typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">Struct</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">declname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span>
             <span class="s2">&quot;_t&quot;</span>
         <span class="p">):</span>
@@ -1530,7 +1494,7 @@ looks like</p>
                 <span class="p">[</span><span class="n">decl</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">decl</span> <span class="ow">in</span> <span class="n">struct</span><span class="o">.</span><span class="n">decls</span><span class="p">],</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">visit_Decl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_Decl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;extern&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -1560,7 +1524,7 @@ looks like</p>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CFunctionDef</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decl</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decl</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">c_parser</span><span class="o">.</span><span class="n">CParser</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&lt;preprocessed&gt;&quot;</span><span class="p">)</span>
@@ -1585,8 +1549,8 @@ looks like</p>
         <span class="p">}</span>
 
 
-<span class="k">class</span> <span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.c&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">))</span>
 
@@ -1609,22 +1573,21 @@ looks like</p>
                 <span class="k">pass</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
         <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.c&quot;</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>So let's use this new technology to make our C unit tests more <em>Pythonesque</em>.
 This is what our new <code>test_cache.py</code> can look like</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">tests.cunit</span> <span class="kn">import</span> <span class="n">C</span>
-<span class="kn">from</span> <span class="nn">tests.cunit.cache</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">QueueItem</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">C</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">QueueItem</span>
 
 <span class="n">NULL</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<span class="k">def</span> <span class="nf">test_queue_item</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_queue_item</span><span class="p">():</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
     <span class="n">queue_item</span> <span class="o">=</span> <span class="n">QueueItem</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">queue_item</span><span class="o">.</span><span class="n">__cself__</span>
@@ -1633,7 +1596,7 @@ This is what our new <code>test_cache.py</code> can look like</p>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;qsize&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">test_queue</span><span class="p">(</span><span class="n">qsize</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_queue</span><span class="p">(</span><span class="n">qsize</span><span class="p">):</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">(</span><span class="n">qsize</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">q</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()</span>
@@ -1652,8 +1615,7 @@ This is what our new <code>test_cache.py</code> can look like</p>
     <span class="k">assert</span> <span class="n">q</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NULL</span>
 
     <span class="k">assert</span> <span class="n">values</span> <span class="o">==</span> <span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">qsize</span><span class="p">)]</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>We can practically treat our C binary object as if it were an actual Python
 module and import the <code>Queue</code> and <code>QueueItem</code> types from it. We can then use

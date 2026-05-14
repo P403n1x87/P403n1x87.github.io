@@ -130,7 +130,7 @@ like key presses. The view itself is not the UI though, but it contains a
 reference to it via the <code>root_widget</code>. The novelty in Austin TUI is that we want
 to partially build a view, or at least the UI part, using a resource file.</p>
 <p>So take a look at the following minimalist example.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -143,22 +143,21 @@ to partially build a view, or at least the UI part, using a resource file.</p>
 <span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
 
-<span class="nt">&lt;aui:MinimalView</span> <span class="na">xmlns:aui=</span><span class="s">&quot;http://austin.p403n1x87.com/ui&quot;</span> <span class="na">name=</span><span class="s">&quot;minimal_view&quot;</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;aui:Window</span> <span class="na">name=</span><span class="s">&quot;main&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;label&quot;</span>
-      <span class="na">text=</span><span class="s">&quot;Hello World&quot;</span>
-      <span class="na">align=</span><span class="s">&quot;center&quot;</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;/aui:Window&gt;</span>
+<span class="nt">&lt;aui:MinimalView</span><span class="w"> </span><span class="na">xmlns:aui=</span><span class="s">&quot;http://austin.p403n1x87.com/ui&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;minimal_view&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:Window</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;main&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;label&quot;</span>
+<span class="w">      </span><span class="na">text=</span><span class="s">&quot;Hello World&quot;</span>
+<span class="w">      </span><span class="na">align=</span><span class="s">&quot;center&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/aui:Window&gt;</span>
 
-  <span class="cm">&lt;!-- Signal mappings --&gt;</span>
+<span class="w">  </span><span class="cm">&lt;!-- Signal mappings --&gt;</span>
 
-  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;q&quot;</span> <span class="na">handler=</span><span class="s">&quot;on_quit&quot;</span> <span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:signal</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;q&quot;</span><span class="w"> </span><span class="na">handler=</span><span class="s">&quot;on_quit&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
 
 <span class="nt">&lt;/aui:MinimalView&gt;</span>
-</pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 
 <p><em>minimal-view.xml</em></p>
 <p>The above XML document describes a view with two main components: a <code>Window</code>
@@ -171,7 +170,7 @@ exit as soon as we press <code>Q</code>.</p>
 Austin TUI, all that we need to do is declare a subclass of <code>View</code> with the same
 name as the root node of the XML document, that is <code>MinimalView</code> in this case,
 and then build the actual view object using the <code>ViewBuilder</code> class, like so</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -194,17 +193,17 @@ and then build the actual view object using the <code>ViewBuilder</code> class, 
 <span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
-<span class="normal">24</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-<span class="kn">from</span> <span class="nn">austin_tui.view</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">ViewBuilder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">austin_tui.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">ViewBuilder</span>
 
 
-<span class="k">class</span> <span class="nc">MinimalView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MinimalView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">(</span><span class="s2">&quot;quit signal&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;minimal-view.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">view_stream</span><span class="p">:</span>
         <span class="n">view</span> <span class="o">=</span> <span class="n">ViewBuilder</span><span class="o">.</span><span class="n">from_stream</span><span class="p">(</span><span class="n">view_stream</span><span class="p">)</span>
         <span class="n">view</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
@@ -218,8 +217,7 @@ and then build the actual view object using the <code>ViewBuilder</code> class, 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 
 <p>This is all the Python code required to build a minimalist TUI that displays a
 label on the screen and that quits whenever the user presses <code>Q</code>. Things we
@@ -246,7 +244,7 @@ the name <code>label</code>. If you want to add multiple children to the window,
 want to include an intermediate <code>Box</code> container widget which acts as an HTML5
 flex container. Let's see how we can build a simple UI for a minimalist <code>top</code>
 utility.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -318,81 +316,80 @@ utility.</p>
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
-<span class="normal">73</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
 
-<span class="nt">&lt;aui:MiniTop</span> <span class="na">xmlns:aui=</span><span class="s">&quot;http://austin.p403n1x87.com/ui&quot;</span> <span class="na">name=</span><span class="s">&quot;tui&quot;</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;aui:Window</span> <span class="na">name=</span><span class="s">&quot;main&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;aui:Box</span> <span class="na">name=</span><span class="s">&quot;main_box&quot;</span> <span class="na">flow=</span><span class="s">&quot;v&quot;</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;aui:Box</span> <span class="na">name=</span><span class="s">&quot;overview_box&quot;</span> <span class="na">flow=</span><span class="s">&quot;h&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;nprocs_label&quot;</span>
-          <span class="na">text=</span><span class="s">&quot;No. of procs.&quot;</span>
-          <span class="na">width=</span><span class="s">&quot;16&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;aui:MiniTop</span><span class="w"> </span><span class="na">xmlns:aui=</span><span class="s">&quot;http://austin.p403n1x87.com/ui&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;tui&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:Window</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;main&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;aui:Box</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;main_box&quot;</span><span class="w"> </span><span class="na">flow=</span><span class="s">&quot;v&quot;</span><span class="nt">&gt;</span>
+<span class="w">      </span><span class="nt">&lt;aui:Box</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;overview_box&quot;</span><span class="w"> </span><span class="na">flow=</span><span class="s">&quot;h&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;nprocs_label&quot;</span>
+<span class="w">          </span><span class="na">text=</span><span class="s">&quot;No. of procs.&quot;</span>
+<span class="w">          </span><span class="na">width=</span><span class="s">&quot;16&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
 
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;nprocs&quot;</span>
-          <span class="na">align=</span><span class="s">&quot;center&quot;</span>
-          <span class="na">width=</span><span class="s">&quot;8&quot;</span>
-          <span class="na">bold=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;nprocs&quot;</span>
+<span class="w">          </span><span class="na">align=</span><span class="s">&quot;center&quot;</span>
+<span class="w">          </span><span class="na">width=</span><span class="s">&quot;8&quot;</span>
+<span class="w">          </span><span class="na">bold=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
 
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;cpu_label&quot;</span>
-          <span class="na">text=</span><span class="s">&quot;Total %CPU&quot;</span>
-          <span class="na">width=</span><span class="s">&quot;16&quot;</span> <span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;cpu_label&quot;</span>
+<span class="w">          </span><span class="na">text=</span><span class="s">&quot;Total %CPU&quot;</span>
+<span class="w">          </span><span class="na">width=</span><span class="s">&quot;16&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
 
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;cpu&quot;</span>
-          <span class="na">align=</span><span class="s">&quot;right&quot;</span>
-          <span class="na">width=</span><span class="s">&quot;6&quot;</span>
-          <span class="na">bold=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;/aui:Box&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;cpu&quot;</span>
+<span class="w">          </span><span class="na">align=</span><span class="s">&quot;right&quot;</span>
+<span class="w">          </span><span class="na">width=</span><span class="s">&quot;6&quot;</span>
+<span class="w">          </span><span class="na">bold=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/aui:Box&gt;</span>
 
-      <span class="nt">&lt;aui:Box</span> <span class="na">name=</span><span class="s">&quot;table_header&quot;</span> <span class="na">flow=</span><span class="s">&quot;h&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;own&quot;</span>
-          <span class="na">text=</span><span class="s">&quot;PID&quot;</span>
-          <span class="na">align=</span><span class="s">&quot;right&quot;</span>
-          <span class="na">width=</span><span class="s">&quot;8&quot;</span>
-          <span class="na">bold=</span><span class="s">&quot;true&quot;</span>
-          <span class="na">reverse=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;proc_cpu&quot;</span>
-          <span class="na">text=</span><span class="s">&quot;%CPU&quot;</span>
-          <span class="na">align=</span><span class="s">&quot;center&quot;</span>
-          <span class="na">width=</span><span class="s">&quot;10&quot;</span>
-          <span class="na">bold=</span><span class="s">&quot;true&quot;</span>
-          <span class="na">reverse=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;cmdline&quot;</span>
-          <span class="na">text=</span><span class="s">&quot;COMMAND LINE&quot;</span>
-          <span class="na">bold=</span><span class="s">&quot;true&quot;</span>
-          <span class="na">reverse=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;/aui:Box&gt;</span>
+<span class="w">      </span><span class="nt">&lt;aui:Box</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;table_header&quot;</span><span class="w"> </span><span class="na">flow=</span><span class="s">&quot;h&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;own&quot;</span>
+<span class="w">          </span><span class="na">text=</span><span class="s">&quot;PID&quot;</span>
+<span class="w">          </span><span class="na">align=</span><span class="s">&quot;right&quot;</span>
+<span class="w">          </span><span class="na">width=</span><span class="s">&quot;8&quot;</span>
+<span class="w">          </span><span class="na">bold=</span><span class="s">&quot;true&quot;</span>
+<span class="w">          </span><span class="na">reverse=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;proc_cpu&quot;</span>
+<span class="w">          </span><span class="na">text=</span><span class="s">&quot;%CPU&quot;</span>
+<span class="w">          </span><span class="na">align=</span><span class="s">&quot;center&quot;</span>
+<span class="w">          </span><span class="na">width=</span><span class="s">&quot;10&quot;</span>
+<span class="w">          </span><span class="na">bold=</span><span class="s">&quot;true&quot;</span>
+<span class="w">          </span><span class="na">reverse=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;cmdline&quot;</span>
+<span class="w">          </span><span class="na">text=</span><span class="s">&quot;COMMAND LINE&quot;</span>
+<span class="w">          </span><span class="na">bold=</span><span class="s">&quot;true&quot;</span>
+<span class="w">          </span><span class="na">reverse=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/aui:Box&gt;</span>
 
-      <span class="nt">&lt;aui:ScrollView</span> <span class="na">name=</span><span class="s">&quot;proc_view&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;aui:Table</span> <span class="na">name=</span><span class="s">&quot;table&quot;</span> <span class="na">columns=</span><span class="s">&quot;3&quot;</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;/aui:ScrollView&gt;</span>
+<span class="w">      </span><span class="nt">&lt;aui:ScrollView</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;proc_view&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;aui:Table</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;table&quot;</span><span class="w"> </span><span class="na">columns=</span><span class="s">&quot;3&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/aui:ScrollView&gt;</span>
 
-      <span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;footer&quot;</span>
-        <span class="na">text=</span><span class="s">&quot;Press Q to exit.&quot;</span>
-        <span class="na">align=</span><span class="s">&quot;center&quot;</span>
-        <span class="na">bold=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/aui:Box&gt;</span>
-  <span class="nt">&lt;/aui:Window&gt;</span>
+<span class="w">      </span><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;footer&quot;</span>
+<span class="w">        </span><span class="na">text=</span><span class="s">&quot;Press Q to exit.&quot;</span>
+<span class="w">        </span><span class="na">align=</span><span class="s">&quot;center&quot;</span>
+<span class="w">        </span><span class="na">bold=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/aui:Box&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/aui:Window&gt;</span>
 
-  <span class="cm">&lt;!-- Signal mappings --&gt;</span>
+<span class="w">  </span><span class="cm">&lt;!-- Signal mappings --&gt;</span>
 
-  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;q&quot;</span>         <span class="na">handler=</span><span class="s">&quot;on_quit&quot;</span>   <span class="nt">/&gt;</span>
-  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_UP&quot;</span>    <span class="na">handler=</span><span class="s">&quot;on_up&quot;</span>     <span class="nt">/&gt;</span>
-  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_DOWN&quot;</span>  <span class="na">handler=</span><span class="s">&quot;on_down&quot;</span>   <span class="nt">/&gt;</span>
-  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_PPAGE&quot;</span> <span class="na">handler=</span><span class="s">&quot;on_pgup&quot;</span>   <span class="nt">/&gt;</span>
-  <span class="nt">&lt;aui:signal</span> <span class="na">key=</span><span class="s">&quot;KEY_NPAGE&quot;</span> <span class="na">handler=</span><span class="s">&quot;on_pgdown&quot;</span> <span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:signal</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;q&quot;</span><span class="w">         </span><span class="na">handler=</span><span class="s">&quot;on_quit&quot;</span><span class="w">   </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:signal</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;KEY_UP&quot;</span><span class="w">    </span><span class="na">handler=</span><span class="s">&quot;on_up&quot;</span><span class="w">     </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:signal</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;KEY_DOWN&quot;</span><span class="w">  </span><span class="na">handler=</span><span class="s">&quot;on_down&quot;</span><span class="w">   </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:signal</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;KEY_PPAGE&quot;</span><span class="w"> </span><span class="na">handler=</span><span class="s">&quot;on_pgup&quot;</span><span class="w">   </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:signal</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;KEY_NPAGE&quot;</span><span class="w"> </span><span class="na">handler=</span><span class="s">&quot;on_pgdown&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
 
-  <span class="cm">&lt;!-- Palette --&gt;</span>
+<span class="w">  </span><span class="cm">&lt;!-- Palette --&gt;</span>
 
-  <span class="nt">&lt;aui:palette&gt;</span>
-    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;pid&quot;</span>  <span class="na">fg=</span><span class="s">&quot;3&quot;</span>   <span class="nt">/&gt;</span>
-    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;opt&quot;</span>  <span class="na">fg=</span><span class="s">&quot;4&quot;</span>   <span class="nt">/&gt;</span>
-    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;cmd&quot;</span>  <span class="na">fg=</span><span class="s">&quot;10&quot;</span>  <span class="nt">/&gt;</span>
-    <span class="nt">&lt;aui:color</span> <span class="na">name=</span><span class="s">&quot;args&quot;</span> <span class="na">fg=</span><span class="s">&quot;246&quot;</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;/aui:palette&gt;</span>
+<span class="w">  </span><span class="nt">&lt;aui:palette&gt;</span>
+<span class="w">    </span><span class="nt">&lt;aui:color</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;pid&quot;</span><span class="w">  </span><span class="na">fg=</span><span class="s">&quot;3&quot;</span><span class="w">   </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;aui:color</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;opt&quot;</span><span class="w">  </span><span class="na">fg=</span><span class="s">&quot;4&quot;</span><span class="w">   </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;aui:color</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;cmd&quot;</span><span class="w">  </span><span class="na">fg=</span><span class="s">&quot;10&quot;</span><span class="w">  </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;aui:color</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;args&quot;</span><span class="w"> </span><span class="na">fg=</span><span class="s">&quot;246&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/aui:palette&gt;</span>
 
 <span class="nt">&lt;/aui:MiniTop&gt;</span>
-</pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 
 <p><em>mini-top.xml</em></p>
 <p>This is a slightly bigger XML document where we have a few more nested widgets,
@@ -423,11 +420,10 @@ documentation of the UI framework used by the Austin TUI project, and this post
 is a way to make up for that as much as possible for now. Looking at all the
 sample XML above you might be wondering where all those attributes come from.
 For example, when we look at a <code>Label</code> element, we see</p>
-<div class="highlight"><pre><span></span><span class="nt">&lt;aui:Label</span> <span class="na">name=</span><span class="s">&quot;label&quot;</span>
-  <span class="na">text=</span><span class="s">&quot;Hello World&quot;</span>
-  <span class="na">align=</span><span class="s">&quot;center&quot;</span> <span class="nt">/&gt;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;aui:Label</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;label&quot;</span>
+<span class="w">  </span><span class="na">text=</span><span class="s">&quot;Hello World&quot;</span>
+<span class="w">  </span><span class="na">align=</span><span class="s">&quot;center&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+</code></pre></div>
 
 <p>The attributes <code>name</code>, <code>text</code> and <code>align</code> are precisely the arguments of the
 <code>__init__</code> method of the <code>Label</code> class. Hence, if you want to find out which
@@ -441,22 +437,20 @@ its own set of attributes.</p>
 you could sub-class <code>Widget</code> and make your own widgets. If you do so and want
 to reference your custom widget in the XML document, all you have to do is use
 the class name as element name. For example, if you have something like</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">austin_tui.widgets</span> <span class="kn">import</span> <span class="n">Widget</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">austin_tui.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
 
-<span class="k">class</span> <span class="nc">MyWidget</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">some_attribute</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyWidget</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">some_attribute</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="o">...</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>then in the XML document you would have something like</p>
-<div class="highlight"><pre><span></span><span class="nt">&lt;aui:MyWidget</span> <span class="na">name=</span><span class="s">&quot;mywidget_instance&quot;</span> <span class="na">some-attribute=</span><span class="s">&quot;42&quot;</span> <span class="nt">&gt;</span>
-  <span class="cm">&lt;!-- any potential children here --&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;aui:MyWidget</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;mywidget_instance&quot;</span><span class="w"> </span><span class="na">some-attribute=</span><span class="s">&quot;42&quot;</span><span class="w"> </span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="cm">&lt;!-- any potential children here --&gt;</span>
 <span class="nt">&lt;/aui:MyWidget&gt;</span>
-</pre></div>
-
+</code></pre></div>
 
 <h1 id="updating-the-ui">Updating the UI</h1>
 <p>For the model part of the MVC pattern we don't have much to say here as that
@@ -464,7 +458,7 @@ will depend upon your application. In this post I will show you how to make a
 minimalist top application, so we can have a look what the model code could look
 like in this case a move over to the more interesting bit, which is the <code>C</code> in
 MVC.</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">psutil</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
 
 
 <span class="n">data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -479,8 +473,7 @@ MVC.</p>
     <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>If you are familiar with the <code>psutil</code> module, you will see that we are iterating
 over all active processes to extract some information from them. In this case we
@@ -490,7 +483,7 @@ introduced in <code>mini-top.xml</code>. As we will see, there is some more code
 could put into the model part of our design, but for simplicity we will embed
 that into the controller. The  code below shows you how to update the UI every 2
 seconds with fresh system data.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -580,13 +573,13 @@ seconds with fresh system data.</p>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-<span class="kn">import</span> <span class="nn">psutil</span>
-<span class="kn">from</span> <span class="nn">austin_tui.view</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">ViewBuilder</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">austin_tui.view</span><span class="w"> </span><span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">ViewBuilder</span>
 
 
-<span class="k">def</span> <span class="nf">format_cmdline</span><span class="p">(</span><span class="n">cmdline</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">format_cmdline</span><span class="p">(</span><span class="n">cmdline</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdline</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
     <span class="n">cmd</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="n">cmdline</span>
@@ -596,31 +589,31 @@ seconds with fresh system data.</p>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;cmd&gt;</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&lt;/cmd&gt; &lt;args&gt;</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&lt;/args&gt;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">MiniTop</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MiniTop</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">(</span><span class="s2">&quot;quit signal&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">on_pgdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pgdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">on_pgup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pgup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_up</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">on_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_up</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">on_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">scroll_down</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proc_view</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
                 <span class="p">[</span>
@@ -654,7 +647,7 @@ seconds with fresh system data.</p>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;mini-top.austinui&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">austinui</span><span class="p">:</span>
         <span class="n">view</span> <span class="o">=</span> <span class="n">ViewBuilder</span><span class="o">.</span><span class="n">from_stream</span><span class="p">(</span><span class="n">austinui</span><span class="p">)</span>
         <span class="n">view</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
@@ -671,8 +664,7 @@ seconds with fresh system data.</p>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre></div>
-</td></tr></table>
+</code></pre></div></td></tr></table></div>
 
 <p>There are quite a few new things that we need to explan here. First of all we
 see that we implement <code>MiniTop</code> as a sub-class of <code>View</code> and we declare all the
@@ -705,9 +697,8 @@ window that would get refreshed would be the root one.</p>
 <code>markup</code> method and the <code>format_cmdline</code> helper function. This is we we find
 references to the <code>palette</code> element in the XML document. Let's have a closer
 look at line 58 for example.</p>
-<div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;pid&gt;</span><span class="si">{</span><span class="n">pid</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2">&lt;/pid&gt;&quot;</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="bp">self</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;pid&gt;</span><span class="si">{</span><span class="n">pid</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2">&lt;/pid&gt;&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 <p>The <code>markup</code> method of a <code>View</code> object is a convenience method for creating
 strings with multiple attributes, like foreground/background colour, boldface,

@@ -41,7 +41,7 @@
         <time class="published py-1" datetime="2018-03-03T22:49:00+01:00">
           &#128197; Sat 03 March 2018
         </time>
-        <span class="readtime py-1">&#9202; A 23 min read</span>
+        <span class="readtime py-1">&#9202; A 22 min read</span>
         <span id="github">
           <i class="fa fa-github" aria-hidden="true"></i>
           <a href="https://github.com/P403n1x87/iot/tree/master/gravity_led" target="_blank">
@@ -193,9 +193,9 @@ normal functions, but rather than <em>returning</em> a value, they <em>yield</em
 normally used in loops to provide iterators.</p>
 <p>The typical scenario where you'd want to opt for a generator rather than a
 function is when you have to keep track of some state in between the different
-values returned. A simple example is a generator that generates the first <span class="math">\(n\)</span>
+values returned. A simple example is a generator that generates the first $n$
 Fibonacci numbers:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span>
 
     <span class="k">yield</span> <span class="mi">0</span>
@@ -212,11 +212,10 @@ Fibonacci numbers:</p>
         <span class="k">yield</span> <span class="n">a2</span>
         <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-</pre></div>
+</code></pre></div>
 
-
-<p>If <span class="math">\(n=0\)</span>, the generator doesn't yield any number and we can then return. When
-<span class="math">\(n=1\)</span>, the generator must yield the first Fibonacci number only, which is 0, and
+<p>If $n=0$, the generator doesn't yield any number and we can then return. When
+$n=1$, the generator must yield the first Fibonacci number only, which is 0, and
 so on. The difference between <code>return</code> and <code>yield</code> is that the former terminates
 the iteration, while the latter allows it to continue. To better understand what
 is going on here, observe that a call to <code>fibonacci</code>, like <code>f = fibonacci(10)</code>
@@ -224,7 +223,7 @@ doesn't return a Fibonacci number (you might at first expect this to return the
 first Fibonacci number), but a <em>generator object</em> instead, that is, something
 that we can use with a <code>for</code> loop, or any function that expects an iterable
 object, like <code>sum</code>. The first two Fibonacci numbers can then be generated with</p>
-<div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">f</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
@@ -232,35 +231,32 @@ object, like <code>sum</code>. The first two Fibonacci numbers can then be gener
 <span class="c1"># &lt;generator object fibonacci at 0x7f2e0940baf0&gt;</span>
 <span class="c1"># 0</span>
 <span class="c1"># 1</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>but if we now try to print yet another Fibonacci number, we get a
 <code>StopIteration</code> exception, which signals that the generator has returned and
 that there are no more values to be generated:</p>
-<div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 <span class="c1"># Expected output</span>
 <span class="c1"># Traceback (most recent call last):</span>
 <span class="c1">#   File &quot;&lt;stdin&gt;&quot;, line 5, in &lt;module&gt;</span>
 <span class="c1">#     print(next(f))</span>
 <span class="c1">#</span>
 <span class="c1"># StopIteration</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The following code snippet illustrates the use of a generator with a <code>for</code> loop</p>
-<div class="highlight"><pre><span></span><span class="n">test_cases</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+<div class="highlight"><pre><span></span><code><span class="n">test_cases</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
 
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">test_cases</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test case: n = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">t</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>I am omitting the expected output to avoid cluttering the page, but it should be
 quite clear what the above code is supposed to do. To produce a more compact
 result we can do something like</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sfibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sfibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span> <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">test_cases</span><span class="p">:</span>
@@ -281,8 +277,7 @@ result we can do something like</p>
 <span class="c1"># 0 1 1 2 3 5 8 13 21 34</span>
 <span class="c1"># Test case: n = 20</span>
 <span class="c1"># 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>which also shows how to construct a generator out of another generator.</p>
 <p>From the above example we deduce that the <code>yield</code> keyword is generating a value
@@ -303,7 +298,7 @@ resuming execution from certain points of the code.</p>
 language. They can be easily constructed with <code>yield</code>, which has been turned
 into an <em>expression</em>. The value <code>yields</code> evaluates to is passed to the coroutine
 with a call to <code>send</code> on the generator, like so</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">coroutine</span><span class="p">():</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">coroutine</span><span class="p">():</span>
     <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="k">yield</span>
@@ -317,8 +312,7 @@ with a call to <code>send</code> on the generator, like so</p>
 <span class="c1"># Expected output</span>
 <span class="c1"># #1 : Hello</span>
 <span class="c1"># #2 : World</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>If you look to code like the above for the first time, you might be wondering
 why I have included a call to <code>next</code>. Remember from our discussion on generators
@@ -378,32 +372,31 @@ following examples are based on them, but with just some slight modifications,
 and a twist: the client sends a string read from STDIN and the echo server
 reverses it.</p>
 <p>So here is the server code</p>
-<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="c1"># Echo server. Will reverse everything we throw at it.</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">websockets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">websockets</span>
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="k">async</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">websocket</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">websockets</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">echo</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8765</span><span class="p">))</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>and here is the client code</p>
-<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="c1"># Client. Sends stuff from STDIN to the server.</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">websockets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">websockets</span>
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">websocket</span><span class="p">:</span>
@@ -411,8 +404,7 @@ reverses it.</p>
             <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">input</span><span class="p">())</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;ws://localhost:8765&#39;</span><span class="p">))</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>And that's where we make our first encounter with the new <code>async</code>/<code>await</code>
 keywords, introduced by the already cited PEP 492. The new syntax <code>async def</code> is
@@ -452,13 +444,12 @@ don't have <code>await</code> and <code>async</code>. The first is the use of th
 <code>@asyncio.coroutine</code> instead of <code>async def</code>. The situation is a bit more
 complicated for <code>async with</code>, which requires a replacement for <code>await</code>, which is
 <code>yield from</code>. The latter is substantially equivalent to</p>
-<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">foo</span><span class="p">():</span> <span class="k">yield</span> <span class="n">a</span>    <span class="c1"># Same as: yield from foo()</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">foo</span><span class="p">():</span> <span class="k">yield</span> <span class="n">a</span>    <span class="c1"># Same as: yield from foo()</span>
+</code></pre></div>
 
 <p>With this in mind, <code>async with</code> can be coded with a more traditional <code>try ...
 finally</code> block as</p>
-<div class="highlight"><pre><span></span><span class="c1"># async with coro() as foo:</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># async with coro() as foo:</span>
 <span class="c1">#     # &lt;code&gt;</span>
 <span class="c1">#     pass</span>
 <span class="n">foo</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">coro</span><span class="p">()</span>
@@ -467,11 +458,10 @@ finally</code> block as</p>
     <span class="k">pass</span>
 <span class="k">finally</span><span class="p">:</span>
     <span class="c1"># Whatever coro().__aexit__() would have done.</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The <code>async for</code> loop would translate to something like the following</p>
-<div class="highlight"><pre><span></span><span class="c1"># async for foo in bar():</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># async for foo in bar():</span>
 <span class="c1">#     # &lt;code&gt;</span>
 <span class="c1">#     pass</span>
 <span class="k">try</span><span class="p">:</span>
@@ -480,43 +470,41 @@ finally</code> block as</p>
         <span class="c1"># &lt;code&gt;</span>
 <span class="k">except</span> <span class="ne">StopAsyncIteration</span><span class="p">:</span>
     <span class="k">return</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This coding is not strict, since you could, or you might have to replace the
 code of <code>bar().__anext__()</code> with the actual coding inside this coroutine. This
 is the case for the code that we are about to see, in which we perform the above
 translations. The server code for Python 3.4 is the following</p>
-<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="c1"># Echo server. Will reverse everything we throw at it.</span>
 <span class="c1"># For Python 3.4</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">websockets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">websockets</span>
 
 <span class="nd">@asyncio</span><span class="o">.</span><span class="n">coroutine</span>
-<span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
         <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">websockets</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">echo</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8765</span><span class="p">))</span>
 <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>while the client code now looks like this</p>
-<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="c1"># Client. Sends stuff from STDIN to the server.</span>
 <span class="c1"># For Python 3.4</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">websockets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">websockets</span>
 
 <span class="nd">@asyncio</span><span class="o">.</span><span class="n">coroutine</span>
-<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
     <span class="n">websocket</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
@@ -528,8 +516,7 @@ translations. The server code for Python 3.4 is the following</p>
         <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;ws://localhost:8765&#39;</span><span class="p">))</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Note how to execute a native coroutine, or one decorated with
 <code>@asyncio.coroutine</code> in Python 3.4, needs to be executed by an event loop from
@@ -593,8 +580,8 @@ is used to bootstrap the class <code>GyroListener</code> contained in
 which holds the actual logic of the server. As you can see, all that we have to
 do is inherit from <code>WSServer</code> and implement the <code>handler</code> coroutine, as shown
 here.</p>
-<div class="highlight"><pre><span></span><span class="nd">@asyncio</span><span class="o">.</span><span class="n">coroutine</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@asyncio</span><span class="o">.</span><span class="n">coroutine</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connection ID </span><span class="si">{}</span><span class="s2"> established [path </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
 
     <span class="n">G</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>
@@ -626,8 +613,7 @@ here.</p>
             <span class="k">break</span>
 
     <span class="n">G</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Here we initialise the Pi's GPIO and start listening to data over the socket
 until the server is running or the connection is closed by the client. The two
@@ -644,9 +630,8 @@ on, with a duty cycle proportional to the value passed by the client; when the
 value is negative the LED on the <code>CHL</code> pin will start to turn on.</p>
 <p>To launch the server, run <code>main.py</code> and pass the IPv4 address and a port number,
 for example</p>
-<div class="highlight"><pre><span></span>python3 main.py <span class="m">0</span>.0.0.0 <span class="m">5678</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>main.py<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="m">5678</span>
+</code></pre></div>
 
 <p>to listen on <em>any</em> IP address on the Raspberry Pi and accept connections from everywhere.</p>
 <h2 id="the-client-code">The Client Code</h2>
@@ -669,20 +654,19 @@ the code in
 all that we have to do is extend the <code>WebSocketClient</code> class and implement a few
 methods, which we just use for logging purposes. The actual signalling is done
 via callbacks triggered by the on-board gravity sensor on the Android device:</p>
-<div class="highlight"><pre><span></span><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSensorChanged</span><span class="p">(</span><span class="kd">final</span> <span class="n">SensorEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
-  <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
-  <span class="kt">float</span> <span class="n">z</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
-  <span class="kt">float</span> <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">);</span>
-  <span class="k">try</span> <span class="p">{</span>
-    <span class="n">webSocketClient</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">));</span>
-  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">WebsocketNotConnectedException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">Log</span><span class="p">.</span><span class="na">w</span><span class="p">(</span><span class="s">&quot;ctrl_ws_client&quot;</span><span class="p">,</span> <span class="s">&quot;Sensor updated but socket not connected&quot;</span><span class="p">);</span>
-  <span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onSensorChanged</span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="n">SensorEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">);</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">webSocketClient</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">WebsocketNotConnectedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Log</span><span class="p">.</span><span class="na">w</span><span class="p">(</span><span class="s">&quot;ctrl_ws_client&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sensor updated but socket not connected&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This method is part of the <code>MainActivity</code> class since we decided that this
 should implement the <code>SensorEventListener</code> interface. When a connection is
@@ -692,9 +676,8 @@ components of the gravity vector are sent in text form to the server via the
 WebSocket.</p>
 <p>We can use Gradle to build and deploy the application for testing on a device
 with the command</p>
-<div class="highlight"><pre><span></span>./gradlew installDebug
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>installDebug
+</code></pre></div>
 
 <p>assuming that you have an Android device in developer mode connected to your
 building machine via USB. This is what it looks like on my Nexus 5</p>
@@ -724,72 +707,8 @@ necessary operation to make sense of the received information.</p>
 receive an binary frame on Java. In this case, though, we will have to implement
 the <code>ByteBuffer</code> version of the <code>onMessage</code> callback of the <code>WebSocketClient</code>
 class, i.e. the one with signature</p>
-<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="p">(</span> <span class="n">ByteBuffer</span> <span class="n">bytes</span> <span class="p">)</span>
-</pre></div>
-
-
-<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width < 768) ? "left" : align;
-        indent = (screen.width < 768) ? "0em" : indent;
-        linebreak = (screen.width < 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
-
-    var configscript = document.createElement('script');
-    configscript.type = 'text/x-mathjax-config';
-    configscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        availableFonts: ['STIX', 'TeX']," +
-        "        preferredFont: 'STIX'," +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-</script>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onMessage</span><span class="p">(</span><span class="w"> </span><span class="n">ByteBuffer</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">)</span>
+</code></pre></div>
   </div><!-- /.entry-content -->
 </section>
 

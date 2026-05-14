@@ -116,9 +116,8 @@ This post will try to be as much self-contained as possible, but whenever you
 feel the need to explore something a bit more, the NASM documentation will
 probably be the right place. To assemble a 64-bit application we will need to
 use the command</p>
-<div class="highlight"><pre><span></span>nasm -f elf64 -o myapp.o myapp.asm
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>myapp.o<span class="w"> </span>myapp.asm
+</code></pre></div>
 
 <p>The flag <code>-f elf64</code> instructs NASM that we want to create a 64-bit ELF object
 file. The flag <code>-o myapp.o</code> tells the assembler that we want the output object
@@ -129,9 +128,8 @@ name of the source file containing the NASM code to be assembled.</p>
 are not using any external libraries, we still need to invoke the linker in
 order to obtain a valid executable file. The typical usage of <code>ld</code> that we will
 encounter in this post is</p>
-<div class="highlight"><pre><span></span>ld -o myapp.o myapp
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-o<span class="w"> </span>myapp.o<span class="w"> </span>myapp
+</code></pre></div>
 
 <p>This is enough to produce a valid executable when we are not linking our object
 file <code>myapp.o</code> against any external shared library or any other object file.
@@ -140,9 +138,8 @@ interpreter you want to use. This is a library which, for ELF executables, acts
 as a loader. It loads the application in memory, as well as the required linked
 shared libraries. On Ubuntu 16.04, the right 64-bit interpreter is at
 <code>/lib64/ld-linux-x86-64.so.2</code> and therefore my invocation of <code>ld</code> will look like</p>
-<div class="highlight"><pre><span></span>ld -o myapp myapp.o -I/lib64/ld-linux-x86-64.so.2
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-o<span class="w"> </span>myapp<span class="w"> </span>myapp.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
+</code></pre></div>
 
 <p>Some external shared libraries are designed to work with C. It is then advisable
 to include a <code>main</code> function in the assembly source code since the Standard C
@@ -153,9 +150,8 @@ will see an example of this situation in a future tutorial on assembly and Gtk+.
 For the time being, we shall limit ourselves to see how to use the GNU C
 Compiler to link our object file with other object files (and in particular with
 <code>libc</code>). The typical usage of <code>gcc</code> will be something like</p>
-<div class="highlight"><pre><span></span>gcc -o myapp.o myapp
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>gcc<span class="w"> </span>-o<span class="w"> </span>myapp.o<span class="w"> </span>myapp
+</code></pre></div>
 
 <p>which is very much similar to <code>ld</code>.</p>
 <h1 id="hello-syscalls">Hello Syscalls!</h1>
@@ -184,7 +180,7 @@ to make system calls. You can still use interrupts to make system calls, but
 <p>The purpose of this section is to explore this new opcode with an example.
 Without further ado, let's dive into some assembly code. The following is the
 content of my <code>hello64.asm</code> file.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -218,43 +214,42 @@ content of my <code>hello64.asm</code> file.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">_start</span><span class="w"></span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">global</span><span class="w"> </span><span class="nv">_start</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; CONSTANTS</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="no">SYS_WRITE</span><span class="w">   </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="no">SYS_EXIT</span><span class="w">    </span><span class="kd">equ</span><span class="w"> </span><span class="mi">60</span><span class="w"></span>
-<span class="no">STDOUT</span><span class="w">      </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; CONSTANTS</span>
+<span class="c1">;</span>
+<span class="no">SYS_WRITE</span><span class="w">   </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span>
+<span class="no">SYS_EXIT</span><span class="w">    </span><span class="kd">equ</span><span class="w"> </span><span class="mi">60</span>
+<span class="no">STDOUT</span><span class="w">      </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Initialised data goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span><span class="w"></span>
-<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; Initialised data goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Code goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; Code goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span>
 
-<span class="nl">_start:</span><span class="w"></span>
-<span class="w">    </span><span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_WRITE</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">STDOUT</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
-<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
-<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span><span class="w"></span>
+<span class="nl">_start:</span>
+<span class="w">    </span><span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_WRITE</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">STDOUT</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
+<span class="w">    </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span>
 
-<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span><span class="w"></span>
-<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span><span class="w"></span>
-<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
-<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
-</pre></div>
-</td></tr></table>
+<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span>
+<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
+<span class="w">    </span><span class="nf">syscall</span>
+</code></pre></div></td></tr></table></div>
 
 <p><em>hello64.asm</em></p>
 <p>Lines 1, 13, 20 and 22 are part of the skeleton of any NASM source code. With
@@ -295,7 +290,7 @@ use <code>rcx</code> instead of <code>r10</code>. Indeed, the latter is only use
 interface, while the former is used in all the other cases.</p>
 <p>On line 23 we have a comment that shows us the equivalent C code for a call to
 <code>sys_write</code>. Its "signature" is the following.</p>
-<div class="highlight"><pre><span></span>1. SYS_WRITE
+<div class="highlight"><pre><span></span><code>1. SYS_WRITE
 
 Parameters
 ----------
@@ -308,8 +303,7 @@ size_t              number of bytes to write
 Return value
 ------------
 The number of bytes of the pointed string written on the file descriptor.
-</pre></div>
-
+</code></pre></div>
 
 <p>The number that appears on the top right corner is the code associated to the
 system call (compare this with line 6 above), and by convention this goes into
@@ -326,7 +320,7 @@ in the stack in order to use it as an exit code to be passed to <code>sys_exit</
 string to standard output, we are ready to terminate the execution of the main
 process. This is achieved by making the exit system call, whose "signature" is
 the following.</p>
-<div class="highlight"><pre><span></span>60. SYS_EXIT
+<div class="highlight"><pre><span></span><code>60. SYS_EXIT
 
 Parameters
 ----------
@@ -337,8 +331,7 @@ int     error code
 Return value
 ------------
 This system call does not return.
-</pre></div>
-
+</code></pre></div>
 
 <p>With line 32 we load the code of <code>sys_exit</code> into the <code>rax</code> register in
 preparation for the system call. As error code, we might want to return <code>0</code> if
@@ -353,44 +346,39 @@ so that if <code>sys_write</code> has written all the expected number of bytes, 
 now be <code>0</code>. The last instruction on line 35 is the <code>syscall</code> opcode that will
 make the system call and terminate the execution.</p>
 <p>All right, time now to assemble, link and execute the above code.</p>
-<div class="highlight"><pre><span></span>nasm -f elf64 -o hello64.o hello64.asm
-ld -o hello64 hello64.o -I/lib64/ld-linux-x86-64.so.2
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>hello64.o<span class="w"> </span>hello64.asm
+ld<span class="w"> </span>-o<span class="w"> </span>hello64<span class="w"> </span>hello64.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
+</code></pre></div>
 
 <p>This will assemble the source code of <code>hello64.asm</code> into the object file
 <code>hello64.o</code>, while the linker will finish off the job by linking the interpreter
 to the object file and produce the ELF64 executable. To run the application,
 simply type</p>
-<div class="highlight"><pre><span></span>./hello64
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>./hello64
+</code></pre></div>
 
 <p>If you also want to display the exit code to make sure the executable is
 behaving as expected we could use</p>
-<div class="highlight"><pre><span></span>./hello64<span class="p">;</span> <span class="nb">echo</span> <span class="s2">&quot;exit code:&quot;</span> <span class="nv">$?</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>./hello64<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;exit code:&quot;</span><span class="w"> </span><span class="nv">$?</span>
+</code></pre></div>
 
 <p>and, on screen, we should now see</p>
-<div class="highlight"><pre><span></span>Hello World!
+<div class="highlight"><pre><span></span><code>Hello World!
 exit code: 0
-</pre></div>
-
+</code></pre></div>
 
 <p>Apart from the fun, another reason to write assembly code is that you can shrink
 the size of the executable file. Let's check how big <code>hello64</code> is at this stage</p>
-<div class="highlight"><pre><span></span>$ wc -c &lt; hello64
+<div class="highlight"><pre><span></span><code>$ wc -c &lt; hello64
 1048
-</pre></div>
-
+</code></pre></div>
 
 <p>A kilobyte seems a bit excessive for an assembly application that only prints a
 short string on screen. The reason of such a bloated executable is in the symbol
 table created by NASM. This plays an important role inside our ELF file in case
 we'd need to link it with other object files. You can see all the symbols stored
 in the elf file with</p>
-<div class="highlight"><pre><span></span>$ objdump -t hello64
+<div class="highlight"><pre><span></span><code>$ objdump -t hello64
 
 hello64:     file format elf64-x86-64
 
@@ -407,37 +395,32 @@ SYMBOL TABLE:
 00000000006000e5 g       .data 0000000000000000 __bss_start
 00000000006000e5 g       .data 0000000000000000 _edata
 00000000006000e8 g       .data 0000000000000000 _end
-</pre></div>
-
+</code></pre></div>
 
 <p>Assuming that we are not planning of doing this with our simple Hello World
 example, we strip the symbol table off <code>hello64</code> with</p>
-<div class="highlight"><pre><span></span>strip -s hello64
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>strip<span class="w"> </span>-s<span class="w"> </span>hello64
+</code></pre></div>
 
 <p>If we now check the file size again, this is what we get</p>
-<div class="highlight"><pre><span></span>$ wc -c &lt; hello64
+<div class="highlight"><pre><span></span><code>$ wc -c &lt; hello64
 512
-</pre></div>
-
+</code></pre></div>
 
 <p>i.e. less than half the original size. Looking at the symbol table again, this
 is what we get now:</p>
-<div class="highlight"><pre><span></span>$ objdump -t hello64
+<div class="highlight"><pre><span></span><code>$ objdump -t hello64
 
 hello64: file format elf64-x86-64
 
 SYMBOL TABLE:
 no symbols
-</pre></div>
-
+</code></pre></div>
 
 <p>Observe that we can obtain the same result with the -s switch to the linker we
 decide to use, that is, either ld or gcc. Thus, for example,</p>
-<div class="highlight"><pre><span></span>ld -s -o hello64 hello64.o
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello64<span class="w"> </span>hello64.o
+</code></pre></div>
 
 <p>will produce an ELF executable that lacks the symbol table completely.</p>
 <p>The possibility of removing symbols from an ELF file gives us the chance of
@@ -447,7 +430,7 @@ repository you can find the file
 where I have defined all the system calls together with their associated ID, and
 the "signature" of each on a comment line. With the help of this file, our
 source code would look like this</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -481,43 +464,42 @@ source code would look like this</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">_start</span><span class="w"></span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">global</span><span class="w"> </span><span class="nv">_start</span>
 
 <span class="cp">%include &quot;../syscalls.inc&quot;</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; CONSTANTS</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="no">STDOUT</span><span class="w">      </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; CONSTANTS</span>
+<span class="c1">;</span>
+<span class="no">STDOUT</span><span class="w">      </span><span class="kd">equ</span><span class="w"> </span><span class="mi">1</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Initialised data goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span><span class="w"></span>
-<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; Initialised data goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Code goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; Code goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span>
 
-<span class="nl">_start:</span><span class="w"></span>
-<span class="w">    </span><span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_WRITE</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">STDOUT</span><span class="w"></span>
-<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
-<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
-<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span><span class="w"></span>
+<span class="nl">_start:</span>
+<span class="w">    </span><span class="c1">; syscall(SYS_WRITE, STDOUT, hello, hello_len);</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_WRITE</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">STDOUT</span>
+<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rsi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rdx</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
+<span class="w">    </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span>
 
-<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span><span class="w"></span>
-<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span><span class="w"></span>
-<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
-<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
-</pre></div>
-</td></tr></table>
+<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, &lt;sys_write return value&gt; - hello_len);</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span>
+<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
+<span class="w">    </span><span class="nf">syscall</span>
+</code></pre></div></td></tr></table></div>
 
 <p><em>hello64_inc.asm</em></p>
 <p>Note the inclusion of the file <code>syscalls.inc</code> at line 3, assumed to be stored in
@@ -529,17 +511,15 @@ but get rid of the one associated to constants that are meaningful to just your
 source code, you can add a <code>-N &lt;symbol name&gt;</code> (e.g. <code>strip -N STDOUT hello64</code>)
 switch to strip for each symbol you want dropped. To automate this when using
 <code>syscalls.inc</code>, one can execute the following (rather long) command</p>
-<div class="highlight"><pre><span></span>strip <span class="sb">`</span><span class="k">while</span> <span class="nv">IFS</span><span class="o">=</span><span class="s1">&#39;&#39;</span> <span class="nb">read</span> -r line <span class="o">||</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">do</span> <span class="nb">read</span> s _ <span class="o">&lt;&lt;&lt;</span> <span class="nv">$line</span><span class="p">;</span> <span class="nb">echo</span> -n <span class="s2">&quot;-N </span><span class="nv">$s</span><span class="s2"> &quot;</span><span class="p">;</span> <span class="k">done</span> &lt; &lt;<span class="o">(</span>tail -n +5 ../syscalls.inc<span class="o">)</span><span class="sb">`</span> hello64
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>strip<span class="w"> </span><span class="sb">`</span><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>s<span class="w"> </span>_<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="nv">$line</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;-N </span><span class="nv">$s</span><span class="s2"> &quot;</span><span class="p">;</span><span class="w"> </span><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>&lt;<span class="o">(</span>tail<span class="w"> </span>-n<span class="w"> </span>+5<span class="w"> </span>../syscalls.inc<span class="o">)</span><span class="sb">`</span><span class="w"> </span>hello64
+</code></pre></div>
 
 <p>on the ELF executable.</p>
 <p>Finally, let's verify that all we really have is pure assembly code, i.e. that
 our application doesn't depend on external shared objects:</p>
-<div class="highlight"><pre><span></span>$ ldd hello64
+<div class="highlight"><pre><span></span><code>$ ldd hello64
         not a dynamic executable
-</pre></div>
-
+</code></pre></div>
 
 <p>In this case, this output is telling us that <code>hello64</code> is not linked to any
 other shared object files.</p>
@@ -554,14 +534,13 @@ application like a Hello World! this last point is pretty much immaterial, but
 we will see in another post on GUIs with Gtk+ 3 the importance of waiting for
 child processes to terminate an application gracefully.</p>
 <p>So the code we want to write is the assembly analogue of the following C code</p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>Inside the <code>main</code> function, we call <code>printf</code> to print the string on screen and
 then use its return value, decreased by the string length, as exit code. Thus,
@@ -574,7 +553,7 @@ parameter passing. In this case, since we are just printing a string, we are not
 passing any other arguments apart from the location of the first character of
 the string, and therefore we need to set <code>rax</code> to zero. With all these
 considerations, the assembly analogue of the above C code will look like this</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -595,30 +574,29 @@ considerations, the assembly analogue of the above C code will look like this</p
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">main</span><span class="w"></span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">global</span><span class="w"> </span><span class="nv">main</span>
 
-<span class="k">extern</span><span class="w"> </span><span class="nv">printf</span><span class="w"></span>
+<span class="k">extern</span><span class="w"> </span><span class="nv">printf</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Initialised data goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span><span class="w"></span>
-<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w">               </span><span class="c1">; size_t</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Code goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; Initialised data goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w">               </span><span class="c1">; size_t</span>
+<span class="c1">;</span>
+<span class="c1">; Code goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span>
 
-<span class="c1">; int main ()</span><span class="w"></span>
-<span class="nl">main:</span><span class="w"></span>
-<span class="w">    </span><span class="c1">; return printf(hello) - hello_len;</span><span class="w"></span>
-<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span><span class="w"></span>
-<span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span><span class="w"></span>
-<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
-</pre></div>
-</td></tr></table>
+<span class="c1">; int main ()</span>
+<span class="nl">main:</span>
+<span class="w">    </span><span class="c1">; return printf(hello) - hello_len;</span>
+<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span>
+<span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span>
+<span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
+</code></pre></div></td></tr></table></div>
 
 <p><em>hello64_libc.asm</em></p>
 <p>On line 1 we export the main symbol, which will get called by the <code>libc</code>
@@ -635,10 +613,9 @@ we are not passing any arguments by the XMM registers, and finally call the
 from the return value of <code>printf</code>.</p>
 <p>Assuming the above code resides in the file <code>hello64_libc.asm</code>, we can assemble
 and link it with</p>
-<div class="highlight"><pre><span></span>nasm -f elf64 -o hello64_libc.o hello64_libc
-gcc -o hello64_libc hello64_libc.o
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>hello64_libc.o<span class="w"> </span>hello64_libc
+gcc<span class="w"> </span>-o<span class="w"> </span>hello64_libc<span class="w"> </span>hello64_libc.o
+</code></pre></div>
 
 <p>The ELF executable I get on my machine is 8696 bytes in size, and 6328 without
 the symbol table. If we thought 1048 was too much for a simple Hello World
@@ -649,7 +626,7 @@ see that we are wasting about 8K by relying on the Standard C Library.</p>
 executable only depends on the Standard C Library. However, as discussed above,
 we lose an important clean-up process that can be convenient, if not necessary,
 at times.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -677,37 +654,36 @@ at times.</p>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">global</span><span class="w"> </span><span class="nv">_start</span><span class="w"></span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">global</span><span class="w"> </span><span class="nv">_start</span>
 
 <span class="cp">%include &quot;../syscalls.inc&quot;</span>
 
-<span class="k">extern</span><span class="w"> </span><span class="nv">printf</span><span class="w"></span>
+<span class="k">extern</span><span class="w"> </span><span class="nv">printf</span>
 
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Initialised data goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span><span class="w"></span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span><span class="w"></span>
-<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="c1">; size_t</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="c1">; Code goes here</span><span class="w"></span>
-<span class="c1">;</span><span class="w"></span>
-<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span><span class="w"></span>
+<span class="c1">;</span>
+<span class="c1">; Initialised data goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span>
+<span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="c1">; size_t</span>
+<span class="c1">;</span>
+<span class="c1">; Code goes here</span>
+<span class="c1">;</span>
+<span class="k">SECTION</span><span class="w"> </span><span class="nv">.text</span>
 
-<span class="nl">_start:</span><span class="w"></span>
-<span class="w">    </span><span class="c1">; printf(hello) - hello_len;</span><span class="w"></span>
-<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span><span class="w"></span>
-<span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span><span class="w"></span>
-<span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span><span class="w"></span>
-<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span><span class="w"></span>
+<span class="nl">_start:</span>
+<span class="w">    </span><span class="c1">; printf(hello) - hello_len;</span>
+<span class="w">    </span><span class="nf">lea</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">hello</span><span class="p">]</span>
+<span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span>
+<span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
 
-<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, rax - hello_len)</span><span class="w"></span>
-<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span><span class="w"></span>
-<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span><span class="w"></span>
-<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span><span class="w"></span>
-<span class="w">    </span><span class="nf">syscall</span><span class="w"></span>
-</pre></div>
-</td></tr></table>
+<span class="w">    </span><span class="c1">; syscall(SYS_EXIT, rax - hello_len)</span>
+<span class="w">    </span><span class="nf">push</span><span class="w">    </span><span class="nb">rax</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span>
+<span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span>
+<span class="w">    </span><span class="nf">syscall</span>
+</code></pre></div></td></tr></table></div>
 
 <p><em>hello64_libc2.asm</em></p>
 <p>Note how, on lines 1 and 18, we removed the main function and reintroduced the
@@ -720,21 +696,19 @@ function, and therefore we have to make a call to <code>SYS_EXIT</code> ourselve
 to 29).</p>
 <p>Assuming this code resides in the file <code>hello64_libc2</code>, we assemble and link
 with the commands</p>
-<div class="highlight"><pre><span></span>nasm -f elf64 -o hello64_libc2.o hello64_libc2
-ld -s -o hello64_libc2 hello64_libc.o -I/lib64/ld-linux-x86-64.so.2
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>hello64_libc2.o<span class="w"> </span>hello64_libc2
+ld<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello64_libc2<span class="w"> </span>hello64_libc.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
+</code></pre></div>
 
 <p>Checking the file size, this is what I get on my machine now</p>
-<div class="highlight"><pre><span></span>$ wc -c &lt; hello64_libc2
+<div class="highlight"><pre><span></span><code>$ wc -c &lt; hello64_libc2
 2056
-</pre></div>
-
+</code></pre></div>
 
 <p>i.e. about a third of the "full" <code>libc</code> example above. There is something we can
 still do with <code>strip</code>, namely determine which sections are not needed. After
 linking with <code>ld</code>, the ELF I get has the following sections</p>
-<div class="highlight"><pre><span></span>$ readelf -S hello64_libc2 | grep [.]
+<div class="highlight"><pre><span></span><code>$ readelf -S hello64_libc2 | grep [.]
   [ 1] .interp           PROGBITS         0000000000400158  00000158
   [ 2] .hash             HASH             0000000000400178  00000178
   [ 3] .dynsym           DYNSYM           0000000000400190  00000190
@@ -749,15 +723,13 @@ linking with <code>ld</code>, the ELF I get has the following sections</p>
   [12] .got.plt          PROGBITS         00000000006003a0  000003a0
   [13] .data             PROGBITS         00000000006003c0  000003c0
   [14] .shstrtab         STRTAB           0000000000000000  000003ce
-</pre></div>
-
+</code></pre></div>
 
 <p>By trials and errors, I have discovered that I can get rid of <code>.hash</code>,
 <code>.gnu.version</code> and <code>.eh_frame</code> while still getting a valid ELF executable that
 does its job. To get rid of these sections one can use the command</p>
-<div class="highlight"><pre><span></span>strip -R .hash -R .gnu.version -R .eh_frame hello64_libc2
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>strip<span class="w"> </span>-R<span class="w"> </span>.hash<span class="w"> </span>-R<span class="w"> </span>.gnu.version<span class="w"> </span>-R<span class="w"> </span>.eh_frame<span class="w"> </span>hello64_libc2
+</code></pre></div>
 
 <p>which yields an executable of 1832 bytes.</p>
 <h1 id="conclusions">Conclusions</h1>

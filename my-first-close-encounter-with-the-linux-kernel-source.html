@@ -143,17 +143,15 @@ first time, like me, is to use Debian.</p>
 <p>But let's go in order. The first thing we want to do is get our hands on the
 latest version of the Linux kernel source code. So install <code>git</code> along with
 these other dependencies</p>
-<div class="highlight"><pre><span></span>sudo apt-get install vim libncurses5-dev gcc make git libssl-dev bison flex libelf-dev bc dwarves
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>vim<span class="w"> </span>libncurses5-dev<span class="w"> </span>gcc<span class="w"> </span>make<span class="w"> </span>git<span class="w"> </span>libssl-dev<span class="w"> </span>bison<span class="w"> </span>flex<span class="w"> </span>libelf-dev<span class="w"> </span>bc<span class="w"> </span>dwarves
+</code></pre></div>
 
 <p>and clone the repository with</p>
-<div class="highlight"><pre><span></span>mkdir kernel
-<span class="nb">cd</span> kernel
-git clone -b staging-testing git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
-<span class="nb">cd</span> staging
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>kernel
+<span class="nb">cd</span><span class="w"> </span>kernel
+git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>staging-testing<span class="w"> </span>git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
+<span class="nb">cd</span><span class="w"> </span>staging
+</code></pre></div>
 
 <p>These steps are adapted from <a href="https://kernelnewbies.org/OutreachyfirstpatchSetup?action=show&amp;redirect=OPWfirstpatchSetup">this KernelNewbies page</a>, which
 is the guide that I have used to get started.</p>
@@ -161,9 +159,8 @@ is the guide that I have used to get started.</p>
 system and your needs, but of course the source code comes with none. The next
 step then is to make one. The guide recommends starting from the current
 system's configuration as a base, which we can get with</p>
-<div class="highlight"><pre><span></span>cp /boot/config-<span class="sb">`</span>uname -r<span class="sb">`</span>* .config
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>cp<span class="w"> </span>/boot/config-<span class="sb">`</span>uname<span class="w"> </span>-r<span class="sb">`</span>*<span class="w"> </span>.config
+</code></pre></div>
 
 <p>If the VM is running a not-so-recent build of the Linux kernel, it's perhaps
 worth running <code>make olddefconfig</code> to get any new configuration options in. And
@@ -192,9 +189,8 @@ as a prefix in the kernel image name in the bootloader menu</p>
 
 <p>To make sure that everything is in order, and that you get GRUB menu entries
 similar to the ones shown above we can try to compile the sources with</p>
-<div class="highlight"><pre><span></span>make -j2 &gt; /dev/null <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;OK&quot;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>-j2<span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+</code></pre></div>
 
 <p>Feel free to replace the <code>2</code> with any other number that might be appropriate to
 your system. This represents the number of parallel compilation processes that
@@ -204,14 +200,12 @@ which is not very instructive. This leaves us with more useful warnings and
 errors that are spit out to <code>stderr</code>. If the compilation succeeeded we would
 then see <code>OK</code> at the end of the output. If this is the case, we can proceed with
 the installation with</p>
-<div class="highlight"><pre><span></span>sudo make modules_install install
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>make<span class="w"> </span>modules_install<span class="w"> </span>install
+</code></pre></div>
 
 <p>To boot into the newly compiled Linux kernel, simply reboot the VM with</p>
-<div class="highlight"><pre><span></span>sudo reboot
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>reboot
+</code></pre></div>
 
 <p>We're now all set to start hacking the Linux kernel 🎉.</p>
 <h1 id="adding-new-bells-and-whistles">Adding new bells and whistles</h1>
@@ -229,106 +223,101 @@ page-by-page using <code>copy_page_to_iter</code>. The system call is also gener
 sense that it performs multiple operations, according to the number of <code>iovec</code>
 elements that are passed to it. For my use case, I'm seeking to implement a
 function with the signature</p>
-<div class="highlight"><pre><span></span><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">process_vm_read</span><span class="p">(</span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">process_vm_read</span><span class="p">(</span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">);</span>
+</code></pre></div>
 
 <p>so that a possible implementation might have looked something like</p>
-<div class="highlight"><pre><span></span><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">process_vm_read</span><span class="p">(</span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="w"> </span><span class="n">lvec</span><span class="p">,</span><span class="w"> </span><span class="n">rvec</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">process_vm_read</span><span class="p">(</span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="w"> </span><span class="n">lvec</span><span class="p">,</span><span class="w"> </span><span class="n">rvec</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">lvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="n">rvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">lvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">rvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">process_vm_rw</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">lvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">process_vm_rw</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">lvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>This is indeed what I have started experimenting with. I added this function to
 <code>mm/process_vm_access.c</code> and exposed it to BPF with the helper</p>
-<div class="highlight"><pre><span></span><span class="n">BPF_CALL_4</span><span class="p">(</span><span class="n">bpf_copy_from_user_remote</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">u32</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">pid_t</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="n">BPF_CALL_4</span><span class="p">(</span><span class="n">bpf_copy_from_user_remote</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">u32</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">pid_t</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">process_vm_read</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">process_vm_read</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bpf_func_proto</span><span class="w"> </span><span class="n">bpf_copy_from_user_remote_proto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">func</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">bpf_copy_from_user_remote</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">gpl_only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">ret_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RET_INTEGER</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">arg1_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_PTR_TO_UNINIT_MEM</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">arg2_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_CONST_SIZE_OR_ZERO</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">arg3_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_ANYTHING</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="n">arg4_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_ANYTHING</span><span class="p">,</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
-</pre></div>
-
+<span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bpf_func_proto</span><span class="w"> </span><span class="n">bpf_copy_from_user_remote_proto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">.</span><span class="n">func</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">bpf_copy_from_user_remote</span><span class="p">,</span>
+<span class="w">  </span><span class="p">.</span><span class="n">gpl_only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="p">.</span><span class="n">ret_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RET_INTEGER</span><span class="p">,</span>
+<span class="w">  </span><span class="p">.</span><span class="n">arg1_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_PTR_TO_UNINIT_MEM</span><span class="p">,</span>
+<span class="w">  </span><span class="p">.</span><span class="n">arg2_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_CONST_SIZE_OR_ZERO</span><span class="p">,</span>
+<span class="w">  </span><span class="p">.</span><span class="n">arg3_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_ANYTHING</span><span class="p">,</span>
+<span class="w">  </span><span class="p">.</span><span class="n">arg4_type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">ARG_ANYTHING</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div>
 
 <p>To test this I wrote a simple C application that takes an integer from the
 command line, stores it safely somewhere in its VM space and is kind enough to
 tell us its PID and the VM address where we can find the "secret"</p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;usage: secret &lt;SECRET&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;usage: secret &lt;SECRET&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">secret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">secret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
 
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I&#39;m process %d and my secret is at %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">getpid</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">secret</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">getpid</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">secret</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I&#39;m process %d and my secret is at %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">getpid</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">secret</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">getpid</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">secret</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(;;)</span><span class="w"></span>
-<span class="w">        </span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(;;)</span>
+<span class="w">        </span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>We can then write a simple BPF program that takes the PID and the address to
 pass them to the new helper in the attempt to retrieve the secret value from the
 remote target process</p>
-<div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">secret</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">secret</span><span class="p">;</span>
 
-<span class="p">...</span><span class="w"></span>
+<span class="p">...</span>
 
-<span class="n">SEC</span><span class="p">(</span><span class="s">&quot;fentry.s/__x64_sys_write&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="kt">int</span><span class="w"> </span><span class="n">BPF_PROG</span><span class="p">(</span><span class="n">test_sys_write</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bpf_get_current_pid_tgid</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span><span class="w"></span>
+<span class="n">SEC</span><span class="p">(</span><span class="s">&quot;fentry.s/__x64_sys_write&quot;</span><span class="p">)</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">BPF_PROG</span><span class="p">(</span><span class="n">test_sys_write</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bpf_get_current_pid_tgid</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pid</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">my_pid</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pid</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">my_pid</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span>
 
-<span class="w">    </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bpf_copy_from_user_remote</span><span class="p">(</span><span class="o">&amp;</span><span class="n">secret</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">secret</span><span class="p">),</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">target_pid</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">bpf_printk</span><span class="p">(</span><span class="s">&quot;bpf_copy_from_user_remote: copied %d bytes&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bpf_copy_from_user_remote</span><span class="p">(</span><span class="o">&amp;</span><span class="n">secret</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">secret</span><span class="p">),</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">target_pid</span><span class="p">);</span>
+<span class="w">    </span><span class="n">bpf_printk</span><span class="p">(</span><span class="s">&quot;bpf_copy_from_user_remote: copied %d bytes&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>We are using <code>fentry</code> because it has a sleepable variant, <code>fentry.s</code>, and using
 <code>sys_write</code> as our target system call. Every time this system call is called our
@@ -352,28 +341,27 @@ copy the <code>struct iovec</code> data over from user-space into kernel-space. 
 how <code>process_vm_rw</code> is actually implemented, one can see that the local vectors
 are turned into a <code>struct iov_iter</code>, so I though that all that was needed was to
 create one from a <code>struct kvec</code> instead. My next attempt has then been</p>
-<div class="highlight"><pre><span></span><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">process_vm_read</span><span class="p">(</span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">kvec</span><span class="w"> </span><span class="n">lvec</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="w"> </span><span class="n">rvec</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">iov_iter</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">process_vm_read</span><span class="p">(</span><span class="kt">pid_t</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="kt">ssize_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">kvec</span><span class="w"> </span><span class="n">lvec</span><span class="p">;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="w"> </span><span class="n">rvec</span><span class="p">;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">iov_iter</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">lvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">kvec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">};</span><span class="w"></span>
-<span class="w">  </span><span class="n">rvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="n">lvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">kvec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="n">rvec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">iovec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">iov_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="w">  </span><span class="p">};</span>
 
-<span class="w">  </span><span class="n">iov_iter_kvec</span><span class="p">(</span><span class="o">&amp;</span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">READ</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">lvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">process_vm_rw_core</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="w">  </span><span class="n">iov_iter_kvec</span><span class="p">(</span><span class="o">&amp;</span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="n">READ</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">lvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">process_vm_rw_core</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">iter</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rvec</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>Progress! The return value of the BPF helper is now <code>4</code> as expected, but for
 some reason the value read into <code>int secret</code> was always 0. 💥</p>
@@ -392,13 +380,12 @@ notes that I have taken throughout the previous three days, I actually realised
 that I had come across <code>access_process_vm</code> while poking around to find what else
 was there. What threw me off was a misinterpretation of the comment that
 preceded its definition</p>
-<div class="highlight"><pre><span></span><span class="cm">/*</span>
+<div class="highlight"><pre><span></span><code><span class="cm">/*</span>
 <span class="cm">* Access another process&#39; address space.</span>
 <span class="cm">* Source/target buffer must be kernel space,</span>
 <span class="cm">* Do not walk the page table directly, use get_user_pages</span>
-<span class="cm">*/</span><span class="w"></span>
-</pre></div>
-
+<span class="cm">*/</span>
+</code></pre></div>
 
 <p>Being a total Linux kernel newbie, I interpreted this as meaning that both
 target and source should have been kernel-space addresses, which of course was
@@ -406,22 +393,21 @@ not my case. However, that comment refers to the <code>buf</code> argument, whic
 lot of sense when you think of it, for the kernel-to-kernel interpretation does
 not really fit with the name of the function. So I ditched my previous attempts
 inside <code>mm/process_vm_access.c</code> and refactored my new BPF helper into</p>
-<div class="highlight"><pre><span></span><span class="n">BPF_CALL_4</span><span class="p">(</span><span class="n">bpf_copy_from_user_remote</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">u32</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">pid_t</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">task_struct</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">task</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="n">BPF_CALL_4</span><span class="p">(</span><span class="n">bpf_copy_from_user_remote</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">u32</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">pid_t</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">task_struct</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">task</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">find_get_task_by_vpid</span><span class="p">(</span><span class="n">pid</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">task</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">ESRCH</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">find_get_task_by_vpid</span><span class="p">(</span><span class="n">pid</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">task</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">ESRCH</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">access_process_vm</span><span class="p">(</span><span class="n">task</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="p">)</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">access_process_vm</span><span class="p">(</span><span class="n">task</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="p">)</span><span class="w"> </span><span class="n">user_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>and success! The simple BPF program that we saw earlier is now able to correctly
 read the secret from the target process! 🎉</p>
