@@ -77,6 +77,17 @@
     toc = document.getElementsByClassName('toc')[0];
     document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
     toc.parentNode.removeChild(toc)
+
+    document.querySelectorAll('.entry-content img').forEach(function(img) {
+      if (img.parentElement.tagName !== 'A') {
+        var a = document.createElement('a');
+        a.href = img.src;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        img.parentNode.insertBefore(a, img);
+        a.appendChild(img);
+      }
+    });
   }
 </script>
     </div>
