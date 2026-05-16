@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="90mm"
+   height="120mm"
+   viewBox="0 0 90 120"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="python_structs.svg"
+   inkscape:export-filename="/home/gabriele/Projects/thehubofheliopolis/images/python-profiling/python_structs.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker25768"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend">
+      <path
+         inkscape:connector-curvature="0"
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path25766" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker25180"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend">
+      <path
+         inkscape:connector-curvature="0"
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path25178" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker22335"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path22333"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker21561"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path21559"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker20883"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path20881"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker18045"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path18043"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker4383"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path4381"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker1575"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path1573"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path1226"
+         style="fill:#ececec;fill-opacity:1;fill-rule:evenodd;stroke:#ececec;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#171717"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="101.99636"
+     inkscape:cy="288.65441"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1053"
+     inkscape:window-x="0"
+     inkscape:window-y="512"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:pagecheckerboard="true" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-17.101738,2.9671266)">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot817"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-opacity:1"
+       transform="matrix(0.26458333,0,0,0.26458333,17.464211,-40.544204)"><flowRegion
+         id="flowRegion819"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;text-anchor:start;stroke:none;stroke-opacity:1"><rect
+           id="rect821"
+           width="145.96704"
+           height="41.416264"
+           x="21.718279"
+           y="155.8037"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;text-anchor:start;stroke:none;stroke-opacity:1" /></flowRegion><flowPara
+         id="flowPara825"
+         style="fill:#fd971f;fill-opacity:1" /></flowRoot>    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
+       x="59.697132"
+       y="20.912401"
+       id="text1311"><tspan
+         sodipodi:role="line"
+         x="59.697132"
+         y="20.912401"
+         id="tspan1305"
+         style="stroke-width:0.26458332"><tspan
+           x="59.697132"
+           y="20.912401"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1301">struct</tspan><tspan
+           dx="0"
+           x="70.280464"
+           y="20.912401"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1303" /></tspan><tspan
+         sodipodi:role="line"
+         x="59.697132"
+         y="26.204069"
+         id="tspan1309"
+         style="stroke-width:0.26458332"><tspan
+           x="59.697132"
+           y="26.204069"
+           style="fill:#fd971f;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1307">PyThreadState</tspan></tspan></text>
+    <path
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Mend)"
+       d="m 39.671464,12.284526 c 0,0 -4.44122,5.008184 0.472469,8.220983 4.913691,3.212798 17.292413,3.496279 17.292413,3.496279"
+       id="path1197"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc" />
+    <path
+       sodipodi:nodetypes="csc"
+       inkscape:connector-curvature="0"
+       id="path1571"
+       d="m 73.33971,18.225174 c 0,0 7.883477,-5.364364 3.090502,-8.7546147 -4.792978,-3.39025 -12.048344,-2.489202 -12.048344,-2.489202"
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1575)" />
+    <path
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4383)"
+       d="m 83.744608,28.472215 c 2.096646,3.558011 6.691066,2.275444 8.910215,0.298924 2.018113,-1.797464 2.777558,-6.396126 0.664016,-8.080346 -5.518741,-4.397725 -8.921476,1.281302 -8.921476,1.281302"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="casc"
+       id="path35" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
+       x="44.730042"
+       y="73.825058"
+       id="text1335"><tspan
+         sodipodi:role="line"
+         x="44.730042"
+         y="73.825058"
+         id="tspan1329"
+         style="stroke-width:0.26458332"><tspan
+           x="44.730042"
+           y="73.825058"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1325">struct</tspan><tspan
+           dx="0"
+           x="55.313374"
+           y="73.825058"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1327" /></tspan><tspan
+         sodipodi:role="line"
+         x="44.730042"
+         y="79.11673"
+         id="tspan1333"
+         style="stroke-width:0.26458332"><tspan
+           x="44.730042"
+           y="79.11673"
+           style="fill:#fd971f;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1331">PyCodeObject</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
+       x="30.297485"
+       y="99.472191"
+       id="text1353"><tspan
+         sodipodi:role="line"
+         x="30.297485"
+         y="99.472191"
+         id="tspan1341"
+         style="stroke-width:0.26458332"><tspan
+           x="30.297485"
+           y="99.472191"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1337">struct</tspan></tspan><tspan
+         sodipodi:role="line"
+         x="30.297485"
+         y="104.76386"
+         id="tspan1347"
+         style="stroke-width:0.26458332"><tspan
+           x="30.297485"
+           y="104.76386"
+           style="fill:#fd971f;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1343">PyObject</tspan></tspan><tspan
+         sodipodi:role="line"
+         x="30.297485"
+         y="110.05553"
+         id="tspan1351"
+         style="stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1"><tspan
+           x="30.297485"
+           y="110.05553"
+           style="font-size:3.52777791px;fill:#dfdfdf;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1349">(unicode)</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
+       x="73.461517"
+       y="100.40764"
+       id="text1371"><tspan
+         sodipodi:role="line"
+         x="73.461517"
+         y="100.40764"
+         id="tspan1359"
+         style="stroke-width:0.26458332"><tspan
+           x="73.461517"
+           y="100.40764"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1355">struct</tspan></tspan><tspan
+         sodipodi:role="line"
+         x="73.461517"
+         y="105.6993"
+         id="tspan1365"
+         style="stroke-width:0.26458332"><tspan
+           x="73.461517"
+           y="105.6993"
+           style="fill:#fd971f;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1361">PyObject</tspan></tspan><tspan
+         sodipodi:role="line"
+         x="73.461517"
+         y="110.99097"
+         id="tspan1369"
+         style="stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1"><tspan
+           x="73.461517"
+           y="110.99097"
+           style="font-size:3.52777791px;fill:#dfdfdf;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1367">(string)</tspan></tspan></text>
+    <path
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker18045)"
+       d="m 71.869728,28.915955 c 0,0 -0.401878,3.856435 -7.199375,7.281557 -5.242852,2.641767 -5.232971,7.533405 -5.232971,7.533405"
+       id="path18041"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc" />
+    <path
+       sodipodi:nodetypes="csc"
+       inkscape:connector-curvature="0"
+       id="path20879"
+       d="m 57.303539,82.218776 c 0,0 0.399931,3.99007 -3.992141,9.018809 -3.861933,4.421759 -8.440205,5.796169 -8.440205,5.796169"
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker20883)" />
+    <path
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker21561)"
+       d="m 66.364839,81.823244 c 0,0 0.401878,3.856435 7.199375,7.281557 5.242852,2.641767 5.232971,7.533413 5.232971,7.533413"
+       id="path21557"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc" />
+    <path
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker22335)"
+       d="m 54.322471,81.554769 c 0,0 -4.009354,-0.0754 -8.665784,4.709596 -4.094384,4.207428 -5.093401,8.881989 -5.093401,8.881989"
+       id="path22331"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="20.724333"
+       y="23.812733"
+       id="text25105"><tspan
+         sodipodi:role="line"
+         id="tspan25103"
+         x="20.724333"
+         y="23.812733"
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;">tstate_head</tspan></text>
+    <text
+       id="text25109"
+       y="10.315621"
+       x="78.320915"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       xml:space="preserve"><tspan
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;"
+         y="10.315621"
+         x="78.320915"
+         id="tspan25107"
+         sodipodi:role="line">interp</tspan></text>
+    <text
+       id="text25113"
+       y="25.549984"
+       x="96.377724"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       xml:space="preserve"><tspan
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;"
+         y="25.549984"
+         x="96.377724"
+         id="tspan25111"
+         sodipodi:role="line">next</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="67.630135"
+       y="38.245285"
+       id="text25117"><tspan
+         sodipodi:role="line"
+         id="tspan25115"
+         x="67.630135"
+         y="38.245285"
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;">frame</tspan></text>
+    <text
+       id="text25121"
+       y="86.469986"
+       x="23.797935"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       xml:space="preserve"><tspan
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;"
+         y="86.469986"
+         x="23.797935"
+         id="tspan25119"
+         sodipodi:role="line">co_filename</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="54.667564"
+       y="92.750824"
+       id="text25125"><tspan
+         sodipodi:role="line"
+         id="tspan25123"
+         x="54.667564"
+         y="92.750824"
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;">co_name</tspan></text>
+    <text
+       id="text25129"
+       y="89.944489"
+       x="76.049126"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       xml:space="preserve"><tspan
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;"
+         y="89.944489"
+         x="76.049126"
+         id="tspan25127"
+         sodipodi:role="line">co_lnotab</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-opacity:1"
+       x="45.108017"
+       y="49.067623"
+       id="text1323"><tspan
+         sodipodi:role="line"
+         x="45.108017"
+         y="49.067623"
+         id="tspan1317"
+         style="stroke-width:0.26458332"><tspan
+           x="45.108017"
+           y="49.067623"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1313">struct</tspan><tspan
+           dx="0"
+           x="55.691349"
+           y="49.067623"
+           style="font-size:3.52777791px;fill:#66d9ef;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1315" /></tspan><tspan
+         sodipodi:role="line"
+         x="45.108017"
+         y="54.359287"
+         id="tspan1321"
+         style="stroke-width:0.26458332"><tspan
+           x="45.108017"
+           y="54.359287"
+           style="fill:#fd971f;fill-opacity:1;stroke-width:0.26458332"
+           id="tspan1319">PyFrameObject</tspan></tspan></text>
+    <path
+       sodipodi:nodetypes="casc"
+       inkscape:connector-curvature="0"
+       d="m 68.512169,55.875489 c 2.096646,3.558011 6.691066,2.275444 8.910215,0.298924 2.018113,-1.797464 2.777558,-6.396126 0.664016,-8.080346 -5.518741,-4.397725 -8.921476,1.281302 -8.921476,1.281302"
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker25180)"
+       id="path25172" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="81.145287"
+       y="52.953259"
+       id="text25176"><tspan
+         sodipodi:role="line"
+         id="tspan25174"
+         x="81.145287"
+         y="52.953259"
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;">f_back</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path25764"
+       d="m 61.047139,56.064477 c -2.482656,7.123269 -4.274979,5.659994 -4.967316,14.625974"
+       style="fill:none;stroke:#ececec;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker25768)" />
+    <text
+       id="text26300"
+       y="64.713112"
+       x="58.961918"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#dfdfdf;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       xml:space="preserve"><tspan
+         style="text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#dfdfdf;fill-opacity:1;"
+         y="64.713112"
+         x="58.961918"
+         id="tspan26298"
+         sodipodi:role="line">f_code</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="23.754623"
+       y="4.5849571"
+       id="text1297"><tspan
+         sodipodi:role="line"
+         id="tspan1295"
+         x="23.754623"
+         y="4.5849571"
+         style="font-size:3.52777767px;text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#66d9ef;fill-opacity:1">struct</tspan><tspan
+         sodipodi:role="line"
+         x="23.754623"
+         y="9.6527452"
+         style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332;fill:#fd971f;fill-opacity:1"
+         id="tspan1299">PyInterpreterState</tspan></text>
+  </g>
+</svg>
