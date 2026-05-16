@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Hub of Heliopolis - Busting performance issues, AI edition</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+
+  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
+
+
+    <meta name="tags" content="python" />
+    <meta name="tags" content="profiling" />
+    <meta name="tags" content="optimisation" />
+</head>
+
+<body id="index" class="home p-8">
+  <header id="banner" class="body text-xl">
+    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
+  </header><!-- /#banner -->
+
+  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
+    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
+
+      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
+
+  </ul></nav><!-- /#menu -->
+
+  <div id="heading">
+  <header class="post-info relative">
+    <div id="heading-bg" style="background-image: url(images/bust-perf-issues/austin_sign.png);"></div>
+    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
+      <h1 class="entry-title">Busting performance issues, AI edition</h1>
+    
+      <div class="py-1 text-xs">
+        <time class="published py-1" datetime="2026-05-16T20:05:00+01:00">
+          &#128197; Sat 16 May 2026
+        </time>
+        <span class="readtime py-1">&#9202; A 11 min read</span>
+      </div>
+
+      <div class="py-1 text-xs">
+        <span class="category py-1">
+            &#128451; <a href="./category/programming.html">Programming</a>
+        </span>
+        <span class="tags py-1">
+          &#127991;
+            <a class="tag" href="./tag/python.html">python</a>
+            <a class="tag" href="./tag/profiling.html">profiling</a>
+            <a class="tag" href="./tag/optimisation.html">optimisation</a>
+        </span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="flex flex-wrap py-4">
+    <div id="sidepane" class="flex-none">
+<footer class="post-info text-sm">
+  <div id="sidebar_toc" class="py-2" />
+</footer><!-- /.post-info -->
+
+<script type="text/javascript">
+  window.onload = function() {
+    toc = document.getElementsByClassName('toc')[0];
+    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
+    toc.parentNode.removeChild(toc)
+  }
+</script>
+    </div>
+    <div id="content-block" class="flex-none">
+<section id="content" class="body">
+  <div id="summary" class="py-0">
+    <p>Coding agents are fast becoming the main generators of new source code, but they are also being used for code review, finding and fixing bugs. How can they be used to the best extent to discover and fix performance issues?</p>
+  </div>
+
+
+  <div class="entry-content">
+    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+<li><a href="#enter-ai">Enter AI</a></li>
+<li><a href="#bytecode-our-case-study">bytecode: Our Case Study</a><ul>
+<li><a href="#a-bit-of-setup-required">A Bit of Setup Required</a></li>
+<li><a href="#establishing-the-baseline">Establishing the Baseline</a></li>
+<li><a href="#communicating-our-intent-to-the-agent">Communicating Our Intent to the Agent</a></li>
+<li><a href="#on-a-mission">On a Mission</a></li>
+</ul>
+</li>
+<li><a href="#a-guided-tour-of-profiles">A Guided Tour of Profiles</a><ul>
+<li><a href="#a-bonus-learning-to-read-profiles">A Bonus: Learning to Read Profiles</a></li>
+</ul>
+</li>
+<li><a href="#is-profiling-data-really-necessary">Is Profiling Data Really Necessary?</a></li>
+<li><a href="#the-takeaway">The Takeaway</a></li>
+</ul>
+</div>
+<p>In a previous post we looked at how to find and resolve performance issues
+lurking in any codebase by simply running some of its code through a profiler.
+The simplest thing we can do, especially when we come to a new codebase that is
+totally unknown to us is to run its test suite (or a subset of it) and see what
+code paths are being exercised. When we look at them through a profiler, the
+typical approach is to start investigating its plateaux, that is functions at
+the top (or bottom, depending on the orientation of the flame graph!) that have
+the largest own time. This is generally where the largest opportunity of
+improvements are. Of course, there could be cases where a function is simply
+repeating unnecessary work, and this won't show up through a mere visual plateau
+scan.</p>
+<h1 id="enter-ai">Enter AI</h1>
+<p>Can we automate this process, and perhaps put it on steroids, with the prowess
+of the most powerful, state-of-the-art coding agents?</p>
+<p>Modern coding agents have reached a level of sophistication where they can
+effectively understand and modify codebases with good practical results.
+Benchmarks such as <a href="https://www.swebench.com/">SWE-bench</a> (which tests multi-file bug fixes in real GitHub
+repositories) and <a href="https://livecodebench.github.io/">LiveCodeBench</a> (which uses fresh competitive programming
+problems to avoid data contamination) show that frontier models now achieve high
+pass rates. However, there still is quite the margin for improvement: studies on
+real-world class-level code generation show a significant gap between synthetic
+benchmark performance (84-89%) and actual project performance (25-34%)
+(<a href="https://arxiv.org/abs/2510.26130">arxiv-2510.26130</a>), highlighting both the progress made and the room for
+improvement in practical coding scenarios.</p>
+<p>In this post we will explore how well a coding agent can come up with
+performance improvements when it is provided with focused profiling data. The
+focus, however, is on the method and the tooling involved, rather than
+benchmarking a set of models to determine which one is better at finding
+performance issues.</p>
+<h1 id="bytecode-our-case-study">bytecode: Our Case Study</h1>
+<p>To make the exposition concrete we will focus on an actual project: we will try
+to improve the performance of the <a href="https://github.com/MatthieuDartiailh/bytecode">bytecode</a> library.</p>
+<p><a href="https://github.com/MatthieuDartiailh/bytecode">bytecode</a> is a Python library for generating and modifying Python bytecode. It
+provides an abstraction over Python's low-level bytecode instructions, allowing
+you to programmatically create bytecode objects, convert them to actual code
+objects, and even inspect and modify existing code's bytecode. It is useful for
+metaprogramming, dynamic code generation, and bytecode analysis.</p>
+<p>These are the tools that we will use for our little experiment, all free:</p>
+<ul>
+<li><a href="https://github.com/p403n1x87/austin">Austin</a>, for Python profiling, easily installed with "pip install
+  austin-dist"</li>
+<li>The <a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode">Austin VS Code</a> extension, easily installed from the VS Code
+  marketplaces. The latest version comes with an MCP server that can feed
+  profiling data and flame graph navigation commands to a coding agent.</li>
+<li><a href="https://opencode.ai">Opencode</a> with the MiniMax M2.5 free model as our coding agent setup.</li>
+<li>The Opencode VS Code extension to never leave VS Code throughout our
+  experiment</li>
+</ul>
+<h2 id="a-bit-of-setup-required">A Bit of Setup Required</h2>
+<p>After having cloned the bytecode repository that we will be working on, and
+opened it in VS Code, there is a minimum of setup required. We need to allow the
+coding agent to discover the Austin MCP. If you're using GitHub Copilot instead
+of Opencode, there is no extra setup required for this, since the Austin MCP
+server integrates natively with that. Otherwise we need to allow other coding
+agents to discover the server. This is as simple as running the <code>Austin:
+Generate .mcp.json</code> command: press
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, type <code>austinmcp</code> and press
+<kbd>Enter</kbd>. That's it. Well, not quite, because we decided to use Opencode
+for our experiment, and as at the moment of writing, it still does not support a
+<code>.mcp.json</code> file. So instead we open an Opencode session with
+<kbd>Ctrl</kbd>+<kbd>Escape</kbd> and politely ask the agent to convert the
+<code>.mcp.json</code> configuration to something that opencode understands</p>
+<blockquote>
+<p>The Austin MCP server uses an ephemeral port to run, so every time you re-open
+VS Code there will be a new port assigned to it. If a <code>.mcp.json</code> was
+previously created, the Austin extension will update the port automatically so
+that you don't have to regenerate it every time. However, Opencode won't do
+this unless you instruct it to.</p>
+</blockquote>
+<p>After Opencode configured itself, you might have to start a new session for it
+to pick up the connection to the server.</p>
+<p><img alt="Opencode configures itself" class="center-image" src="./images/perf-llm/setup-mcp-opencode.png">
+<em>We have asked Opencode to configure itself based on the contents of the .mcp.json file</em></p>
+<p>Finally, let's create a virtual environment where we can install the library in
+editable mode so that we can quickly test our changes. Pick your favourite
+version of Python (one that the library supports of course, e.g. 3.13) and run</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/path/to/bytecode
+python3.13<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+
+<p>After this we're all set to start experimenting!</p>
+<h2 id="establishing-the-baseline">Establishing the Baseline</h2>
+<p>As a first step, we should probably try to establish a baseline. This will give
+us a sense of where we're starting from in terms of the performance to make sure
+that we have a clear signal that the changes that the coding agent is coming up
+with are actually improving things. For our case at hand, we can use a simple
+round-trip benchmark run: we take a reference code object, decompile and
+recompile it in a loop for about 1 second. We can then measure how many times we
+were able to do this, which will be our throughput metric. Our baseline was
+<strong>203 iterations per second</strong>. Meanwhile, we can also profile the benchmark to
+see what codepaths are being exercised and what they look like in terms of wall
+time distributions.</p>
+<blockquote>
+<p>Here we won't bother too much with wall vs. CPU time because we expect the
+work to be essentially single-threaded CPU-bound anyway.</p>
+</blockquote>
+<p>So this is the simple script that we will be using to drive the analysis</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># perf.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">bytecode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span> <span class="k">as</span> <span class="n">time</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="n">bytecode</span><span class="o">.</span><span class="n">ConcreteBytecode</span><span class="o">.</span><span class="n">to_code</span><span class="o">.</span><span class="vm">__code__</span>
+
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1.0</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
+    <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">bytecode</span><span class="o">.</span><span class="n">Bytecode</span><span class="o">.</span><span class="n">from_code</span><span class="p">(</span><span class="n">code</span><span class="p">)</span><span class="o">.</span><span class="n">to_code</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The output to screen is the plain throughput, so this will give us an immediate
+feedback when we run it. So let's run it and take note of the output, and to
+complete our baseline let's grab a profile as well</p>
+<div class="highlight"><pre><span></span><code>austin<span class="w"> </span>-o<span class="w"> </span>perf.mojo<span class="w"> </span>python<span class="w"> </span>perf.py
+</code></pre></div>
+
+<h2 id="communicating-our-intent-to-the-agent">Communicating Our Intent to the Agent</h2>
+<p>Now that we have our baseline, let's state our intent with the agent and ask it
+to analyse the profiling data we have just collected.</p>
+<p><img alt="The agent loads the initial profile" class="center-image" src="./images/perf-llm/profile-analysis.png">
+<em>We ask the Opencode agent to load the profile data we have collected with the Austin tools</em></p>
+<p>Because the agent has access to the Austin MCP tools, it can easily figure out
+that it needs to use the load tool to open the profile. It can then use the
+other tools to pull meaningful profiling data, such as the top functions in
+terms of own time (the plateau analysis) and the call stacks. This allows the
+agent to focus on areas of the code base that the profile has highlighted as
+requiring attention, instead of getting lost in the entirety of the source code.
+Immediately the agent comes back to us with some ideas.</p>
+<p><img alt="The first optimisation" class="center-image" src="./images/perf-llm/first-optimisation.png">
+<em>The first optimisation is implemented and already giving a small improvement. But we can do better</em></p>
+<h2 id="on-a-mission">On a Mission</h2>
+<p>Galvanised by the early success, the agent gets very eager to implement more and
+more improvements, quickly spiraling into an iteration loop where it
+autonomously runs and profiles the benchmark script.</p>
+<p><img alt="Iteration loop" class="center-image" src="./images/perf-llm/rinse-repeat.png">
+<em>The agent gets into an optimisation iteration loop by itself until it can find margin for improvement</em></p>
+<p>We ask the agent to include test runs in the loop to make sure that its changes
+are not breaking anything and it complies immediately</p>
+<p><img alt="Tests into the loop for validation" class="center-image" src="./images/perf-llm/tests-ok.png">
+<em>Tests are now part of the iteration loop to add validation</em></p>
+<p>Now we're not here to advocate for this or that model (I have obtained much
+better results with more powerful models), but we've already achieved a <strong>+17%
+improvement</strong> (203 → 237 iterations per second) in just a few minutes of running
+this experiment using completely free tools, so this is already a pretty good
+win. We can maybe push things a bit further with some human input. For example,
+looking at the Top View from the Austin side panel, we notice that <code>dis</code> shows
+up at the top in terms of own time and we might wonder if we can bypass its
+overhead for something more direct for our needs.</p>
+<p><img alt="User input to the agent" class="center-image" src="./images/perf-llm/human-input.png">
+<em>We ask the agent to consider some aspects of the coding based on what we can see from the Austin data, e.g. the top view</em></p>
+<h1 id="a-guided-tour-of-profiles">A Guided Tour of Profiles</h1>
+<p>Reading a profile is generally not an easy task, especially when you jump into a
+code  base that you are not familiar with, and the profile looks "hairy": many
+spiky peaks and small plateaux that don't really give you an immediate lead for
+a performance investigation. Because coding agents can understand a code base
+very quickly and reason about code paths, allowing them to utilise profiling
+data to drive their analysis means that we can put performance analysis on
+overdrive with the right set of tools. But while allowing an agent to figure out
+performance issues is nice and cool, especially because of the satisfying wins,
+one might still want to be kept in the loop and know what the agent is thinking.
+The tools exposed by the Austin MCP server allow us to ask the agent to show us
+around the profile in a sort of guided tour. So we could, for instance, ask it
+to show us the relevant part in a profile where it is considering making
+performance optimisations, and why. This might help the user develop a better
+intuition of how to use profiles, essentially using the coding agent as a tutor
+that can instruct how to read a profile.</p>
+<p><img alt="Profiler guided tour" class="center-image" src="./images/perf-llm/zoom-in.png">
+<em>We ask the agent to show us around the profile so that we can also get an idea of what is going on</em></p>
+<h2 id="a-bonus-learning-to-read-profiles">A Bonus: Learning to Read Profiles</h2>
+<p>So beyond just fixing issues, there's a hidden gem in this workflow: you can use
+the agent as a <em>learning tool</em>. Instead of just handing off the problem, try
+asking it to explain what it's looking at:</p>
+<ul>
+<li><em>"What does this plateau tell us?"</em></li>
+<li><em>"Why is this function taking so long compared to others?"</em></li>
+<li><em>"What's the call path to this hot function?"</em></li>
+<li><em>"What would you look for next in this profile?"</em></li>
+</ul>
+<p>Over time, this might help you build intuition for reading profiles yourself, if
+you have never dived into one before, or you have only skimmed some briefly. The
+agent doesn't get tired of explaining, and you get a personalised tutorial every
+time you run a new profile. This turns a powerful but esoteric tool like a
+profiler into something more accessible, an assistant that can teach you at your
+own pace.</p>
+<h1 id="is-profiling-data-really-necessary">Is Profiling Data Really Necessary?</h1>
+<p>One observation that can be made at this point is how relevant profiling data is
+in this process. Would the agent been able to identify the same performance
+issues in the code without consulting any profiling data and by just looking at
+the code? To try answer this question, I have repeated the experiment, starting
+from the same commit, and I have asked the agent to identify any optimisation
+opportunities just by looking at the code</p>
+<p><img alt="Try again without profiles" class="center-image" src="./images/perf-llm/without-profiles.png">
+<em>The agent is now tasked to find optimisations without any profiling data</em></p>
+<p>Perhaps unsurprisingly, after a first scan of the code, the agent feels the need
+to reach out for a profiler (cProfile from the Python standard library in this
+case) to guide its analysis.</p>
+<p><img alt="The need for profiling data" class="center-image" src="./images/perf-llm/the-need-for-profiling.png">
+<em>The agent feels the need for profiling data</em></p>
+<p>However, even with that data now at its disposal, it struggles quite a bit to
+decide what needs to be optimised. It looks as if it had identified the repeated
+validation issue, but it's not quite sure it is the best path to take. After 15
+minutes the agent is still debating on what to do.</p>
+<p><img alt="Long debate" class="center-image" src="./images/perf-llm/still-debating.png">
+<em>The agent is not quite sure what to do exactly</em></p>
+<p>When asked where we are in terms of gains after some attempts at reducing some
+repeated operations, the agent replies that the gains are still quite marginal
+and that it needs to think about the code more.</p>
+<p><img alt="Slow progress" class="center-image" src="./images/perf-llm/slow-progress.png">
+<em>The agent is getting somewhere, but the progress is pretty slow by its own admission</em></p>
+<p>Half an hour in we still haven't breached the 5% barrier, and when I ask the
+agent to validate its changes by running the test suite we discover a
+segmentation fault.</p>
+<p><img alt="Tests are crashing hard" class="center-image" src="./images/perf-llm/tests-nok.png">
+<em>The tests are failing hard with a segmentation fault</em></p>
+<p>One fair conclusion we can draw from this is that indeed profiling data matters,
+as well as the quality of the data itself. Quite likely, the Austin MCP server
+was able to feed the agent with more fine-grained, detailed profiling data that
+allowed it to focus on the areas of the codebase that really needed attention
+to find those performance optimisation opportunities. With lower quality data,
+or with the lack of it, the agent feels a bit lost and tries to reach for that
+missing information by itself.</p>
+<h1 id="the-takeaway">The Takeaway</h1>
+<p>Our experiment has highlighted that a coding agent, when equipped with good
+quality profiling data, can find genuine performance improvements without much
+hand-holding. Our baseline of 203 iterations per second jumped to 237 with about
+15 minutes of agent time and no manual profiling or code inspection on our part.
+The agent identified an O(n²) algorithm, inlined hot paths, and eliminated
+unnecessary validation. Instead, when profiling data was missing or not so
+fine-grained, the agent struggled to find any solid and correct improvements.</p>
+<p>So take that project you've been meaning to optimise, fire up a good profiler,
+and ask your favourite coding agent to take a look. You might be surprised how
+far a little profiling data goes.</p>
+  </div><!-- /.entry-content -->
+</section>
+
+<div id="disqus_thread" class="py-8"></div>
+<script>
+
+var disqus_config = function () {
+  // this.page.url = "./busting-performance-issues-ai-edition.html";
+  this.page.identifier = "bust-perf-issues-ai-ed"
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://the-hub-of-heliopolis.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </div>
+
+  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
+    <address id="about" class="vcard body text-3xl py-4">
+    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
+      <i class="fa fa-github" aria-hidden="true"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
+      <i class="fa fa-linkedin" aria-hidden="true"></i>
+    </a>
+    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
+      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
+    </a>
+    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
+      <i class="fa fa-steam" aria-hidden="true"></i>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
+      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+    </a>
+    </address><!-- /#about -->
+    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
+      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
+    </a>
+    <p class="text-xs pt-4">
+      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+    </p>
+  </footer><!-- /#contentinfo -->
+</body>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104560783-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
+
+</html>

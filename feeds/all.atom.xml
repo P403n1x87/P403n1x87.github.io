@@ -1,5 +1,257 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"/><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"/><id>https://p403n1x87.github.io/</id><updated>2022-02-11T14:01:00+00:00</updated><entry><title>Running C unit tests with pytest</title><link href="https://p403n1x87.github.io/running-c-unit-tests-with-pytest.html" rel="alternate"/><published>2022-02-11T14:01:00+00:00</published><updated>2022-02-11T14:01:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2022-02-11:/running-c-unit-tests-with-pytest.html</id><summary type="html">&lt;p&gt;In this post I will describe my approach to C unit testing using pytest. In particular, we get to see how to gracefully handle SIGSEGVs and prevent them from stopping the test runner abruptly. Furthermore, we shall try to write tests in a Pythonic way.&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"/><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"/><id>https://p403n1x87.github.io/</id><updated>2026-05-16T20:05:00+01:00</updated><entry><title>Busting performance issues, AI edition</title><link href="https://p403n1x87.github.io/busting-performance-issues-ai-edition.html" rel="alternate"/><published>2026-05-16T20:05:00+01:00</published><updated>2026-05-16T20:05:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2026-05-16:/busting-performance-issues-ai-edition.html</id><summary type="html">&lt;p&gt;Coding agents are fast becoming the main generators of new source code, but they are also being used for code review, finding and fixing bugs. How can they be used to the best extent to discover and fix performance issues?&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#enter-ai"&gt;Enter AI&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#bytecode-our-case-study"&gt;bytecode: Our Case Study&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#a-bit-of-setup-required"&gt;A Bit of Setup Required&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#establishing-the-baseline"&gt;Establishing the Baseline&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#communicating-our-intent-to-the-agent"&gt;Communicating Our Intent to the Agent&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#on-a-mission"&gt;On a Mission&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#a-guided-tour-of-profiles"&gt;A Guided Tour of Profiles&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#a-bonus-learning-to-read-profiles"&gt;A Bonus: Learning to Read Profiles&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#is-profiling-data-really-necessary"&gt;Is Profiling Data Really Necessary?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#the-takeaway"&gt;The Takeaway&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;p&gt;In a previous post we looked at how to find and resolve performance issues
+lurking in any codebase by simply running some of its code through a profiler.
+The simplest thing we can do, especially when we come to a new codebase that is
+totally unknown to us is to run its test suite (or a subset of it) and see what
+code paths are being exercised. When we look at them through a profiler, the
+typical approach is to start investigating its plateaux, that is functions at
+the top (or bottom, depending on the orientation of the flame graph!) that have
+the largest own time. This is generally where the largest opportunity of
+improvements are. Of course, there could be cases where a function is simply
+repeating unnecessary work, and this won't show up through a mere visual plateau
+scan.&lt;/p&gt;
+&lt;h1 id="enter-ai"&gt;Enter AI&lt;/h1&gt;
+&lt;p&gt;Can we automate this process, and perhaps put it on steroids, with the prowess
+of the most powerful, state-of-the-art coding agents?&lt;/p&gt;
+&lt;p&gt;Modern coding agents have reached a level of sophistication where they can
+effectively understand and modify codebases with good practical results.
+Benchmarks such as &lt;a href="https://www.swebench.com/"&gt;SWE-bench&lt;/a&gt; (which tests multi-file bug fixes in real GitHub
+repositories) and &lt;a href="https://livecodebench.github.io/"&gt;LiveCodeBench&lt;/a&gt; (which uses fresh competitive programming
+problems to avoid data contamination) show that frontier models now achieve high
+pass rates. However, there still is quite the margin for improvement: studies on
+real-world class-level code generation show a significant gap between synthetic
+benchmark performance (84-89%) and actual project performance (25-34%)
+(&lt;a href="https://arxiv.org/abs/2510.26130"&gt;arxiv-2510.26130&lt;/a&gt;), highlighting both the progress made and the room for
+improvement in practical coding scenarios.&lt;/p&gt;
+&lt;p&gt;In this post we will explore how well a coding agent can come up with
+performance improvements when it is provided with focused profiling data. The
+focus, however, is on the method and the tooling involved, rather than
+benchmarking a set of models to determine which one is better at finding
+performance issues.&lt;/p&gt;
+&lt;h1 id="bytecode-our-case-study"&gt;bytecode: Our Case Study&lt;/h1&gt;
+&lt;p&gt;To make the exposition concrete we will focus on an actual project: we will try
+to improve the performance of the &lt;a href="https://github.com/MatthieuDartiailh/bytecode"&gt;bytecode&lt;/a&gt; library.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/MatthieuDartiailh/bytecode"&gt;bytecode&lt;/a&gt; is a Python library for generating and modifying Python bytecode. It
+provides an abstraction over Python's low-level bytecode instructions, allowing
+you to programmatically create bytecode objects, convert them to actual code
+objects, and even inspect and modify existing code's bytecode. It is useful for
+metaprogramming, dynamic code generation, and bytecode analysis.&lt;/p&gt;
+&lt;p&gt;These are the tools that we will use for our little experiment, all free:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/p403n1x87/austin"&gt;Austin&lt;/a&gt;, for Python profiling, easily installed with "pip install
+  austin-dist"&lt;/li&gt;
+&lt;li&gt;The &lt;a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode"&gt;Austin VS Code&lt;/a&gt; extension, easily installed from the VS Code
+  marketplaces. The latest version comes with an MCP server that can feed
+  profiling data and flame graph navigation commands to a coding agent.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://opencode.ai"&gt;Opencode&lt;/a&gt; with the MiniMax M2.5 free model as our coding agent setup.&lt;/li&gt;
+&lt;li&gt;The Opencode VS Code extension to never leave VS Code throughout our
+  experiment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="a-bit-of-setup-required"&gt;A Bit of Setup Required&lt;/h2&gt;
+&lt;p&gt;After having cloned the bytecode repository that we will be working on, and
+opened it in VS Code, there is a minimum of setup required. We need to allow the
+coding agent to discover the Austin MCP. If you're using GitHub Copilot instead
+of Opencode, there is no extra setup required for this, since the Austin MCP
+server integrates natively with that. Otherwise we need to allow other coding
+agents to discover the server. This is as simple as running the &lt;code&gt;Austin:
+Generate .mcp.json&lt;/code&gt; command: press
+&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;Shift&lt;/kbd&gt;+&lt;kbd&gt;P&lt;/kbd&gt;, type &lt;code&gt;austinmcp&lt;/code&gt; and press
+&lt;kbd&gt;Enter&lt;/kbd&gt;. That's it. Well, not quite, because we decided to use Opencode
+for our experiment, and as at the moment of writing, it still does not support a
+&lt;code&gt;.mcp.json&lt;/code&gt; file. So instead we open an Opencode session with
+&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;Escape&lt;/kbd&gt; and politely ask the agent to convert the
+&lt;code&gt;.mcp.json&lt;/code&gt; configuration to something that opencode understands&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The Austin MCP server uses an ephemeral port to run, so every time you re-open
+VS Code there will be a new port assigned to it. If a &lt;code&gt;.mcp.json&lt;/code&gt; was
+previously created, the Austin extension will update the port automatically so
+that you don't have to regenerate it every time. However, Opencode won't do
+this unless you instruct it to.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After Opencode configured itself, you might have to start a new session for it
+to pick up the connection to the server.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Opencode configures itself" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/setup-mcp-opencode.png"&gt;
+&lt;em&gt;We have asked Opencode to configure itself based on the contents of the .mcp.json file&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Finally, let's create a virtual environment where we can install the library in
+editable mode so that we can quickly test our changes. Pick your favourite
+version of Python (one that the library supports of course, e.g. 3.13) and run&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;/path/to/bytecode
+python3.13&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;venv&lt;span class="w"&gt; &lt;/span&gt;.venv
+&lt;span class="nb"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;.venv/bin/activate
+pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;After this we're all set to start experimenting!&lt;/p&gt;
+&lt;h2 id="establishing-the-baseline"&gt;Establishing the Baseline&lt;/h2&gt;
+&lt;p&gt;As a first step, we should probably try to establish a baseline. This will give
+us a sense of where we're starting from in terms of the performance to make sure
+that we have a clear signal that the changes that the coding agent is coming up
+with are actually improving things. For our case at hand, we can use a simple
+round-trip benchmark run: we take a reference code object, decompile and
+recompile it in a loop for about 1 second. We can then measure how many times we
+were able to do this, which will be our throughput metric. Our baseline was
+&lt;strong&gt;203 iterations per second&lt;/strong&gt;. Meanwhile, we can also profile the benchmark to
+see what codepaths are being exercised and what they look like in terms of wall
+time distributions.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Here we won't bother too much with wall vs. CPU time because we expect the
+work to be essentially single-threaded CPU-bound anyway.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So this is the simple script that we will be using to drive the analysis&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# perf.py&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;bytecode&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;perf_counter&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;
+
+&lt;span class="n"&gt;code&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;bytecode&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ConcreteBytecode&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_code&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="vm"&gt;__code__&lt;/span&gt;
+
+&lt;span class="n"&gt;end&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mf"&gt;1.0&lt;/span&gt;
+&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="n"&gt;bytecode&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Bytecode&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;from_code&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;code&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_code&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The output to screen is the plain throughput, so this will give us an immediate
+feedback when we run it. So let's run it and take note of the output, and to
+complete our baseline let's grab a profile as well&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;austin&lt;span class="w"&gt; &lt;/span&gt;-o&lt;span class="w"&gt; &lt;/span&gt;perf.mojo&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;perf.py
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id="communicating-our-intent-to-the-agent"&gt;Communicating Our Intent to the Agent&lt;/h2&gt;
+&lt;p&gt;Now that we have our baseline, let's state our intent with the agent and ask it
+to analyse the profiling data we have just collected.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="The agent loads the initial profile" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/profile-analysis.png"&gt;
+&lt;em&gt;We ask the Opencode agent to load the profile data we have collected with the Austin tools&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Because the agent has access to the Austin MCP tools, it can easily figure out
+that it needs to use the load tool to open the profile. It can then use the
+other tools to pull meaningful profiling data, such as the top functions in
+terms of own time (the plateau analysis) and the call stacks. This allows the
+agent to focus on areas of the code base that the profile has highlighted as
+requiring attention, instead of getting lost in the entirety of the source code.
+Immediately the agent comes back to us with some ideas.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="The first optimisation" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/first-optimisation.png"&gt;
+&lt;em&gt;The first optimisation is implemented and already giving a small improvement. But we can do better&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id="on-a-mission"&gt;On a Mission&lt;/h2&gt;
+&lt;p&gt;Galvanised by the early success, the agent gets very eager to implement more and
+more improvements, quickly spiraling into an iteration loop where it
+autonomously runs and profiles the benchmark script.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Iteration loop" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/rinse-repeat.png"&gt;
+&lt;em&gt;The agent gets into an optimisation iteration loop by itself until it can find margin for improvement&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We ask the agent to include test runs in the loop to make sure that its changes
+are not breaking anything and it complies immediately&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Tests into the loop for validation" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/tests-ok.png"&gt;
+&lt;em&gt;Tests are now part of the iteration loop to add validation&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Now we're not here to advocate for this or that model (I have obtained much
+better results with more powerful models), but we've already achieved a &lt;strong&gt;+17%
+improvement&lt;/strong&gt; (203 → 237 iterations per second) in just a few minutes of running
+this experiment using completely free tools, so this is already a pretty good
+win. We can maybe push things a bit further with some human input. For example,
+looking at the Top View from the Austin side panel, we notice that &lt;code&gt;dis&lt;/code&gt; shows
+up at the top in terms of own time and we might wonder if we can bypass its
+overhead for something more direct for our needs.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="User input to the agent" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/human-input.png"&gt;
+&lt;em&gt;We ask the agent to consider some aspects of the coding based on what we can see from the Austin data, e.g. the top view&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id="a-guided-tour-of-profiles"&gt;A Guided Tour of Profiles&lt;/h1&gt;
+&lt;p&gt;Reading a profile is generally not an easy task, especially when you jump into a
+code  base that you are not familiar with, and the profile looks "hairy": many
+spiky peaks and small plateaux that don't really give you an immediate lead for
+a performance investigation. Because coding agents can understand a code base
+very quickly and reason about code paths, allowing them to utilise profiling
+data to drive their analysis means that we can put performance analysis on
+overdrive with the right set of tools. But while allowing an agent to figure out
+performance issues is nice and cool, especially because of the satisfying wins,
+one might still want to be kept in the loop and know what the agent is thinking.
+The tools exposed by the Austin MCP server allow us to ask the agent to show us
+around the profile in a sort of guided tour. So we could, for instance, ask it
+to show us the relevant part in a profile where it is considering making
+performance optimisations, and why. This might help the user develop a better
+intuition of how to use profiles, essentially using the coding agent as a tutor
+that can instruct how to read a profile.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Profiler guided tour" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/zoom-in.png"&gt;
+&lt;em&gt;We ask the agent to show us around the profile so that we can also get an idea of what is going on&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id="a-bonus-learning-to-read-profiles"&gt;A Bonus: Learning to Read Profiles&lt;/h2&gt;
+&lt;p&gt;So beyond just fixing issues, there's a hidden gem in this workflow: you can use
+the agent as a &lt;em&gt;learning tool&lt;/em&gt;. Instead of just handing off the problem, try
+asking it to explain what it's looking at:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;"What does this plateau tell us?"&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;"Why is this function taking so long compared to others?"&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;"What's the call path to this hot function?"&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;"What would you look for next in this profile?"&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Over time, this might help you build intuition for reading profiles yourself, if
+you have never dived into one before, or you have only skimmed some briefly. The
+agent doesn't get tired of explaining, and you get a personalised tutorial every
+time you run a new profile. This turns a powerful but esoteric tool like a
+profiler into something more accessible, an assistant that can teach you at your
+own pace.&lt;/p&gt;
+&lt;h1 id="is-profiling-data-really-necessary"&gt;Is Profiling Data Really Necessary?&lt;/h1&gt;
+&lt;p&gt;One observation that can be made at this point is how relevant profiling data is
+in this process. Would the agent been able to identify the same performance
+issues in the code without consulting any profiling data and by just looking at
+the code? To try answer this question, I have repeated the experiment, starting
+from the same commit, and I have asked the agent to identify any optimisation
+opportunities just by looking at the code&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Try again without profiles" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/without-profiles.png"&gt;
+&lt;em&gt;The agent is now tasked to find optimisations without any profiling data&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Perhaps unsurprisingly, after a first scan of the code, the agent feels the need
+to reach out for a profiler (cProfile from the Python standard library in this
+case) to guide its analysis.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="The need for profiling data" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/the-need-for-profiling.png"&gt;
+&lt;em&gt;The agent feels the need for profiling data&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;However, even with that data now at its disposal, it struggles quite a bit to
+decide what needs to be optimised. It looks as if it had identified the repeated
+validation issue, but it's not quite sure it is the best path to take. After 15
+minutes the agent is still debating on what to do.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Long debate" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/still-debating.png"&gt;
+&lt;em&gt;The agent is not quite sure what to do exactly&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;When asked where we are in terms of gains after some attempts at reducing some
+repeated operations, the agent replies that the gains are still quite marginal
+and that it needs to think about the code more.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Slow progress" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/slow-progress.png"&gt;
+&lt;em&gt;The agent is getting somewhere, but the progress is pretty slow by its own admission&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Half an hour in we still haven't breached the 5% barrier, and when I ask the
+agent to validate its changes by running the test suite we discover a
+segmentation fault.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Tests are crashing hard" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/tests-nok.png"&gt;
+&lt;em&gt;The tests are failing hard with a segmentation fault&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;One fair conclusion we can draw from this is that indeed profiling data matters,
+as well as the quality of the data itself. Quite likely, the Austin MCP server
+was able to feed the agent with more fine-grained, detailed profiling data that
+allowed it to focus on the areas of the codebase that really needed attention
+to find those performance optimisation opportunities. With lower quality data,
+or with the lack of it, the agent feels a bit lost and tries to reach for that
+missing information by itself.&lt;/p&gt;
+&lt;h1 id="the-takeaway"&gt;The Takeaway&lt;/h1&gt;
+&lt;p&gt;Our experiment has highlighted that a coding agent, when equipped with good
+quality profiling data, can find genuine performance improvements without much
+hand-holding. Our baseline of 203 iterations per second jumped to 237 with about
+15 minutes of agent time and no manual profiling or code inspection on our part.
+The agent identified an O(n²) algorithm, inlined hot paths, and eliminated
+unnecessary validation. Instead, when profiling data was missing or not so
+fine-grained, the agent struggled to find any solid and correct improvements.&lt;/p&gt;
+&lt;p&gt;So take that project you've been meaning to optimise, fire up a good profiler,
+and ask your favourite coding agent to take a look. You might be surprised how
+far a little profiling data goes.&lt;/p&gt;</content><category term="Programming"/><category term="python"/><category term="profiling"/><category term="optimisation"/></entry><entry><title>Running C unit tests with pytest</title><link href="https://p403n1x87.github.io/running-c-unit-tests-with-pytest.html" rel="alternate"/><published>2022-02-11T14:01:00+00:00</published><updated>2022-02-11T14:01:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2022-02-11:/running-c-unit-tests-with-pytest.html</id><summary type="html">&lt;p&gt;In this post I will describe my approach to C unit testing using pytest. In particular, we get to see how to gracefully handle SIGSEGVs and prevent them from stopping the test runner abruptly. Furthermore, we shall try to write tests in a Pythonic way.&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a href="#why"&gt;Why?&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="#calling-native-code-from-python"&gt;Calling native code from Python&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="#enter-pytest"&gt;Enter pytest&lt;/a&gt;&lt;/li&gt;
