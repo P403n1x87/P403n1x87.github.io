@@ -1,5 +1,548 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"/><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"/><id>https://p403n1x87.github.io/</id><updated>2026-05-16T20:05:00+01:00</updated><entry><title>Busting performance issues, AI edition</title><link href="https://p403n1x87.github.io/busting-performance-issues-ai-edition.html" rel="alternate"/><published>2026-05-16T20:05:00+01:00</published><updated>2026-05-16T20:05:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2026-05-16:/busting-performance-issues-ai-edition.html</id><summary type="html">&lt;p&gt;Coding agents are fast becoming the main generators of new source code, but they are also being used for code review, finding and fixing bugs. How can they be used to the best extent to discover and fix performance issues?&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"/><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"/><id>https://p403n1x87.github.io/</id><updated>2026-10-30T12:00:00+00:00</updated><entry><title>The State of Python Profiling in 2026</title><link href="https://p403n1x87.github.io/the-state-of-python-profiling-in-2026.html" rel="alternate"/><published>2026-10-30T12:00:00+00:00</published><updated>2026-10-30T12:00:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2026-10-30:/the-state-of-python-profiling-in-2026.html</id><summary type="html">&lt;p&gt;CPython now ships its own sampling profiler, free-threading is going mainstream, and coding agents have started reading profiles. In this post I look at where Python profiling stands today, compare Tachyon, py-spy, Scalene and Austin, and go through what's new in Austin 4.1.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Python profiling has changed more in the last two years than in the decade
+before. CPython 3.14 gave external tools an official way to look inside a
+running interpreter, and made &lt;code&gt;asyncio&lt;/code&gt; task graphs inspectable from outside the
+process. CPython 3.15 ships a sampling profiler in the standard library.
+Free-threaded builds have gone from experiment to something people actually
+deploy. And a growing share of the people reading profiles aren't people at all,
+but coding agents.&lt;/p&gt;
+&lt;p&gt;This post looks at where things stand: what the main sampling profilers can do
+today, where each one fits, and what changed in the latest release of Austin.&lt;/p&gt;
+&lt;p&gt;As many of you know, I've been working on Austin for the best part of eight
+years now, so I have a view from the inside on how this landscape came to be,
+and, naturally, a soft spot for one of the tools in it. I've tried to be fair to
+the others: what I say about them comes from their own documentation and release
+notes as of October 2026. If I've got something wrong, let me know and I'll fix
+it.&lt;/p&gt;
+&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#a-quick-map-of-the-landscape"&gt;A Quick Map of the Landscape&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#why-these-four"&gt;Why These Four&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#why-sampling-rate-matters"&gt;Why Sampling Rate Matters&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#how-we-got-here"&gt;How We Got Here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#tachyon-a-profiler-in-the-standard-library"&gt;Tachyon: A Profiler in the Standard Library&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#a-familiar-design"&gt;A Familiar Design&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#py-spy-the-established-choice"&gt;py-spy: The Established Choice&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#scalene-the-in-process-all-rounder"&gt;Scalene: The In-Process All-Rounder&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#austin-sampling-from-the-outside-at-speed"&gt;Austin: Sampling from the Outside, at Speed&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="#1-higher-sampling-rates"&gt;1. Higher Sampling Rates&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#2-native-mode"&gt;2. Native Mode&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#3-asyncio-profiling"&gt;3. asyncio Profiling&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#4-making-profiling-approachable"&gt;4. Making Profiling Approachable&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#other-things-in-41"&gt;Other Things in 4.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#where-austin-falls-short"&gt;Where Austin Falls Short&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="#which-one-should-you-use"&gt;Which One Should You Use?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#whats-next"&gt;What's Next&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;h1 id="a-quick-map-of-the-landscape"&gt;A Quick Map of the Landscape&lt;/h1&gt;
+&lt;p&gt;Most profilers make two basic choices, and these choices explain most of the
+differences between tools.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Tracing or sampling.&lt;/strong&gt; A tracing (deterministic) profiler like &lt;code&gt;cProfile&lt;/code&gt;
+records every function call and return. You get exact call counts, but the
+overhead changes the program's timing, sometimes a lot. A sampling profiler
+looks at the call stack at regular intervals and builds a statistical picture
+from those snapshots. You don't get call counts, but the program runs at close
+to normal speed. I went into the differences between the two, and how they work
+under the bonnet, in &lt;a href="https://p403n1x87.github.io/deterministic-and-statistical-python-profiling.html"&gt;an earlier post&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;In-process or out-of-process.&lt;/strong&gt; An in-process profiler runs inside your
+program, usually by starting it for you or being imported. An out-of-process
+profiler is a separate program that reads the target's memory from outside.
+Out-of-process tools can attach to something that's already running, like a
+production server that started misbehaving an hour ago, without restarting it
+or changing its code.&lt;/p&gt;
+&lt;p&gt;All four tools in this post are sampling profilers. Tachyon, py-spy and Austin
+work from outside the process. Scalene works from inside.&lt;/p&gt;
+&lt;h2 id="why-these-four"&gt;Why These Four&lt;/h2&gt;
+&lt;p&gt;There are many more Python profilers than I can cover here, so I've picked the
+ones I think are the most widely known and used, and that have a track record on
+accuracy and overhead. That track record isn't just my opinion. The most
+thorough comparison of Python profilers I know of, by the Scalene team at UMass
+Amherst (&lt;a href="https://arxiv.org/abs/2212.07597"&gt;Berger, Stern and Altmayer Pizzorno, 2022&lt;/a&gt;), measured a
+dozen of them on the longest-running benchmarks of the pyperformance suite. Its
+conclusion was that sampling profilers are "both more efficient and often more
+accurate" than tracing ones.&lt;/p&gt;
+&lt;p&gt;The two go together. A tracing profiler runs its own code on every function call
+and return, inside your program, so it slows the program down, and not evenly:
+code that makes many small calls is slowed down far more than code that makes
+few, which skews the picture of where time is spent. The study found one
+tracing profiler reporting that a function took 80% of the run time when it
+actually took 25%. A sampling profiler stays out of the way of your code, so the
+timings it reports are much closer to how the program behaves when nobody is
+watching. In the study, Austin, py-spy and Scalene were among the profilers with
+the lowest overhead in CPU mode, adding between 0% and 2% to the run time,
+compared with 73% for &lt;code&gt;cProfile&lt;/code&gt; and more than 200% for some others.&lt;/p&gt;
+&lt;p&gt;Tracing profilers still have their place: they count every call exactly, which
+sampling can't do. If you need to know that a function was called 1,204 times,
+use &lt;code&gt;cProfile&lt;/code&gt;. If you need to know where the time goes, sample.&lt;/p&gt;
+&lt;p&gt;Tachyon is too new to have been part of that study, but as the profiler that now
+ships with Python, it's the one many people will reach for first, so it belongs
+here.&lt;/p&gt;
+&lt;p&gt;One notable absence is &lt;a href="https://github.com/uber-archive/pyflame"&gt;pyflame&lt;/a&gt;,
+Uber's profiler from 2016. It was one of the first to sample Python stacks from
+outside the process, and it deserves credit for showing that the approach works.
+But it was Linux-only, its last changes date from 2019, before Python 3.8 was
+released, and its repository is now archived and marked as no longer
+maintained. I mention a few other good tools at the end of the post.&lt;/p&gt;
+&lt;h2 id="why-sampling-rate-matters"&gt;Why Sampling Rate Matters&lt;/h2&gt;
+&lt;p&gt;With a sampling profiler, the time attributed to a function is an estimate: the
+fraction of samples it appears in, multiplied by the duration of the run. Like
+any statistical estimate, its error shrinks as the number of samples grows,
+roughly in proportion to 1/√n. Sampling 10 times faster gives you about three
+times less noise from the same run, so short runs give stable results and
+short-lived functions are less likely to be missed entirely.&lt;/p&gt;
+&lt;p&gt;So the maximum rate a profiler can sustain, without disturbing the target,
+directly limits how accurate it can be.&lt;/p&gt;
+&lt;p&gt;That's why raw sampling speed has been a priority for Austin from the start, and
+it's the reason it's written in C and does nothing but sample: every
+microsecond saved per sample is another sample per second. Each release has
+pushed this further. Austin 4.0 more than doubled the maximum sampling rate of
+3.x, and 4.1 pushes it higher again (more on that below), with a default of
+10,000 samples per second.&lt;/p&gt;
+&lt;p&gt;Tachyon's authors clearly think the same way: the profiler is named after the
+hypothetical particle that travels faster than light. Its sampling core is
+written in C too, and while its default rate is a more conservative 1,000 samples
+per second, it's designed to be raised well beyond that. When a profiler that's
+been around since 2018 and the one that has just joined the standard library
+both put speed first, it's a good sign that sampling rate is finally getting the
+attention it deserves.&lt;/p&gt;
+&lt;h1 id="how-we-got-here"&gt;How We Got Here&lt;/h1&gt;
+&lt;p&gt;Profiling Python from outside the process used to be close to a hack. CPython
+made no promises about the layout of its internal structures, so tools like
+Austin and py-spy had to copy large parts of the interpreter's private headers
+for every Python version, and work out where the interesting fields were from
+compiler- and platform-specific details. Every new release could break them, and
+often did.&lt;/p&gt;
+&lt;p&gt;Those tools showed that the approach was worth it. Being able to attach to a
+running process with no instrumentation and almost no overhead turned out to be
+winning proposition in production, and evidently it made a strong case for
+CPython to support out-of-process tools properly, rather than just tolerate
+them.&lt;/p&gt;
+&lt;p&gt;Some of that work came directly from Austin. In 2021, I made three changes to
+CPython, each to solve a problem I'd run into while working on Austin:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;co_qualname&lt;/code&gt;&lt;/strong&gt; (&lt;a href="https://github.com/python/cpython/issues/88696"&gt;bpo-44530&lt;/a&gt;). Code objects only carried a function's bare
+  name, so an external profiler couldn't tell &lt;code&gt;Foo.run&lt;/code&gt; from &lt;code&gt;Bar.run&lt;/code&gt;, and
+  their samples ended up merged. Since Python 3.11, code objects also carry the
+  qualified name, and every out-of-process profiler can show it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;native_thread_id&lt;/code&gt;&lt;/strong&gt; (&lt;a href="https://github.com/python/cpython/issues/88045"&gt;bpo-43879&lt;/a&gt;). To measure CPU time, a profiler needs the
+  operating system's ID for each thread. On Linux, there was no direct way to
+  find it from outside the process, so tools like Austin had to dig through
+  glibc's internal thread structures to infer it.
+  Since 3.11, the interpreter's thread state simply records it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;Py_Version&lt;/code&gt;&lt;/strong&gt; (&lt;a href="https://github.com/python/cpython/issues/88097"&gt;bpo-43931&lt;/a&gt;). An exported symbol that lets external tools
+  reliably tell which Python version a process is running. py-spy now uses it
+  too.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Tachyon reads both &lt;code&gt;co_qualname&lt;/code&gt; and &lt;code&gt;native_thread_id&lt;/code&gt; today. In 2023 I
+moved the fields that out-of-process tools rely on to the top of the
+interpreter's structures (&lt;a href="https://github.com/python/cpython/pull/105271"&gt;gh-105271&lt;/a&gt;). That change was one of the references
+Pablo Galindo cited when he proposed the &lt;strong&gt;debug offsets&lt;/strong&gt; table (&lt;a href="https://github.com/python/cpython/issues/106597"&gt;gh-106597&lt;/a&gt;):
+a structure at the start of the runtime state that tells external tools where to
+find the data they need, without copying any headers. I later added more fields
+to it (&lt;a href="https://github.com/python/cpython/pull/121311"&gt;gh-121311&lt;/a&gt;). The debug offsets table is the foundation that PEP 768's
+remote debugging interface is built on, and that Tachyon uses to read the
+interpreter's state.&lt;/p&gt;
+&lt;p&gt;So the profiler that now ships with CPython is, in a sense, the result of years
+of external tools proving that out-of-process sampling works. CPython made it a
+supported use case, and the core developers have now built a sampling profiler
+into the interpreter itself. I find that very satisfying, and it's good news
+for every external tool too, Austin included.&lt;/p&gt;
+&lt;h1 id="tachyon-a-profiler-in-the-standard-library"&gt;Tachyon: A Profiler in the Standard Library&lt;/h1&gt;
+&lt;p&gt;The biggest news of the year is that CPython 3.15 includes a sampling profiler,
+&lt;code&gt;profiling.sampling&lt;/code&gt;, also known as &lt;strong&gt;Tachyon&lt;/strong&gt; (it was proposed alongside
+reorganising &lt;code&gt;cProfile&lt;/code&gt; into &lt;code&gt;profiling.tracing&lt;/code&gt;, in PEP 799). It builds on the
+remote debugging support added in 3.14 by PEP 768.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="go"&gt;python -m profiling.sampling run --flamegraph script.py&lt;/span&gt;
+&lt;span class="go"&gt;python -m profiling.sampling attach 12345&lt;/span&gt;
+&lt;span class="go"&gt;python -m profiling.sampling run --live script.py&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Tachyon covers a lot of ground for a first release:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;run&lt;/code&gt; a script, &lt;code&gt;attach&lt;/code&gt; to a running process, or &lt;code&gt;dump&lt;/code&gt; its current stacks.&lt;/li&gt;
+&lt;li&gt;Wall time, CPU time, GIL-holding and exception sampling modes.&lt;/li&gt;
+&lt;li&gt;An &lt;code&gt;--async-aware&lt;/code&gt; mode that rebuilds stacks per &lt;code&gt;asyncio&lt;/code&gt; task.&lt;/li&gt;
+&lt;li&gt;A live, &lt;code&gt;top&lt;/code&gt;-style terminal view.&lt;/li&gt;
+&lt;li&gt;Many output formats: pstats, collapsed stacks, interactive HTML flame graphs
+  and line-level heatmaps, differential flame graphs, the Firefox Profiler's
+  Gecko format, JSONL, and a compact binary format.&lt;/li&gt;
+&lt;li&gt;Subprocess profiling, and a default sampling rate of 1 kHz that can be raised.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The obvious advantage is that it's already there: nothing to install, and it's
+maintained alongside the interpreter, so it stays in step with internal changes.&lt;/p&gt;
+&lt;p&gt;The main limit is version coverage. Tachyon only profiles Python 3.15 and later,
+and the profiler and the target must run the same minor version (and the same
+build type: free-threaded or standard). If your services run on 3.12, Tachyon
+doesn't help you yet. Its &lt;code&gt;--native&lt;/code&gt; option adds placeholder &lt;code&gt;&amp;lt;native&amp;gt;&lt;/code&gt; frames
+to show where Python calls into native code, but doesn't unwind the native
+stack itself.&lt;/p&gt;
+&lt;h2 id="a-familiar-design"&gt;A Familiar Design&lt;/h2&gt;
+&lt;p&gt;If you've used Austin, much of Tachyon will feel familiar. The basic approach of
+reading the interpreter's memory from outside the process is shared with py-spy,
+and goes back to pyflame in 2016. But beyond that, many of
+the features Tachyon has added since its first commit in August 2025 are ones
+Austin has had for years:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Feature&lt;/th&gt;
+&lt;th&gt;In Austin since&lt;/th&gt;
+&lt;th&gt;In Tachyon since&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Separate wall time and CPU time modes&lt;/td&gt;
+&lt;td&gt;0.2 (2018)&lt;/td&gt;
+&lt;td&gt;September 2025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Profiling child processes&lt;/td&gt;
+&lt;td&gt;1.0 (2019)&lt;/td&gt;
+&lt;td&gt;December 2025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Marking samples taken during garbage collection&lt;/td&gt;
+&lt;td&gt;3.1 (2021)&lt;/td&gt;
+&lt;td&gt;November 2025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Writing raw samples to a compact binary format, analysed later&lt;/td&gt;
+&lt;td&gt;3.4 (2022)&lt;/td&gt;
+&lt;td&gt;December 2025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Column-level source locations in that format&lt;/td&gt;
+&lt;td&gt;3.5 (2023)&lt;/td&gt;
+&lt;td&gt;December 2025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Sampling all sub-interpreters&lt;/td&gt;
+&lt;td&gt;3.6 (2023)&lt;/td&gt;
+&lt;td&gt;September 2025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Some of these exist in py-spy too, and it goes the other way as well: Tachyon's
+&lt;code&gt;asyncio&lt;/code&gt; support landed before Austin's. That's how open source should work,
+with good ideas spreading between projects. What's missing is the credit. PEP
+799 doesn't mention Austin, py-spy or any of the external profilers whose
+approach Tachyon adopts. I think that's a missed opportunity to recognise the
+years of community work that came before the standard library caught up, and
+that made it possible.&lt;/p&gt;
+&lt;h1 id="py-spy-the-established-choice"&gt;py-spy: The Established Choice&lt;/h1&gt;
+&lt;p&gt;&lt;a href="https://github.com/benfred/py-spy"&gt;py-spy&lt;/a&gt;, written in Rust, made out-of-process
+sampling mainstream for Python, and it's what many people mean when they say
+"Python sampling profiler".&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="go"&gt;py-spy record -o profile.svg --pid 12345&lt;/span&gt;
+&lt;span class="go"&gt;py-spy top --pid 12345&lt;/span&gt;
+&lt;span class="go"&gt;py-spy dump --pid 12345&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Its &lt;code&gt;record&lt;/code&gt;, &lt;code&gt;top&lt;/code&gt; and &lt;code&gt;dump&lt;/code&gt; commands are a model of a simple interface. It
+writes SVG flame graphs, Speedscope and Chrome trace files, can follow
+subprocesses, filter to threads holding the GIL, and include or exclude idle
+threads. With &lt;code&gt;--native&lt;/code&gt; it also unwinds native C, C++ and Rust frames on Linux
+(x86_64 and, since recently, aarch64) and Windows.&lt;/p&gt;
+&lt;p&gt;py-spy 0.4.2, released in April 2026, added Python 3.14 support. At the time of
+writing, free-threaded builds aren't supported yet (there's an open issue
+tracking it), and there's no task-aware &lt;code&gt;asyncio&lt;/code&gt; mode: coroutines appear as
+ordinary frames on whichever thread runs the event loop.&lt;/p&gt;
+&lt;h1 id="scalene-the-in-process-all-rounder"&gt;Scalene: The In-Process All-Rounder&lt;/h1&gt;
+&lt;p&gt;&lt;a href="https://github.com/plasma-umass/scalene"&gt;Scalene&lt;/a&gt; takes a different approach.
+It runs your program for you and profiles from the inside, which lets it measure
+things external tools can't easily see.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="go"&gt;scalene run script.py&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Its strengths are breadth and line-level detail:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU time split into Python, native and system time, per line and per
+  function.&lt;/li&gt;
+&lt;li&gt;Memory profiling through its own allocator, including per-line allocation,
+  likely leaks, and copy volume (for example, data accidentally copied between
+  NumPy and Python objects).&lt;/li&gt;
+&lt;li&gt;GPU time on NVIDIA GPUs, and on Apple GPUs when using PyTorch's MPS backend.&lt;/li&gt;
+&lt;li&gt;Wall-clock &lt;code&gt;await&lt;/code&gt; time per line for &lt;code&gt;async&lt;/code&gt; code, along with how many
+  coroutines were waiting there at once.&lt;/li&gt;
+&lt;li&gt;Combined Python and native stacks, shown as flame charts and a timeline.&lt;/li&gt;
+&lt;li&gt;AI-generated optimisation suggestions from the web UI, using a provider of
+  your choice (OpenAI, Bedrock, Azure or a local model through Ollama).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Two of these numbers come with caveats. Scalene doesn't observe native code
+directly: it uses a timer signal, and treats any delay in handling it as time
+spent in native code, during which Python can't handle signals. But CPython
+only handles signals on the main thread, so in a program with several busy
+threads the delay can simply come from waiting for its turn on the GIL. In 2022,
+Pablo Galindo showed a multi-threaded, pure-Python program that Scalene reported
+as spending most of its time in native code (&lt;a href="https://github.com/plasma-umass/scalene/issues/428"&gt;scalene#428&lt;/a&gt;). Scalene's author
+replied that worker threads are profiled in a different way, but the issue is
+still open, and the current code still estimates the main thread's native time
+from the signal delay. So treat the Python/native split with some care in
+multi-threaded programs.&lt;/p&gt;
+&lt;p&gt;For GPU time on NVIDIA, Scalene needs the GPU's per-process accounting mode,
+which has to be enabled once with root privileges. Without it, Scalene falls
+back to the utilisation of the whole GPU, including other processes, and shows
+a warning saying so.&lt;/p&gt;
+&lt;p&gt;Scalene 2.4 (October 2026) supports free-threaded Python 3.13 and 3.14. By its
+own figures, the overhead is typically 10–20%. That's fine during development,
+but the trade-off of being in-process is that you can't attach Scalene to
+something already running. You have to start the program under it.&lt;/p&gt;
+&lt;h1 id="austin-sampling-from-the-outside-at-speed"&gt;Austin: Sampling from the Outside, at Speed&lt;/h1&gt;
+&lt;p&gt;&lt;a href="https://github.com/P403n1x87/austin"&gt;Austin&lt;/a&gt; is the tool I maintain. It's a
+frame stack sampler written in pure C, with no dependencies beyond the C
+standard library and the operating system. It reads the interpreter's memory
+from outside the process, writes every sample to a compact binary format called
+MOJO, and leaves the analysis to other tools. Because it doesn't aggregate
+anything while it samples, it can sample very fast.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="go"&gt;austin -o profile.mojo python script.py&lt;/span&gt;
+&lt;span class="go"&gt;sudo austin -p 12345 -o profile.mojo&lt;/span&gt;
+&lt;span class="go"&gt;austin -w 12345   # print the current stacks of every thread&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Austin 4.1 supports CPython 3.10 through 3.15, including free-threaded builds,
+on Linux, macOS and Windows. On Linux it also runs on less common architectures
+like i686, armv7 and ppc64le. Each release drops the oldest Python versions, but
+older releases of Austin are still available if you need to profile something
+older: Austin 4.0 supports 3.9 through 3.14, 3.7 supports 3.8 through 3.13, and
+3.5 goes all the way back to Python 2.3.&lt;/p&gt;
+&lt;p&gt;Austin 4.1 adds four things worth covering in some detail.&lt;/p&gt;
+&lt;h2 id="1-higher-sampling-rates"&gt;1. Higher Sampling Rates&lt;/h2&gt;
+&lt;p&gt;Austin 4.0 already more than doubled the maximum sampling rate of the previous
+release, by cutting down how much memory Austin reads from the target and how
+much work it does to write each sample. 4.1 goes further: Austin now detects
+when a thread's stack hasn't changed since the previous sample. When that
+happens, it skips walking the stack again and writes a short "same as before"
+marker instead of the whole stack, which also makes the output files smaller.
+It also buffers its output instead of writing each sample separately.&lt;/p&gt;
+&lt;p&gt;Every performance change to Austin is benchmarked in CI against the code it
+replaces, and the results are posted on the pull request. Here are the two that
+made the biggest difference, measured on Linux (x86_64) with Python 3.13, at
+the smallest sampling interval (1 µs), where Austin samples as fast as it can:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Change&lt;/th&gt;
+&lt;th&gt;Maximum sampling rate (wall time)&lt;/th&gt;
+&lt;th&gt;Time per sample&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;4.0 performance work, compared with Austin 3.7 (&lt;a href="https://github.com/P403n1x87/austin/pull/295#issuecomment-3168126096"&gt;#295&lt;/a&gt;)&lt;/td&gt;
+&lt;td&gt;54,000 → 111,000 samples/s (×2.1)&lt;/td&gt;
+&lt;td&gt;32.4 → 12.4 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4.1 repeated stack detection (&lt;a href="https://github.com/P403n1x87/austin/pull/402#issuecomment-4350906929"&gt;#402&lt;/a&gt;)&lt;/td&gt;
+&lt;td&gt;121,000 → 166,000 samples/s (+37%)&lt;/td&gt;
+&lt;td&gt;15.0 → 10.4 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;In CPU time mode, where Austin also has to check whether each thread is on the
+CPU, the same changes took the maximum rate from 20,000 to 32,000 samples per
+second (+60%) and from 34,000 to 37,000 (+9%) respectively.&lt;/p&gt;
+&lt;p&gt;Something to keep in mind is that the gain from repeated stack detection depends
+on how often stacks repeat between samples. That happens a lot when a program
+spends time in long-running loops or calls, but it varies with the workload.&lt;/p&gt;
+&lt;p&gt;As explained earlier, this matters for accuracy: at the default 100 µs
+interval, Austin collects up to 10,000 samples per second per thread, ten times
+Tachyon's default rate.&lt;/p&gt;
+&lt;h2 id="2-native-mode"&gt;2. Native Mode&lt;/h2&gt;
+&lt;p&gt;With &lt;code&gt;-n/--native&lt;/code&gt;, Austin collects native call stacks and interleaves them with
+the Python frames they belong to:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="go"&gt;austin -n -i 1ms -o profile.mojo python script.py&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This shows, for example, what's actually happening inside NumPy, a Cython module
+or a Rust extension built with PyO3, not just that time was spent "somewhere in
+native code". In native mode Austin also samples threads that never run Python
+code, like worker threads started by native libraries, which are invisible to
+profilers that only look at Python threads.&lt;/p&gt;
+&lt;p&gt;Austin users may remember that native stacks used to need a separate tool,
+&lt;code&gt;austinp&lt;/code&gt;, a variant of Austin that uses libunwind to walk native stacks. It was
+a separate tool for two reasons. It only worked on Linux. And it broke one of
+Austin's founding principles, minimal impact on the program being profiled: to
+walk a thread's native stack reliably, libunwind needs the thread to stand
+still, so &lt;code&gt;austinp&lt;/code&gt; had to stop each thread while sampling it. I wrote about
+that trade-off in &lt;a href="https://p403n1x87.github.io/spy-on-python-down-to-the-linux-kernel-level.html"&gt;Spy on Python down to the Linux kernel level&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The new native mode fixes the first problem. It works on Linux (x86_64 and
+aarch64), macOS and Windows (x86_64), with no extra dependencies, because Austin
+now walks native stacks itself instead of relying on libunwind. Its design owes
+a lot to &lt;a href="https://github.com/mstange/samply"&gt;samply&lt;/a&gt;, Markus Stange's excellent
+native sampling profiler, which showed how fast and portable this kind of
+unwinding can be. On macOS, Austin captures native stacks the same way samply
+does. On Linux, both unwind using the compiler-generated unwind tables, though
+they capture stacks differently, and on Windows samply relies on the system's
+event tracing while Austin unwinds stacks itself. As far as I know, Austin is
+currently the only out-of-process &lt;em&gt;Python&lt;/em&gt; profiler that unwinds native stacks
+on macOS. &lt;code&gt;austinp&lt;/code&gt; is still available on Linux, for the architectures that
+native mode doesn't cover yet and for sampling kernel stacks.&lt;/p&gt;
+&lt;p&gt;There is one other way to get Python and native frames in the same profile.
+Since 3.12, CPython can make Python function calls visible to native profilers
+like &lt;code&gt;perf&lt;/code&gt; and samply (on macOS from Python 3.15), if you enable its &lt;a href="https://docs.python.org/3/howto/perf_profiling.html"&gt;perf
+support&lt;/a&gt; with &lt;code&gt;-X perf&lt;/code&gt; or &lt;code&gt;PYTHONPERFSUPPORT=1&lt;/code&gt;. You get Python
+function names in a fully native profile. But it has to be enabled inside the
+target process, it only goes down to functions, not lines, and it slows Python
+down: in 2023 Mark Shannon &lt;a href="https://discuss.python.org/t/the-performance-of-python-with-perf-support-is-not-great-and-is-going-to-get-a-lot-worse/25280"&gt;measured&lt;/a&gt; an 8% slowdown on a
+standard build, with more expected in builds that keep frame pointers. So it's a
+good option for a quick look at a local program, rather than for attaching to
+something already running.&lt;/p&gt;
+&lt;p&gt;The second problem is a deliberate compromise. To get a consistent native stack,
+Austin still has to briefly suspend each thread while sampling it, so native
+mode has more impact on the program than Austin's normal mode, and the impact
+grows with the sampling rate. Use a larger interval (1 ms is a good start), and
+avoid it in production. That's why native mode is an option you turn on, not
+the default. In its normal mode, Austin still never pauses the program it's
+profiling, and I explained the reasoning behind that in &lt;a href="https://p403n1x87.github.io/increasing-austin-accuracy-with-a-dobule-heap-trick.html"&gt;an earlier
+post&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="3-asyncio-profiling"&gt;3. asyncio Profiling&lt;/h2&gt;
+&lt;p&gt;On CPython 3.14 and later, Austin tracks the &lt;code&gt;asyncio&lt;/code&gt; task graph: each event
+loop's tasks, the coroutine chain each task is executing or suspended at, and
+which tasks are awaiting which. Samples are attributed to the task running on
+the thread, and the stacks of suspended tasks are recorded together with the
+await relationships between them.&lt;/p&gt;
+&lt;p&gt;That's what you need to answer the question that ordinary flame graphs get
+wrong for async code: not "which frames were on the CPU", but "which &lt;em&gt;task&lt;/em&gt;
+was slow, and was it slow because it was working or because it was waiting on
+something else?" And &lt;code&gt;austin -w&lt;/code&gt; prints the live task tree of a running
+application, grouped under the thread whose event loop owns it.&lt;/p&gt;
+&lt;p&gt;There's a further difference that's easy to miss. Most sampling profilers only
+record &lt;em&gt;what&lt;/em&gt; was running, so each sample is anonymous: they can tell you that
+&lt;code&gt;fetch_user&lt;/code&gt; took 30% of the time, but not whether that was one slow task or a
+thousand quick ones. Tachyon's async-aware mode labels each stack with the name
+of its task, but still adds the samples up into a single aggregate profile.
+Austin records &lt;em&gt;which&lt;/em&gt; task each sample belongs to, and follows each task from
+the first time it sees it to the last. That makes its asyncio support closer to
+a tracer in spirit, while keeping the low overhead of sampling.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode"&gt;VS Code extension&lt;/a&gt; makes use of this. Alongside the usual flame graph,
+which adds up time across all tasks, its Task Trace panel shows a flame chart
+for each event loop: every task drawn from when it was first seen to when it
+was last seen, nested under the task awaiting it, with how much of that time it
+spent running and how much waiting. So you can see what happened over time,
+not just where the time went in total, which is often what you need to work out
+why a request was slow.&lt;/p&gt;
+&lt;h2 id="4-making-profiling-approachable"&gt;4. Making Profiling Approachable&lt;/h2&gt;
+&lt;p&gt;Here's an uncomfortable truth: most Python code never gets profiled. Not because
+the tools are missing, but because profiling feels hard to get into. You have to
+pick a tool, run it the right way, and then make sense of a flame graph full of
+frames you've never heard of. Many developers try it once, feel lost, and go
+back to guessing. That's a shame, because as I argued in &lt;a href="https://p403n1x87.github.io/how-to-bust-python-performance-issues.html"&gt;How to bust Python
+performance issues&lt;/a&gt;, a single profiling run often turns up
+easy wins. A big part of what I want Austin to do is lower that barrier, and
+4.1 approaches it from two directions.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Let an agent do the work.&lt;/strong&gt; Coding agents can now profile code with Austin and
+reason about the results themselves. You ask "why is this endpoint slow?", and
+the agent runs Austin, finds the hot path, proposes a fix, and profiles again to
+check that the fix worked. There are two ways to set this up:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode"&gt;VS Code extension&lt;/a&gt; includes an &lt;strong&gt;MCP server&lt;/strong&gt; that exposes the loaded
+  profile to agents. Its data tools let the agent ask for the hottest
+  functions, call stacks, &lt;code&gt;asyncio&lt;/code&gt; task traces, GC activity and metadata. It
+  works with GitHub Copilot's agent mode with no setup, and with Claude Code,
+  Cursor or any other MCP client after running a single command.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;austin-query&lt;/code&gt;&lt;/strong&gt;, from the &lt;a href="https://github.com/P403n1x87/austin-python"&gt;austin-python&lt;/a&gt; package, answers the same
+  questions from the command line, as text tables or JSON. Any agent that can
+  run shell commands can use it, in a terminal, a script or CI. Pointing the
+  agent at &lt;code&gt;austin-query --help&lt;/code&gt; is usually all the setup it needs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Or let it teach you.&lt;/strong&gt; Having an agent fix things for you is useful, but it
+doesn't make you any better at reading a profile. So the MCP server also has
+action tools that let the agent search and zoom the flame graph in the editor,
+while you watch. That turns the extension into a learning tool: instead of
+"fix this", you can ask your agent to &lt;em&gt;walk you through&lt;/em&gt; the analysis. It can
+zoom into the hot path and explain why it's hot, point out the frame where your
+code hands over to a library, or show you what time spent waiting looks like
+compared with time spent computing. You're both looking at the same flame
+graph, so after a few sessions you start to recognise the patterns yourself,
+and the next time, you might not need to ask. &lt;a href="https://p403n1x87.github.io/busting-performance-issues-ai-edition.html"&gt;Busting performance issues, AI
+edition&lt;/a&gt; shows both approaches on a real project, including one of
+these guided tours.&lt;/p&gt;
+&lt;!-- TODO: embed demo video / GIF of the agent loop here, ideally one showing
+     the agent guiding the user through the flame graph. --&gt;
+
+&lt;h2 id="other-things-in-41"&gt;Other Things in 4.1&lt;/h2&gt;
+&lt;p&gt;The rest of the release is about meeting Python where it's going, and where it
+actually runs. Austin 4.1 supports Python 3.15 on day one, and free-threaded
+builds too. Free-threading changes a lot for a profiler: without the GIL,
+threads really do run at the same time, so a sampler has to keep up with all of
+them at once. The one thing it costs is some accuracy in memory mode, since
+without the GIL there's no reliable way to tell which thread caused a change in
+memory usage (see below).&lt;/p&gt;
+&lt;p&gt;Profiles are also easier to read. Threads now show up under the names you gave
+them in the &lt;code&gt;threading&lt;/code&gt; module, so you see &lt;code&gt;MainThread&lt;/code&gt; and &lt;code&gt;worker-3&lt;/code&gt; rather
+than a list of opaque thread IDs, which makes a big difference in a busy
+multi-threaded application.&lt;/p&gt;
+&lt;p&gt;Finally, a lot of Python runs in containers, and profiling it from the host used
+to be awkward. Austin 4.1 handles containerised processes better, and it now
+records the target's working directory, virtual environment and &lt;code&gt;PYTHONPATH&lt;/code&gt;
+alongside the samples. That's the information a tool needs to map the file
+paths in a profile back to the source files on your machine, even when the code
+ran somewhere else.&lt;/p&gt;
+&lt;h2 id="where-austin-falls-short"&gt;Where Austin Falls Short&lt;/h2&gt;
+&lt;p&gt;Whilst Austin has a memory mode, users must be aware that it isn't an allocation
+profiler. Its memory mode measures changes in resident memory (RSS) between
+samples: how much physical memory the process is actually using, not how much it
+has asked for. These can be very different numbers. If you allocate a 512 MB
+array but only write to half of it, the operating system only provides physical
+memory for the half you've used, so RSS grows by about 256 MB.&lt;/p&gt;
+&lt;p&gt;That's exactly the test the &lt;a href="https://arxiv.org/abs/2212.07597"&gt;Scalene study&lt;/a&gt; used to compare
+memory profilers: allocate 512 MB, touch between 0% and 100% of it, and check
+that the profiler reports 512 MB. Austin mostly reported less, and the study
+counted that as inaccurate. But reporting only the memory that was touched is
+the correct answer for what Austin measures. The study was asking an allocation
+question, and Austin answers a residency question. Both are useful: RSS tells
+you what your process really costs the machine, which is what matters when
+you're about to run out of memory. But if you want to know which line allocated
+what, or hunt for leaks, you want an allocation profiler like Scalene or
+&lt;a href="https://github.com/bloomberg/memray"&gt;memray&lt;/a&gt;.
+Austin also has no line-level GUI of its own. It relies on the VS Code
+extension, the TUI, Speedscope or pprof for visualisation, so out of the box it
+asks a bit more of you than Scalene or py-spy do. And attaching to a process
+needs elevated privileges on Linux and macOS, as it does for any out-of-process
+profiler.&lt;/p&gt;
+&lt;h1 id="which-one-should-you-use"&gt;Which One Should You Use?&lt;/h1&gt;
+&lt;p&gt;There isn't one best profiler. Here's how I'd choose:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;You're on Python 3.15 and want something quick:&lt;/strong&gt; start with Tachyon. It's
+  already installed, and it's good.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;You need to know about memory or GPU time, line by line:&lt;/strong&gt; use Scalene, as
+  long as you can start the program under it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;You need to profile older Python versions, or attach to production:&lt;/strong&gt; py-spy
+  and Austin both do this well. Austin covers 3.15 and free-threaded builds
+  today, and samples faster.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;You're profiling asyncio code:&lt;/strong&gt; on 3.14+, Austin gives you task-level
+  profiles that account for waiting time, Tachyon gives you task-aware stacks
+  on 3.15, and Scalene tells you which &lt;code&gt;await&lt;/code&gt; lines are slow.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;You're working on native extensions, especially on macOS:&lt;/strong&gt; use Austin's
+  native mode.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;You want your coding agent to do the profiling, or to teach you how:&lt;/strong&gt; use
+  Austin's MCP server or &lt;code&gt;austin-query&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Other tools worth knowing about: &lt;a href="https://github.com/joerick/pyinstrument"&gt;pyinstrument&lt;/a&gt;
+for a friendly in-process call tree, &lt;a href="https://github.com/bloomberg/memray"&gt;memray&lt;/a&gt;
+for serious memory work, and &lt;code&gt;cProfile&lt;/code&gt; (now &lt;code&gt;profiling.tracing&lt;/code&gt;) when you need
+exact call counts.&lt;/p&gt;
+&lt;h1 id="whats-next"&gt;What's Next&lt;/h1&gt;
+&lt;p&gt;Python profiling has never been in better shape. Having a sampling profiler in
+the standard library raises the baseline for everyone, and the remote debugging
+work in 3.14 and 3.15 makes all external tools more reliable. I expect the next
+round of progress to come from two directions: better support for concurrency
+(free-threading and &lt;code&gt;asyncio&lt;/code&gt; together), and making profiling accessible to
+everyone, whether that means an agent doing the work or an agent teaching you to
+do it yourself. The best profiler is the one people actually use.&lt;/p&gt;
+&lt;p&gt;Austin 4.1 is available on &lt;a href="https://pypi.org/project/austin-dist/"&gt;PyPI&lt;/a&gt;,
+Homebrew, Snap, Chocolatey, Scoop, conda-forge and as standalone binaries from
+&lt;a href="https://github.com/P403n1x87/austin/releases"&gt;GitHub releases&lt;/a&gt;. The
+&lt;a href="https://p403n1x87.github.io/austin/"&gt;documentation&lt;/a&gt; covers everything above in
+more detail. If you try it, I'd love to hear how it goes.&lt;/p&gt;</content><category term="Programming"/><category term="python"/><category term="profiling"/><category term="optimisation"/></entry><entry><title>Busting performance issues, AI edition</title><link href="https://p403n1x87.github.io/busting-performance-issues-ai-edition.html" rel="alternate"/><published>2026-05-16T20:05:00+01:00</published><updated>2026-05-16T20:05:00+01:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2026-05-16:/busting-performance-issues-ai-edition.html</id><summary type="html">&lt;p&gt;Coding agents are fast becoming the main generators of new source code, but they are also being used for code review, finding and fixing bugs. How can they be used to the best extent to discover and fix performance issues?&lt;/p&gt;</summary><content type="html">&lt;div class="toc"&gt;&lt;span class="toctitle"&gt;Table of contents:&lt;/span&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a href="#enter-ai"&gt;Enter AI&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="#bytecode-our-case-study"&gt;bytecode: Our Case Study&lt;/a&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a href="#a-bit-of-setup-required"&gt;A Bit of Setup Required&lt;/a&gt;&lt;/li&gt;
