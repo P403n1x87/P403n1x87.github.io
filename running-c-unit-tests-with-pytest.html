@@ -1,97 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>The Hub of Heliopolis - Running C unit tests with pytest</title>
-  <meta charset="utf-8" />
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content="Pelican" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub of Heliopolis - Running C unit tests with pytest</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" />
+  <link rel="stylesheet" href="./theme/css/terminal.css" />
+  <link rel="stylesheet" href="./theme/css/pygment.css" />
+  <script src="./theme/js/terminal.js" defer></script>
 
-  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
-  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
-
-
-    <meta name="tags" content="python" />
-    <meta name="tags" content="testing" />
-    <meta name="tags" content="c" />
+  <meta name="tags" content="python" />
+  <meta name="tags" content="testing" />
+  <meta name="tags" content="c" />
 </head>
 
-<body id="index" class="home p-8">
-  <header id="banner" class="body text-xl">
-    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
-  </header><!-- /#banner -->
-
-  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
-    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
-
-      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
-
-  </ul></nav><!-- /#menu -->
-
-  <div id="heading">
-  <header class="post-info relative">
-    <div id="heading-bg" style="background-image: url(theme/images/default_art.png);"></div>
-    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
-      <h1 class="entry-title">Running C unit tests with pytest</h1>
-    
-      <div class="py-1 text-xs">
-        <time class="published py-1" datetime="2022-02-11T14:01:00+00:00">
-          &#128197; Fri 11 February 2022
-        </time>
-        <span class="readtime py-1">&#9202; A 34 min read</span>
-      </div>
-
-      <div class="py-1 text-xs">
-        <span class="category py-1">
-            &#128451; <a href="./category/programming.html">Programming</a>
-        </span>
-        <span class="tags py-1">
-          &#127991;
-            <a class="tag" href="./tag/python.html">python</a>
-            <a class="tag" href="./tag/testing.html">testing</a>
-            <a class="tag" href="./tag/c.html">c</a>
-        </span>
-      </div>
-    </div>
+<body class="article">
+  <header class="site-header frame">
+    <p class="prompt">
+      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/running-c-unit-tests-with-pytest</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+    </p>
+    <nav class="menu" aria-label="Main">
+      <a href="./">cd ~</a>
+      <a href="./archives.html">ls posts/</a>
+      <a href="./tags.html">ls tags/</a>
+      <a href="./pages/about.html">cat about.md</a>
+      <a href="./feeds/all.atom.xml">tail -f feed</a>
+    </nav>
   </header>
-  </div>
 
-  <div class="flex flex-wrap py-4">
-    <div id="sidepane" class="flex-none">
-<footer class="post-info text-sm">
-  <div id="sidebar_toc" class="py-2" />
-</footer><!-- /.post-info -->
-
-<script type="text/javascript">
-  window.onload = function() {
-    toc = document.getElementsByClassName('toc')[0];
-    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
-    toc.parentNode.removeChild(toc)
-
-    document.querySelectorAll('.entry-content img').forEach(function(img) {
-      if (img.parentElement.tagName !== 'A') {
-        var a = document.createElement('a');
-        a.href = img.src;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        img.parentNode.insertBefore(a, img);
-        a.appendChild(img);
-      }
-    });
-  }
-</script>
-    </div>
-    <div id="content-block" class="flex-none">
-<section id="content" class="body">
-  <div id="summary" class="py-0">
-    <p>In this post I will describe my approach to C unit testing using pytest. In particular, we get to see how to gracefully handle SIGSEGVs and prevent them from stopping the test runner abruptly. Furthermore, we shall try to write tests in a Pythonic way.</p>
-  </div>
-
-
-  <div class="entry-content">
-    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+  <main class="site-main frame">
+<div class="with-aside">
+  <aside class="aside">    <details class="toc" id="toc">
+      <summary>running-c-unit-tests-with-pytest.md</summary>
+      <div class="toc"><span class="toctitle">Table of contents:</span><ul>
 <li><a href="#why">Why?</a></li>
 <li><a href="#calling-native-code-from-python">Calling native code from Python</a></li>
 <li><a href="#enter-pytest">Enter pytest</a></li>
@@ -101,7 +46,32 @@
 <li><a href="#coverage-please">Coverage, please!</a></li>
 </ul>
 </div>
-<h1 id="why">Why?</h1>
+    </details>
+    <script>
+      if (matchMedia("(min-width: 1000px)").matches) document.getElementById("toc").open = true;
+    </script></aside>
+
+  <article class="article">
+    <header class="article-header">
+      <p class="cmd"><span class="ps1">$</span> cat running-c-unit-tests-with-pytest.md</p>
+      <h1 class="article-title">Running C unit tests with pytest</h1>
+      <p class="meta">
+        <time datetime="2022-02-11T14:01:00+00:00">Fri 11 February 2022</time>
+        <span>34 min read</span>
+        <a class="cat" href="./category/programming.html">programming/</a>
+        <a class="tag" href="./tag/python.html">#python</a>
+        <a class="tag" href="./tag/testing.html">#testing</a>
+        <a class="tag" href="./tag/c.html">#c</a>
+      </p>
+    </header>
+
+    <div class="lead">
+      <p>In this post I will describe my approach to C unit testing using pytest. In particular, we get to see how to gracefully handle SIGSEGVs and prevent them from stopping the test runner abruptly. Furthermore, we shall try to write tests in a Pythonic way.</p>
+    </div>
+
+    <div class="entry-content">
+      
+<h1 id="why">Why?<a class="headerlink" href="#why" title="Permanent link">¶</a></h1>
 <p>That's probably what you might be asking right now. Why use a Python testing
 framework to test C code? Why don't just use C testing frameworks, like <a href="https://github.com/google/googletest">Google
 Test</a>, or <a href="https://libcheck.github.io/check/">Check</a>. I can give you an answer with all the
@@ -116,7 +86,7 @@ and leverage all the features of pytest, as well as all the packages that are
 available for Python, should I ever need to. But these are not all the reasons
 for adopting pytest for running C tests. If you keep reading you will discover a
 few more that might convince you to use pytest for your C unit tests too!</p>
-<h1 id="calling-native-code-from-python">Calling native code from Python</h1>
+<h1 id="calling-native-code-from-python">Calling native code from Python<a class="headerlink" href="#calling-native-code-from-python" title="Permanent link">¶</a></h1>
 <p>Testing C code with Python would only make sense if it were easy to call native
 code from the interpreter. Thankfully, the Python standard library comes with
 the <a href="https://docs.python.org/3/library/ctypes.html"><code>ctypes</code></a> module that allows us to do just that! So let's start
@@ -129,33 +99,29 @@ looking at some C code, for instance,</p>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
-
 <p>which we want to compile as a shared object, e.g. with</p>
 <div class="highlight"><pre><span></span><code>gcc<span class="w"> </span>-shared<span class="w"> </span>-o<span class="w"> </span>fact.so<span class="w"> </span>fact.c
 </code></pre></div>
-
 <p>How do we test the <code>fact</code> function from Python? Easy peasy!</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># file: fact.py</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDLL</span>
 
-<span class="n">libfact</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;./fact.so&quot;</span><span class="p">)</span>
+<span class="n">libfact</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">"./fact.so"</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">==</span> <span class="mi">720</span>
 <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
 <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
 </code></pre></div>
-
 <p>Assuming we are in the directory where both <code>fact.so</code> and <code>fact.py</code> reside, we
 can test the <code>fact</code> function inside <code>fact.c</code> simply with</p>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>fact.py
 </code></pre></div>
-
 <p>If the test succeeds, the script's return code will be 0.</p>
 <blockquote>
 <p>Congratulations! You have now tested some C code with Python! 🎉</p>
 </blockquote>
-<h1 id="enter-pytest">Enter pytest</h1>
+<h1 id="enter-pytest">Enter pytest<a class="headerlink" href="#enter-pytest" title="Permanent link">¶</a></h1>
 <p>We are not here to just play around with bare <code>assert</code>s. I promised you the full
 power of Python and <code>pytest</code>, so we can't settle with just this simple
 example. Let's add <code>pytest</code> to our test dependencies and do this instead</p>
@@ -167,7 +133,7 @@ example. Let's add <code>pytest</code> to our test dependencies and do this inst
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">libfact</span><span class="p">():</span>
-    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;./fact.so&quot;</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">"./fact.so"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_fact</span><span class="p">(</span><span class="n">libfact</span><span class="p">):</span>
@@ -175,7 +141,6 @@ example. Let's add <code>pytest</code> to our test dependencies and do this inst
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
 </code></pre></div>
-
 <p>Now run <code>pytest</code> to get</p>
 <div class="highlight"><pre><span></span><code>$ pytest
 =========================== test session starts ============================
@@ -187,7 +152,6 @@ test_fact.py .                                                       [100%]
 
 ============================ 1 passed in 0.00s =============================
 </code></pre></div>
-
 <p>That's some more informative output than what a plain Python test script would
 give us! How about starting to leverage some of the other <code>pytest</code> features,
 like parametrised tests? Let's rewrite our test case like so</p>
@@ -200,14 +164,13 @@ like parametrised tests? Let's rewrite our test case like so</p>
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">libfact</span><span class="p">():</span>
-    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;./fact.so&quot;</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">"./fact.so"</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;n,e&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">720</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">"n,e"</span><span class="p">,</span> <span class="p">[(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">720</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">42</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_fact</span><span class="p">(</span><span class="n">libfact</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">libfact</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="n">e</span>
 </code></pre></div>
-
 <p>Let's run this again with <code>pytest</code>, this time with a more verbose output:</p>
 <div class="highlight"><pre><span></span><code>pytest -vv
 =========================== test session starts ============================
@@ -222,9 +185,8 @@ test_fact.py::test_fact[-42-1] PASSED                                [100%]
 
 ============================ 3 passed in 0.01s =============================
 </code></pre></div>
-
 <p>Sweet! 🍯</p>
-<h1 id="in-the-wild">In the wild</h1>
+<h1 id="in-the-wild">In the wild<a class="headerlink" href="#in-the-wild" title="Permanent link">¶</a></h1>
 <p>Thus far we've got an idea of how to invoke C from Python and how to write some
 simple tests that we can run with <code>pytest</code> while also leveraging features like
 fixtures and parametrised tests. Let us now step this up a notch and consider
@@ -240,7 +202,6 @@ the organisation of sources within an <em>actual</em> C project, for instance</p
 ├── README
 ...
 </code></pre></div>
-
 <p>In the previous example, we built the shared object <code>fact.so</code> by hand, but in a
 CI environment we would probably want to automate that step too. What should we
 use for that? A bash script? A makefile? Python, of course! What else?!? 😀</p>
@@ -297,14 +258,13 @@ which implement a simple LRU cache. This is part of the spec</p>
 <span class="kt">void</span>
 <span class="nf">queue__destroy</span><span class="p">(</span><span class="n">queue_t</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
 </code></pre></div>
-
 <p>and this is the corresponding part of the implementation</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// file: src/cache.c</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdbool.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;cache.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"cache.h"</span>
 
 <span class="cp">#define isvalid(x) ((x) != NULL)</span>
 
@@ -422,7 +382,6 @@ which implement a simple LRU cache. This is part of the spec</p>
 <span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
-
 <p>It's quite a fair bit of code; however, we are not interested in how the data
 structures are implemented, but rather to what it actually implements. This
 already gives us plenty to play with.</p>
@@ -436,7 +395,7 @@ code in <code>tests/cunit/__init__.py</code></p>
 <span class="n">HERE</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">TEST</span> <span class="o">=</span> <span class="n">HERE</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">ROOT</span> <span class="o">=</span> <span class="n">TEST</span><span class="o">.</span><span class="n">parent</span>
-<span class="n">SRC</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;src&quot;</span>
+<span class="n">SRC</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"src"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CompilationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -444,10 +403,10 @@ code in <code>tests/cunit/__init__.py</code></p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
-    <span class="n">binary</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)</span>
+    <span class="n">binary</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span>
-        <span class="p">[</span><span class="s2">&quot;gcc&quot;</span><span class="p">,</span> <span class="s2">&quot;-shared&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">cflags</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="o">*</span><span class="n">ldadd</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">"gcc"</span><span class="p">,</span> <span class="s2">"-shared"</span><span class="p">,</span> <span class="o">*</span><span class="n">cflags</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="o">*</span><span class="n">ldadd</span><span class="p">],</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span>
         <span class="n">stderr</span><span class="o">=</span><span class="n">STDOUT</span><span class="p">,</span>
         <span class="n">cwd</span><span class="o">=</span><span class="n">SRC</span><span class="p">,</span>
@@ -458,7 +417,6 @@ code in <code>tests/cunit/__init__.py</code></p>
 
     <span class="k">raise</span> <span class="n">CompilationError</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 </code></pre></div>
-
 <p>This simply defines the <code>compile</code> utility that allows us to invoke <code>gcc</code> to
 compile a source and generate the <code>.so</code> shared object. We can then use it in our
 test source this way</p>
@@ -467,14 +425,14 @@ test source this way</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="nb">compile</span>
 
-<span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.so.6&quot;</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">"libc.so.6"</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">():</span>
-    <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">&quot;cache.c&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">"cache.c"</span>
     <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
+    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">)))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
@@ -482,7 +440,6 @@ test source this way</p>
     <span class="k">assert</span> <span class="n">lru_cache</span>
     <span class="n">cache</span><span class="o">.</span><span class="n">lru_cache__destroy</span><span class="p">(</span><span class="n">lru_cache</span><span class="p">)</span>
 </code></pre></div>
-
 <p>At this point, your project folder should have the following structure</p>
 <div class="highlight"><pre><span></span><code>my-c-project/
 ...
@@ -496,11 +453,10 @@ test source this way</p>
 |   └── __init__.py
 ...
 </code></pre></div>
-
 <p>and when you run <code>pytest</code> again, this time the C source would be compiled at
 runtime using <code>gcc</code>. The tests then run as before, which should produce the same
 output we saw earlier.</p>
-<h1 id="dead-end">Dead end?</h1>
+<h1 id="dead-end">Dead end?<a class="headerlink" href="#dead-end" title="Permanent link">¶</a></h1>
 <p>If you're still with me, then things are probably looking interesting to you
 too. So let's test a bit more of the functions exported by the caching
 component. Let's make a test case for the <code>queue_item_t</code> and <code>queue_t</code> objects,
@@ -510,14 +466,14 @@ like so</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="nb">compile</span>
 
-<span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.so.6&quot;</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">"libc.so.6"</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">():</span>
-    <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">&quot;cache.c&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">"cache.c"</span>
     <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
+    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">)))</span>
 
 
 <span class="n">NULL</span> <span class="o">=</span> <span class="mi">0</span>
@@ -531,7 +487,7 @@ like so</p>
     <span class="n">cache</span><span class="o">.</span><span class="n">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;qsize&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">"qsize"</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_queue</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">qsize</span><span class="p">):</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">queue_new</span><span class="p">(</span><span class="n">qsize</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 
@@ -552,7 +508,6 @@ like so</p>
 
     <span class="k">assert</span> <span class="n">values</span> <span class="o">==</span> <span class="p">[</span><span class="n">cache</span><span class="o">.</span><span class="n">queue__dequeue</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">qsize</span><span class="p">)]</span>
 </code></pre></div>
-
 <p>Let's run the new tests with <code>pytest -vv</code> and</p>
 <div class="highlight"><pre><span></span><code>=============================== test session starts ===============================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
@@ -563,41 +518,40 @@ collected 5 items
 tests/cunit/test_cache.py::test_queue_item Fatal Python error: Segmentation fault
 
 Current thread 0x00007f4016e4f740 (most recent call first):
-  File &quot;/home/gabriele/Projects/cunit/tests/cunit/test_cache.py&quot;, line 24 in test_queue_item
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/python.py&quot;, line 192 in pytest_pyfunc_call
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py&quot;, line 39 in _multicall
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py&quot;, line 80 in _hookexec
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py&quot;, line 265 in __call__
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/python.py&quot;, line 1718 in runtest
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 168 in pytest_runtest_call
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py&quot;, line 39 in _multicall
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py&quot;, line 80 in _hookexec
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py&quot;, line 265 in __call__
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 261 in &lt;lambda&gt;
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 340 in from_call
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 260 in call_runtest_hook
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 221 in call_and_report
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 132 in runtestprotocol
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py&quot;, line 113 in pytest_runtest_protocol
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py&quot;, line 39 in _multicall
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py&quot;, line 80 in _hookexec
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py&quot;, line 265 in __call__
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py&quot;, line 347 in pytest_runtestloop
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py&quot;, line 39 in _multicall
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py&quot;, line 80 in _hookexec
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py&quot;, line 265 in __call__
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py&quot;, line 322 in _main
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py&quot;, line 268 in wrap_session
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py&quot;, line 315 in pytest_cmdline_main
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py&quot;, line 39 in _multicall
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py&quot;, line 80 in _hookexec
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py&quot;, line 265 in __call__
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/config/__init__.py&quot;, line 165 in main
-  File &quot;/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/config/__init__.py&quot;, line 188 in console_main
-  File &quot;/home/gabriele/Projects/cunit/.venv/bin/pytest&quot;, line 8 in &lt;module&gt;
+  File "/home/gabriele/Projects/cunit/tests/cunit/test_cache.py", line 24 in test_queue_item
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/python.py", line 192 in pytest_pyfunc_call
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py", line 39 in _multicall
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py", line 80 in _hookexec
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py", line 265 in __call__
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/python.py", line 1718 in runtest
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 168 in pytest_runtest_call
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py", line 39 in _multicall
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py", line 80 in _hookexec
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py", line 265 in __call__
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 261 in &lt;lambda&gt;
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 340 in from_call
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 260 in call_runtest_hook
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 221 in call_and_report
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 132 in runtestprotocol
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/runner.py", line 113 in pytest_runtest_protocol
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py", line 39 in _multicall
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py", line 80 in _hookexec
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py", line 265 in __call__
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py", line 347 in pytest_runtestloop
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py", line 39 in _multicall
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py", line 80 in _hookexec
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py", line 265 in __call__
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py", line 322 in _main
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py", line 268 in wrap_session
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/main.py", line 315 in pytest_cmdline_main
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_callers.py", line 39 in _multicall
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_manager.py", line 80 in _hookexec
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/pluggy/_hooks.py", line 265 in __call__
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/config/__init__.py", line 165 in main
+  File "/home/gabriele/Projects/cunit/.venv/lib/python3.10/site-packages/_pytest/config/__init__.py", line 188 in console_main
+  File "/home/gabriele/Projects/cunit/.venv/bin/pytest", line 8 in &lt;module&gt;
 [1]    337951 segmentation fault  .venv/bin/pytest -vv
 </code></pre></div>
-
 <p>Wait, what?! Where are our tests? A segmentation fault?!? Where did that come
 from? Well, there goes all this <code>pytest</code> hype! 😡</p>
 <p>Now, do you think I would have written this post if this was really the end of
@@ -606,7 +560,6 @@ the story? </p>
 you are ready to carry on, change line 20 to</p>
 <div class="highlight"><pre><span></span><code><span class="n">value</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">malloc</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
 </code></pre></div>
-
 <p>and now the tests will all be happy! However, we really want to avoid crashing
 the <code>pytest</code> process when we run into a segmentation fault, which is not so rare
 when running arbitrary C code. Not only that, but we would like to get some
@@ -634,40 +587,39 @@ other tests. Let's put this into <code>tests/cunit/conftest.py</code></p>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">pytest_pycollect_makeitem</span><span class="p">(</span><span class="n">collector</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">)</span>
+        <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"PYTEST_CUNIT"</span><span class="p">)</span>
         <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"test_"</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">__cunit__</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">collector</span><span class="o">.</span><span class="n">fspath</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cunit</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">env</span><span class="p">[</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_name</span>
+        <span class="n">env</span><span class="p">[</span><span class="s2">"PYTEST_CUNIT"</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_name</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;-svv&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"-svv"</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="k">raise</span> <span class="n">CUnitTestFailure</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="n">CUnitTestFailure</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 
     <span class="k">return</span> <span class="n">_</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">test_name</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">test_name</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"PYTEST_CUNIT"</span><span class="p">):</span>
         <span class="c1"># We are inside the sandbox process. We select the only test we care</span>
         <span class="n">items</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">_</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">test_name</span><span class="p">]</span>
         <span class="k">return</span>
 
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;__cunit__&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">"__cunit__"</span><span class="p">):</span>
             <span class="n">item</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">cunit</span><span class="p">(</span><span class="o">*</span><span class="n">item</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">__cunit__</span><span class="p">,</span> <span class="n">full_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div>
-
 <p>Let's re-run our broken test suite and see what happens this time:</p>
 <div class="highlight"><pre><span></span><code>================================ test session starts =================================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
@@ -685,22 +637,22 @@ tests/cunit/test_cache.py::test_queue[1000] &lt;- tests/cunit/conftest.py PASSED
 __________________________________ test_queue_item ___________________________________
 
 _ = ()
-__ = {&#39;cache&#39;: &lt;CDLL &#39;/home/gabriele/Projects/cunit/src/cache.so&#39;, handle 25c8400 at 0x7efd5b5d83d0&gt;}
-test = &#39;/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queue_item&#39;
-env = {&#39;ANDROID_HOME&#39;: &#39;/home/gabriele/.android/sdk&#39;, &#39;COLORTERM&#39;: &#39;truecolor&#39;, &#39;DBUS_SESSION_BUS_ADDRESS&#39;: &#39;unix:path=/run/user/1000/bus&#39;, &#39;DEFAULTS_PATH&#39;: &#39;/usr/share/gconf/ubuntu.default.path&#39;, ...}
-result = CompletedProcess(args=[&#39;.venv/bin/pytest&#39;, &#39;-svv&#39;, &#39;/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queu...__init__.py&quot;, line 188 in console_main\n  File &quot;/home/gabriele/Projects/cunit/.venv/bin/pytest&quot;, line 8 in &lt;module&gt;\n&#39;)
+__ = {'cache': &lt;CDLL '/home/gabriele/Projects/cunit/src/cache.so', handle 25c8400 at 0x7efd5b5d83d0&gt;}
+test = '/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queue_item'
+env = {'ANDROID_HOME': '/home/gabriele/.android/sdk', 'COLORTERM': 'truecolor', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'DEFAULTS_PATH': '/usr/share/gconf/ubuntu.default.path', ...}
+result = CompletedProcess(args=['.venv/bin/pytest', '-svv', '/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queu...__init__.py", line 188 in console_main\n  File "/home/gabriele/Projects/cunit/.venv/bin/pytest", line 8 in &lt;module&gt;\n')
 
     def _(*_, **__):
-        test = f&quot;{module}::{name}&quot;
+        test = f"{module}::{name}"
         env = os.environ.copy()
-        env[&quot;PYTEST_CUNIT&quot;] = full_name
+        env["PYTEST_CUNIT"] = full_name
 
-        result = run([sys.argv[0], &quot;-svv&quot;, test], stdout=PIPE, stderr=PIPE, env=env)
+        result = run([sys.argv[0], "-svv", test], stdout=PIPE, stderr=PIPE, env=env)
 
         if result.returncode == 0:
             return
 
-&gt;       raise CUnitTestFailure(&quot;\n&quot; + result.stdout.decode())
+&gt;       raise CUnitTestFailure("\n" + result.stdout.decode())
 E       tests.cunit.conftest.CUnitTestFailure: 
 E       ============================= test session starts ==============================
 E       platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
@@ -715,7 +667,6 @@ tests/cunit/conftest.py:49: CUnitTestFailure
 FAILED tests/cunit/test_cache.py::test_queue_item - tests.cunit.conftest.CUnitTestF...
 ============================ 1 failed, 4 passed in 1.21s =============================
 </code></pre></div>
-
 <p>How do we like this better? Now the first test fails with the segmentation
 fault, but the rest of the test suite still runs and we can see the reason of
 the failure for the first test in the report, i.e. the segmentation fault.</p>
@@ -767,44 +718,42 @@ hopefully help us investigate the problem. So let's add these helpers to the
 
 <span class="k">def</span><span class="w"> </span><span class="nf">gdb</span><span class="p">(</span><span class="n">cmds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">check_output</span><span class="p">(</span>
-        <span class="p">[</span><span class="s2">&quot;gdb&quot;</span><span class="p">,</span> <span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;-batch&quot;</span><span class="p">]</span>
-        <span class="o">+</span> <span class="p">[</span><span class="n">_</span> <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;-ex&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>
+        <span class="p">[</span><span class="s2">"gdb"</span><span class="p">,</span> <span class="s2">"-q"</span><span class="p">,</span> <span class="s2">"-batch"</span><span class="p">]</span>
+        <span class="o">+</span> <span class="p">[</span><span class="n">_</span> <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"-ex"</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>
         <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
         <span class="n">stderr</span><span class="o">=</span><span class="n">STDOUT</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">bt</span><span class="p">(</span><span class="n">binary</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">gdb</span><span class="p">([</span><span class="s2">&quot;bt full&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="s2">&quot;core&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;No core dump available.&quot;</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"core"</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">gdb</span><span class="p">([</span><span class="s2">"bt full"</span><span class="p">,</span> <span class="s2">"q"</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="s2">"core"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"No core dump available."</span>
 </code></pre></div>
-
 <p>and improve the <code>cunit</code> decorator like so</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cunit</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">::</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">env</span><span class="p">[</span><span class="s2">&quot;PYTEST_CUNIT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_name</span>
+        <span class="n">env</span><span class="p">[</span><span class="s2">"PYTEST_CUNIT"</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_name</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;-svv&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"-svv"</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
 
         <span class="k">match</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span><span class="p">:</span>
             <span class="k">case</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span>
 
             <span class="k">case</span> <span class="o">-</span><span class="mi">11</span><span class="p">:</span>
-                <span class="n">binary_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">SegmentationFault</span><span class="p">(</span><span class="n">bt</span><span class="p">((</span><span class="n">SRC</span> <span class="o">/</span> <span class="n">binary_name</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
+                <span class="n">binary_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"test_"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">SegmentationFault</span><span class="p">(</span><span class="n">bt</span><span class="p">((</span><span class="n">SRC</span> <span class="o">/</span> <span class="n">binary_name</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">)))</span>
 
-        <span class="k">raise</span> <span class="n">CUnitTestFailure</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="n">CUnitTestFailure</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 
     <span class="k">return</span> <span class="n">_</span>
 </code></pre></div>
-
 <p>Now, when we run our broken test suite we should get this more verbose output</p>
 <div class="highlight"><pre><span></span><code>================================ test session starts =================================
 platform linux -- Python 3.10.2, pytest-7.0.0, pluggy-1.0.0 -- /home/gabriele/Projects/cunit/.venv/bin/python3.10
@@ -822,32 +771,32 @@ tests/cunit/test_cache.py::test_queue[1000] &lt;- tests/cunit/conftest.py PASSED
 __________________________________ test_queue_item ___________________________________
 
 _ = ()
-__ = {&#39;cache&#39;: &lt;CDLL &#39;/home/gabriele/Projects/cunit/src/cache.so&#39;, handle fc4ba0 at 0x7f5ec8d50460&gt;}
-test = &#39;/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queue_item&#39;
-env = {&#39;ANDROID_HOME&#39;: &#39;/home/gabriele/.android/sdk&#39;, &#39;COLORTERM&#39;: &#39;truecolor&#39;, &#39;DBUS_SESSION_BUS_ADDRESS&#39;: &#39;unix:path=/run/user/1000/bus&#39;, &#39;DEFAULTS_PATH&#39;: &#39;/usr/share/gconf/ubuntu.default.path&#39;, ...}
-result = CompletedProcess(args=[&#39;.venv/bin/pytest&#39;, &#39;-svv&#39;, &#39;/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queu...__init__.py&quot;, line 188 in console_main\n  File &quot;/home/gabriele/Projects/cunit/.venv/bin/pytest&quot;, line 8 in &lt;module&gt;\n&#39;)
-binary_name = &#39;cache&#39;
+__ = {'cache': &lt;CDLL '/home/gabriele/Projects/cunit/src/cache.so', handle fc4ba0 at 0x7f5ec8d50460&gt;}
+test = '/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queue_item'
+env = {'ANDROID_HOME': '/home/gabriele/.android/sdk', 'COLORTERM': 'truecolor', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'DEFAULTS_PATH': '/usr/share/gconf/ubuntu.default.path', ...}
+result = CompletedProcess(args=['.venv/bin/pytest', '-svv', '/home/gabriele/Projects/cunit/tests/cunit/test_cache.py::test_queu...__init__.py", line 188 in console_main\n  File "/home/gabriele/Projects/cunit/.venv/bin/pytest", line 8 in &lt;module&gt;\n')
+binary_name = 'cache'
 
     def _(*_, **__):
-        test = f&quot;{module}::{name}&quot;
+        test = f"{module}::{name}"
         env = os.environ.copy()
-        env[&quot;PYTEST_CUNIT&quot;] = full_name
+        env["PYTEST_CUNIT"] = full_name
 
-        result = run([sys.argv[0], &quot;-svv&quot;, test], stdout=PIPE, stderr=PIPE, env=env)
+        result = run([sys.argv[0], "-svv", test], stdout=PIPE, stderr=PIPE, env=env)
 
         match result.returncode:
             case 0:
                 return
 
             case -11:
-                binary_name = Path(module).stem.replace(&quot;test_&quot;, &quot;&quot;)
-&gt;               raise SegmentationFault(bt((SRC / binary_name).with_suffix(&quot;.so&quot;)))
+                binary_name = Path(module).stem.replace("test_", "")
+&gt;               raise SegmentationFault(bt((SRC / binary_name).with_suffix(".so")))
 E               tests.cunit.conftest.SegmentationFault: 
 E               warning: core file may not match specified executable file.
 E               [New LWP 548824]
 E               [Thread debugging using libthread_db enabled]
-E               Using host libthread_db library &quot;/lib/x86_64-linux-gnu/libthread_db.so.1&quot;.
-E               Core was generated by `/home/gabriele/Projects/cunit/.venv/bin/python3.10 .venv/bin/pytest -svv /home/&#39;.
+E               Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+E               Core was generated by `/home/gabriele/Projects/cunit/.venv/bin/python3.10 .venv/bin/pytest -svv /home/'.
 E               Program terminated with signal SIGSEGV, Segmentation fault.
 E               #0  raise (sig=&lt;optimised out&gt;) at ../sysdeps/unix/sysv/linux/raise.c:50
 E               50  ../sysdeps/unix/sysv/linux/raise.c: No such file or directory.
@@ -942,24 +891,21 @@ tests/cunit/conftest.py:56: SegmentationFault
 FAILED tests/cunit/test_cache.py::test_queue_item - tests.cunit.conftest.Segmentati...
 ============================ 1 failed, 4 passed in 1.73s =============================
 </code></pre></div>
-
 <p>Hmm, Still not that useful. What if we compile with debug symbols? Let's change
 the <code>cache</code> fixture in <code>test_cache.py</code> so that it compiles the caching sources
 with the <code>-g</code> option</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">():</span>
-    <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">&quot;cache.c&quot;</span>
-    <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">])</span>
-    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)))</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">SRC</span> <span class="o">/</span> <span class="s2">"cache.c"</span>
+    <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[</span><span class="s2">"-g"</span><span class="p">])</span>
+    <span class="k">yield</span> <span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">)))</span>
 </code></pre></div>
-
 <p>Now that's much, <em>much</em> better!</p>
 <div class="highlight"><pre><span></span><code>E               #3  0x00007ff51cf8b40a in queue_item__destroy (self=0x104ac60, deallocator=0x7ff51cc68850 &lt;__GI___libc_free&gt;) at /home/gabriele/Projects/cunit/src/cache.c:37
 </code></pre></div>
-
 <p>This tells us <em>exactly</em> where the problem occurred. Now that we have this
 information we can fix the test and make the test suite happy again! 🎉</p>
-<h1 id="pythonic-c-unit-testing">Pythonic C unit testing</h1>
+<h1 id="pythonic-c-unit-testing">Pythonic C unit testing<a class="headerlink" href="#pythonic-c-unit-testing" title="Permanent link">¶</a></h1>
 <p>OK, running C unit tests is nice and fun, but it doesn't save us much in terms
 of typing. In fact, the tests we wrote so far not only feel quite verbose,
 considering we are writing Python code, but don't feel Pythonic at all. Whilst
@@ -977,8 +923,8 @@ do things like <code>from cache import queue_item_new</code> etc... and sweep al
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.c&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">'.c'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -986,26 +932,23 @@ do things like <code>from cache import queue_item_new</code> etc... and sweep al
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.c&quot;</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
+        <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".c"</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 </code></pre></div>
-
 <p>Now create <code>tests/cunit/cache.py</code> with the following content</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">tests.cunit</span><span class="w"> </span><span class="kn">import</span> <span class="n">SRC</span><span class="p">,</span> <span class="n">CModule</span>
 
-<span class="n">CFLAGS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">]</span>
+<span class="n">CFLAGS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"-g"</span><span class="p">]</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">CModule</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">SRC</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="n">CFLAGS</span><span class="p">)</span>
 </code></pre></div>
-
 <p>and get rid of the <code>cache</code> fixture in <code>test_cache.py</code> (make sure to remove it
 also from the test arguments!). Instead, add</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tests.cunit.cache</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cache</span>
 </code></pre></div>
-
 <p><em>et voilà</em>! Now <code>cache</code> feels like a Python module that exports ordinary
 functions that we can call like any other Python function.</p>
 <p>Now, what about this code</p>
@@ -1016,7 +959,6 @@ functions that we can call like any other Python function.</p>
 
     <span class="n">cache</span><span class="o">.</span><span class="n">queue_item__destroy</span><span class="p">(</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 </code></pre></div>
-
 <p>Clearly <code>cache.queue_item_new</code> is creating a new object. The Pythonic way of
 writing something like this would be</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_queue_item</span><span class="p">():</span>
@@ -1024,7 +966,6 @@ writing something like this would be</p>
     <span class="n">queue_item</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">QueueItem</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">queue_item</span>
 </code></pre></div>
-
 <p>and we don't even care about destroying the object as we'd love the garbage
 collector to take care of that for us. Now that's a more Pythonic way of going
 about our C unit tests! Can we achieve something like this? The answer is once
@@ -1053,11 +994,11 @@ Python types. Here is what it might look like</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_Typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">Struct</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">declname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span>
-            <span class="s2">&quot;_t&quot;</span>
+            <span class="s2">"_t"</span>
         <span class="p">):</span>
             <span class="n">struct</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">declname</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">CTypeDef</span><span class="p">(</span>
@@ -1066,7 +1007,7 @@ Python types. Here is what it might look like</p>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_Decl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">&quot;extern&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"extern"</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">FuncDecl</span><span class="p">):</span>
@@ -1074,19 +1015,19 @@ Python types. Here is what it might look like</p>
             <span class="n">ret_type</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span>
             <span class="n">rtype</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret_type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">PtrDecl</span><span class="p">):</span>
-                <span class="k">if</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret_type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;char&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret_type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"char"</span><span class="p">:</span>
                     <span class="n">rtype</span> <span class="o">=</span> <span class="n">c_char_p</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">[</span><span class="n">_</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">params</span><span class="p">]</span>
+                <span class="p">[</span><span class="n">_</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">params</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="k">else</span> <span class="p">[]</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">func_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_new&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="n">CFunctionDef</span><span class="p">(</span>
-                    <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span>
+            <span class="k">if</span> <span class="n">func_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"_new"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="n">CFunctionDef</span><span class="p">(</span>
+                    <span class="s2">"new"</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span>
                 <span class="p">)</span>
-            <span class="k">elif</span> <span class="s2">&quot;__&quot;</span> <span class="ow">in</span> <span class="n">func_name</span><span class="p">:</span>
-                <span class="n">type_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">func_name</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">"__"</span> <span class="ow">in</span> <span class="n">func_name</span><span class="p">:</span>
+                <span class="n">type_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">func_name</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"__"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">type_name</span><span class="p">:</span>
                     <span class="k">return</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">type_name</span><span class="p">]</span><span class="o">.</span><span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1098,18 +1039,18 @@ Python types. Here is what it might look like</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decl</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">c_parser</span><span class="o">.</span><span class="n">CParser</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&lt;preprocessed&gt;&quot;</span><span class="p">)</span>
+            <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"&lt;preprocessed&gt;"</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ParseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">decl</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
             <span class="n">line</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">" "</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span> <span class="o">-</span> <span class="mi">4</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">line</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="se">\033</span><span class="s2">[33;1m</span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31;1m&lt;&lt;^</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="se">\033</span><span class="s2">[33;1m</span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m"</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">" "</span> <span class="o">*</span> <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\033</span><span class="s2">[31;1m&lt;&lt;^</span><span class="se">\033</span><span class="s2">[0m"</span><span class="p">)</span>
             <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span>
@@ -1119,7 +1060,6 @@ Python types. Here is what it might look like</p>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CTypeDef</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">constructor</span>
         <span class="p">}</span>
 </code></pre></div>
-
 <p>This is also a handful, but the behaviour is very simple. We define an AST
 visitor that listens to <code>typedef</code>s and declarations. For the former, we single
 out structure declarations and store the relevant information inside an
@@ -1141,20 +1081,19 @@ merely defined as (up to you to use the more elegant <code>@dataclass</code> dec
         <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="kc">False</span>
 </code></pre></div>
-
 <p>Armed with these definitions we can enhance our <code>CModule</code> class like so</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.c&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">'.c'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">))</span>
 
         <span class="n">collector</span> <span class="o">=</span> <span class="n">DeclCollector</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ctypedef</span> <span class="ow">in</span> <span class="n">collector</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span>
-            <span class="n">preprocess</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.h&quot;</span><span class="p">))</span>
+            <span class="n">preprocess</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".h"</span><span class="p">))</span>
         <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-            <span class="n">py_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">_</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">))</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
+            <span class="n">py_name</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">_</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">))</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">py_name</span><span class="p">,</span> <span class="n">CMetaType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctypedef</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">cfuncdef</span> <span class="ow">in</span> <span class="n">collector</span><span class="o">.</span><span class="n">functions</span><span class="p">:</span>
@@ -1168,10 +1107,9 @@ merely defined as (up to you to use the more elegant <code>@dataclass</code> dec
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.c&quot;</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
+        <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".c"</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 </code></pre></div>
-
 <p>That is, we add the collected types and functions as attributes to the C module.
 This is the C type metaclass that we use as a C type factory</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CMetaType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Structure</span><span class="p">)):</span>
@@ -1180,22 +1118,21 @@ This is the C type metaclass that we use as a C type factory</p>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">(</span><span class="n">CType</span><span class="p">,),</span>
-            <span class="p">{</span><span class="s2">&quot;__cmodule__&quot;</span><span class="p">:</span> <span class="n">cmodule</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"__cmodule__"</span><span class="p">:</span> <span class="n">cmodule</span><span class="p">},</span>
         <span class="p">)</span>
 
-        <span class="n">constructor</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">_new&quot;</span><span class="p">)</span>
+        <span class="n">constructor</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">_new"</span><span class="p">)</span>
         <span class="n">ctype</span><span class="o">.</span><span class="n">new</span> <span class="o">=</span> <span class="n">CStaticMethod</span><span class="p">(</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">constructor</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">ctype</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">method_def</span> <span class="ow">in</span> <span class="n">ctypedef</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
             <span class="n">method_name</span> <span class="o">=</span> <span class="n">method_def</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">ctype</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">CMethod</span><span class="p">(</span><span class="n">method_def</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">ctype</span><span class="p">))</span>
 
         <span class="n">ctype</span><span class="o">.</span><span class="n">__cname__</span> <span class="o">=</span> <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span>
 
         <span class="k">return</span> <span class="n">ctype</span>
 </code></pre></div>
-
 <p>This is responsible for creating a new C type as a Python type, with all the
 methods added as appropriate instances of wrappers around the C functions (note
 the special handling of the <code>_new</code> method!):</p>
@@ -1211,12 +1148,12 @@ the special handling of the <code>_new</code> method!):</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posonly</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes only positional arguments&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes only positional arguments"</span><span class="p">)</span>
 
         <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nargs</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes exactly </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="n">nargs</span><span class="si">}</span><span class="s2"> given)&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes exactly </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="n">nargs</span><span class="si">}</span><span class="s2"> given)"</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1224,7 +1161,7 @@ the special handling of the <code>_new</code> method!):</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cfunc__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CFunction &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;CFunction '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'&gt;"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
@@ -1244,7 +1181,7 @@ the special handling of the <code>_new</code> method!):</p>
         <span class="k">return</span> <span class="n">_</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;CMethod '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' of CType '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'&gt;"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CStaticMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
@@ -1253,9 +1190,8 @@ the special handling of the <code>_new</code> method!):</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span> <span class="o">=</span> <span class="n">ctype</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CStaticMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;CStaticMethod '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' of CType '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'&gt;"</span>
 </code></pre></div>
-
 <p>The <code>CType</code> class implementation tries to mimic the behaviour of Python classes,
 with <code>__cself__</code> playing the role of the C analogue of <code>self</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CType</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
@@ -1267,17 +1203,16 @@ with <code>__cself__</code> playing the role of the C analogue of <code>self</co
             <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> CObject at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> CObject at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span><span class="si">}</span><span class="s2">&gt;"</span>
 </code></pre></div>
-
 <p>We also handle the destructor by overriding the <code>__del__</code> special method so that
 the garbage collector can take care of freeing memory for us.</p>
 <p>In general, we would need to preprocess sources, especially headers, before we
 can parse them concretely with <code>pycparser</code>. That's why we also need to define
 something like</p>
-<div class="highlight"><pre><span></span><code><span class="n">restrict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;__restrict \w+&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">restrict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"__restrict \w+"</span><span class="p">)</span>
 
-<span class="n">_header_head</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_header_head</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">#define __attribute__(x)</span>
 <span class="s2">#define __extension__</span>
 <span class="s2">#define __inline inline</span>
@@ -1290,23 +1225,22 @@ something like</p>
 <span class="s2">#define __GNUC_VA_LIST</span>
 <span class="s2">#define __gnuc_va_list char</span>
 <span class="s2">#define __thread</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">source</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">_header_head</span> <span class="o">+</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">restrict_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">""</span><span class="p">,</span>
             <span class="n">run</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;gcc&quot;</span><span class="p">,</span> <span class="s2">&quot;-E&quot;</span><span class="p">,</span> <span class="s2">&quot;-P&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">"gcc"</span><span class="p">,</span> <span class="s2">"-E"</span><span class="p">,</span> <span class="s2">"-P"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">],</span>
                 <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span>
                 <span class="nb">input</span><span class="o">=</span><span class="n">code</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
                 <span class="n">cwd</span><span class="o">=</span><span class="n">SRC</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
         <span class="p">)</span>
 </code></pre></div>
-
 <p>The <code>_header_head</code> and the <code>restrict_re</code> are needed to take care of GCC
 extensions, which are not supported by <code>pycparser</code>. But apart from them, all we
 do is invoke the <code>gcc</code> preprocessor on the C sources. Putting everything
@@ -1326,12 +1260,12 @@ looks like</p>
 <span class="n">HERE</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">TEST</span> <span class="o">=</span> <span class="n">HERE</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">ROOT</span> <span class="o">=</span> <span class="n">TEST</span><span class="o">.</span><span class="n">parent</span>
-<span class="n">SRC</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">&quot;src&quot;</span>
+<span class="n">SRC</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"src"</span>
 
 
-<span class="n">restrict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;__restrict \w+&quot;</span><span class="p">)</span>
+<span class="n">restrict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"__restrict \w+"</span><span class="p">)</span>
 
-<span class="n">_header_head</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_header_head</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">#define __attribute__(x)</span>
 <span class="s2">#define __extension__</span>
 <span class="s2">#define __inline inline</span>
@@ -1344,16 +1278,16 @@ looks like</p>
 <span class="s2">#define __GNUC_VA_LIST</span>
 <span class="s2">#define __gnuc_va_list char</span>
 <span class="s2">#define __thread</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">source</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">_header_head</span> <span class="o">+</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">restrict_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">""</span><span class="p">,</span>
             <span class="n">run</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;gcc&quot;</span><span class="p">,</span> <span class="s2">&quot;-E&quot;</span><span class="p">,</span> <span class="s2">&quot;-P&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">"gcc"</span><span class="p">,</span> <span class="s2">"-E"</span><span class="p">,</span> <span class="s2">"-P"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">],</span>
                 <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span>
                 <span class="nb">input</span><span class="o">=</span><span class="n">code</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
                 <span class="n">cwd</span><span class="o">=</span><span class="n">SRC</span><span class="p">,</span>
@@ -1362,10 +1296,10 @@ looks like</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
-    <span class="n">binary</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">)</span>
+    <span class="n">binary</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span>
-        <span class="p">[</span><span class="s2">&quot;gcc&quot;</span><span class="p">,</span> <span class="s2">&quot;-shared&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">cflags</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="o">*</span><span class="n">ldadd</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">"gcc"</span><span class="p">,</span> <span class="s2">"-shared"</span><span class="p">,</span> <span class="o">*</span><span class="n">cflags</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">binary</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="o">*</span><span class="n">ldadd</span><span class="p">],</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span>
         <span class="n">stderr</span><span class="o">=</span><span class="n">STDOUT</span><span class="p">,</span>
         <span class="n">cwd</span><span class="o">=</span><span class="n">SRC</span><span class="p">,</span>
@@ -1377,7 +1311,7 @@ looks like</p>
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 
 
-<span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.so.6&quot;</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="s2">"libc.so.6"</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CFunctionDef</span><span class="p">:</span>
@@ -1404,7 +1338,7 @@ looks like</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> CObject at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> CObject at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__cself__</span><span class="si">}</span><span class="s2">&gt;"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CFunction</span><span class="p">:</span>
@@ -1419,12 +1353,12 @@ looks like</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posonly</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes only positional arguments&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes only positional arguments"</span><span class="p">)</span>
 
         <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nargs</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes exactly </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="n">nargs</span><span class="si">}</span><span class="s2"> given)&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> takes exactly </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span><span class="si">}</span><span class="s2"> arguments (</span><span class="si">{</span><span class="n">nargs</span><span class="si">}</span><span class="s2"> given)"</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1432,7 +1366,7 @@ looks like</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cfunc__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CFunction &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;CFunction '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'&gt;"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
@@ -1452,7 +1386,7 @@ looks like</p>
         <span class="k">return</span> <span class="n">_</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;CMethod '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' of CType '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'&gt;"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CStaticMethod</span><span class="p">(</span><span class="n">CFunction</span><span class="p">):</span>
@@ -1461,7 +1395,7 @@ looks like</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span> <span class="o">=</span> <span class="n">ctype</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CStaticMethod &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; of CType &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;CStaticMethod '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' of CType '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__ctype__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'&gt;"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CMetaType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Structure</span><span class="p">)):</span>
@@ -1470,15 +1404,15 @@ looks like</p>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">(</span><span class="n">CType</span><span class="p">,),</span>
-            <span class="p">{</span><span class="s2">&quot;__cmodule__&quot;</span><span class="p">:</span> <span class="n">cmodule</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"__cmodule__"</span><span class="p">:</span> <span class="n">cmodule</span><span class="p">},</span>
         <span class="p">)</span>
 
-        <span class="n">constructor</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">_new&quot;</span><span class="p">)</span>
+        <span class="n">constructor</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">_new"</span><span class="p">)</span>
         <span class="n">ctype</span><span class="o">.</span><span class="n">new</span> <span class="o">=</span> <span class="n">CStaticMethod</span><span class="p">(</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">constructor</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">ctype</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">method_def</span> <span class="ow">in</span> <span class="n">ctypedef</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
             <span class="n">method_name</span> <span class="o">=</span> <span class="n">method_def</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmodule</span><span class="o">.</span><span class="n">__binary__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">ctype</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">CMethod</span><span class="p">(</span><span class="n">method_def</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">ctype</span><span class="p">))</span>
 
         <span class="n">ctype</span><span class="o">.</span><span class="n">__cname__</span> <span class="o">=</span> <span class="n">ctypedef</span><span class="o">.</span><span class="n">name</span>
@@ -1493,11 +1427,11 @@ looks like</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_Typedef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">Struct</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">declname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span>
-            <span class="s2">&quot;_t&quot;</span>
+            <span class="s2">"_t"</span>
         <span class="p">):</span>
             <span class="n">struct</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">declname</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">CTypeDef</span><span class="p">(</span>
@@ -1506,7 +1440,7 @@ looks like</p>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_Decl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">&quot;extern&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"extern"</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">FuncDecl</span><span class="p">):</span>
@@ -1514,19 +1448,19 @@ looks like</p>
             <span class="n">ret_type</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span>
             <span class="n">rtype</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret_type</span><span class="p">,</span> <span class="n">c_ast</span><span class="o">.</span><span class="n">PtrDecl</span><span class="p">):</span>
-                <span class="k">if</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret_type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;char&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret_type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"char"</span><span class="p">:</span>
                     <span class="n">rtype</span> <span class="o">=</span> <span class="n">c_char_p</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">[</span><span class="n">_</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">params</span><span class="p">]</span>
+                <span class="p">[</span><span class="n">_</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">params</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="k">else</span> <span class="p">[]</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">func_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_new&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="n">CFunctionDef</span><span class="p">(</span>
-                    <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span>
+            <span class="k">if</span> <span class="n">func_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"_new"</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span><span class="o">.</span><span class="n">constructor</span> <span class="o">=</span> <span class="n">CFunctionDef</span><span class="p">(</span>
+                    <span class="s2">"new"</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">rtype</span>
                 <span class="p">)</span>
-            <span class="k">elif</span> <span class="s2">&quot;__&quot;</span> <span class="ow">in</span> <span class="n">func_name</span><span class="p">:</span>
-                <span class="n">type_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">func_name</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">"__"</span> <span class="ow">in</span> <span class="n">func_name</span><span class="p">:</span>
+                <span class="n">type_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">func_name</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"__"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">type_name</span><span class="p">:</span>
                     <span class="k">return</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">type_name</span><span class="p">]</span><span class="o">.</span><span class="n">methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1538,18 +1472,18 @@ looks like</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decl</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">c_parser</span><span class="o">.</span><span class="n">CParser</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&lt;preprocessed&gt;&quot;</span><span class="p">)</span>
+            <span class="n">ast</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"&lt;preprocessed&gt;"</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ParseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">decl</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
             <span class="n">line</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">" "</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span> <span class="o">-</span> <span class="mi">4</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">line</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="se">\033</span><span class="s2">[33;1m</span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31;1m&lt;&lt;^</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="se">\033</span><span class="s2">[33;1m</span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m"</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">" "</span> <span class="o">*</span> <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\033</span><span class="s2">[31;1m&lt;&lt;^</span><span class="se">\033</span><span class="s2">[0m"</span><span class="p">)</span>
             <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span>
@@ -1562,16 +1496,16 @@ looks like</p>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CModule</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.c&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.so&quot;</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Generated from </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">'.c'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__binary__</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".so"</span><span class="p">))</span>
 
         <span class="n">collector</span> <span class="o">=</span> <span class="n">DeclCollector</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ctypedef</span> <span class="ow">in</span> <span class="n">collector</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span>
-            <span class="n">preprocess</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.h&quot;</span><span class="p">))</span>
+            <span class="n">preprocess</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".h"</span><span class="p">))</span>
         <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-            <span class="n">py_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">_</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">))</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
+            <span class="n">py_name</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">_</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">))</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">py_name</span><span class="p">,</span> <span class="n">CMetaType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctypedef</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">cfuncdef</span> <span class="ow">in</span> <span class="n">collector</span><span class="o">.</span><span class="n">functions</span><span class="p">:</span>
@@ -1585,10 +1519,9 @@ looks like</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cflags</span><span class="o">=</span><span class="p">[],</span> <span class="n">ldadd</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.c&quot;</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
+        <span class="nb">compile</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".c"</span><span class="p">),</span> <span class="n">cflags</span><span class="p">,</span> <span class="n">ldadd</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 </code></pre></div>
-
 <p>So let's use this new technology to make our C unit tests more <em>Pythonesque</em>.
 This is what our new <code>test_cache.py</code> can look like</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
@@ -1606,7 +1539,7 @@ This is what our new <code>test_cache.py</code> can look like</p>
     <span class="n">queue_item</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;qsize&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">"qsize"</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_queue</span><span class="p">(</span><span class="n">qsize</span><span class="p">):</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">(</span><span class="n">qsize</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">)</span>
 
@@ -1627,12 +1560,11 @@ This is what our new <code>test_cache.py</code> can look like</p>
 
     <span class="k">assert</span> <span class="n">values</span> <span class="o">==</span> <span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">qsize</span><span class="p">)]</span>
 </code></pre></div>
-
 <p>We can practically treat our C binary object as if it were an actual Python
 module and import the <code>Queue</code> and <code>QueueItem</code> types from it. We can then use
 them as if they were actual Python classes and call methods on them. How cool is
 that? 😄</p>
-<h1 id="coverage-please">Coverage, please!</h1>
+<h1 id="coverage-please">Coverage, please!<a class="headerlink" href="#coverage-please" title="Permanent link">¶</a></h1>
 <p>What about test coverage? If you've used <code>pytest</code> before, you are probably
 familiar with the <code>pytest-cov</code> plugin, which is a handy way of collecting and
 reporting test coverage. GCC supports the <code>-fprofile-arcs</code> and <code>-ftest-coverage</code>
@@ -1643,65 +1575,65 @@ actually inspired by the Python counterpart <code>coverage.py</code> and can be 
 generate some nice reports. In particular, it could be used to generate
 Cobertura XML reports that could be uploaded to services like
 <a href="https://codecov.io/">codecov.io</a>.</p>
-  </div><!-- /.entry-content -->
-</section>
-
-<div id="giscus" class="py-8">
-  <script src="https://giscus.app/client.js"
-          data-repo="p403n1x87/P403n1x87.github.io"
-          data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
-          data-category="Giscus"
-          data-category-id="DIC_kwDOBLR9Zs4C9NXy"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="transparent_dark"
-          data-lang="en"
-          crossorigin="anonymous"
-          async>
-  </script>
-</div>
     </div>
-  </div>
 
-  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
-    <address id="about" class="vcard body text-3xl py-4">
-    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
-      <i class="fa fa-github" aria-hidden="true"></i>
-    </a>
-    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
-      <i class="fa fa-linkedin" aria-hidden="true"></i>
-    </a>
-    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
-      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
-    </a>
-    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
-      <i class="fa fa-steam" aria-hidden="true"></i>
-    </a>
-    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
-      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
-    </a>
-    </address><!-- /#about -->
-    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
-      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
-    </a>
-    <p class="text-xs pt-4">
-      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
-    </p>
-  </footer><!-- /#contentinfo -->
+    <footer class="article-footer">
+      <nav class="neighbors" aria-label="More posts">
+        <a class="neighbor prev" rel="prev" href="./my-first-close-encounter-with-the-linux-kernel-source.html">
+          <span class="label">$ cd ../older</span>
+          My first close encounter with the Linux kernel source
+        </a>
+        <a class="neighbor next" rel="next" href="./busting-performance-issues-ai-edition.html">
+          <span class="label">$ cd ../newer</span>
+          Busting performance issues, AI edition
+        </a>
+      </nav>
+
+      <section class="comments">
+        <p class="cmd"><span class="ps1">$</span> cat comments.log</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="p403n1x87/P403n1x87.github.io"
+                data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
+                data-category="Giscus"
+                data-category-id="DIC_kwDOBLR9Zs4C9NXy"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="transparent_dark"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </section>
+    </footer>
+  </article>
+</div>
+  </main>
+
+  <footer class="statusline frame">
+    <span class="status-session">[heliopolis]</span>
+    <span class="status-window">0:less*</span>
+    <nav class="status-links" aria-label="Elsewhere">
+      <a href="https://github.com/p403n1x87" rel="me noopener" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" rel="me noopener" target="_blank">linkedin</a>
+      <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
+      <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
+      <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
+      <a href="./feeds/all.atom.xml">rss</a>
+    </nav>
+    <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104560783-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-104560783-1', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
-
 </html>

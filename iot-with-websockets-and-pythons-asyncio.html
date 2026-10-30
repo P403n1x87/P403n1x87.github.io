@@ -1,105 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>The Hub of Heliopolis - IoT with WebSockets and Python's AsyncIO</title>
-  <meta charset="utf-8" />
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content="Pelican" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub of Heliopolis - IoT with WebSockets and Python's AsyncIO</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" />
+  <link rel="stylesheet" href="./theme/css/terminal.css" />
+  <link rel="stylesheet" href="./theme/css/pygment.css" />
+  <script src="./theme/js/terminal.js" defer></script>
 
-  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
-  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
-
-
-    <meta name="tags" content="python" />
-    <meta name="tags" content="android" />
-    <meta name="tags" content="raspberry pi" />
-    <meta name="tags" content="electronics" />
+  <meta name="tags" content="python" />
+  <meta name="tags" content="android" />
+  <meta name="tags" content="raspberry pi" />
+  <meta name="tags" content="electronics" />
 </head>
 
-<body id="index" class="home p-8">
-  <header id="banner" class="body text-xl">
-    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
-  </header><!-- /#banner -->
-
-  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
-    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
-
-      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
-
-  </ul></nav><!-- /#menu -->
-
-  <div id="heading">
-  <header class="post-info relative">
-    <div id="heading-bg" style="background-image: url(images/ws_asyncio/header.jpg);"></div>
-    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
-      <h1 class="entry-title">IoT with WebSockets and Python's AsyncIO</h1>
-    
-      <div class="py-1 text-xs">
-        <time class="published py-1" datetime="2018-03-03T22:49:00+01:00">
-          &#128197; Sat 03 March 2018
-        </time>
-        <span class="readtime py-1">&#9202; A 22 min read</span>
-        <span id="github">
-          <i class="fa fa-github" aria-hidden="true"></i>
-          <a href="https://github.com/P403n1x87/iot/tree/master/gravity_led" target="_blank">
-            P403n1x87/iot/gravity_led
-          </a>
-        </span>
-      </div>
-
-      <div class="py-1 text-xs">
-        <span class="category py-1">
-            &#128451; <a href="./category/iot.html">IoT</a>
-        </span>
-        <span class="tags py-1">
-          &#127991;
-            <a class="tag" href="./tag/python.html">python</a>
-            <a class="tag" href="./tag/android.html">android</a>
-            <a class="tag" href="./tag/raspberry-pi.html">raspberry pi</a>
-            <a class="tag" href="./tag/electronics.html">electronics</a>
-        </span>
-      </div>
-    </div>
+<body class="article">
+  <header class="site-header frame">
+    <p class="prompt">
+      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/iot-with-websockets-and-pythons-asyncio</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+    </p>
+    <nav class="menu" aria-label="Main">
+      <a href="./">cd ~</a>
+      <a href="./archives.html">ls posts/</a>
+      <a href="./tags.html">ls tags/</a>
+      <a href="./pages/about.html">cat about.md</a>
+      <a href="./feeds/all.atom.xml">tail -f feed</a>
+    </nav>
   </header>
-  </div>
 
-  <div class="flex flex-wrap py-4">
-    <div id="sidepane" class="flex-none">
-<footer class="post-info text-sm">
-  <div id="sidebar_toc" class="py-2" />
-</footer><!-- /.post-info -->
-
-<script type="text/javascript">
-  window.onload = function() {
-    toc = document.getElementsByClassName('toc')[0];
-    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
-    toc.parentNode.removeChild(toc)
-
-    document.querySelectorAll('.entry-content img').forEach(function(img) {
-      if (img.parentElement.tagName !== 'A') {
-        var a = document.createElement('a');
-        a.href = img.src;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        img.parentNode.insertBefore(a, img);
-        a.appendChild(img);
-      }
-    });
-  }
-</script>
-    </div>
-    <div id="content-block" class="flex-none">
-<section id="content" class="body">
-  <div id="summary" class="py-0">
-    <p>After <a href="https://p403n1x87.github.io/a-gentle-introduction-to-iot.html">a gentle introduction to the concept of IoT</a> and what it entails, we take a dive into WebSockets and Asynchronous I/O in Python to explore other ways of controlling devices over a network. This post uses a simple two LED circuit to introduce WebSockets, and how to use them in Python together with the <code>asyncio</code> module.</p>
-  </div>
-
-
-  <div class="entry-content">
-    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+  <main class="site-main frame">
+<div class="with-aside">
+  <aside class="aside">    <details class="toc" id="toc">
+      <summary>iot-with-websockets-and-pythons-asyncio.md</summary>
+      <div class="toc"><span class="toctitle">Table of contents:</span><ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#connecting-devices-over-a-network-websockets">Connecting Devices over a Network: WebSockets</a><ul>
 <li><a href="#coroutines">Coroutines</a></li>
@@ -115,7 +53,34 @@
 <li><a href="#conclusions">Conclusions</a></li>
 </ul>
 </div>
-<h1 id="introduction">Introduction</h1>
+    </details>
+    <script>
+      if (matchMedia("(min-width: 1000px)").matches) document.getElementById("toc").open = true;
+    </script></aside>
+
+  <article class="article">
+    <header class="article-header">
+      <p class="cmd"><span class="ps1">$</span> cat iot-with-websockets-and-pythons-asyncio.md</p>
+      <h1 class="article-title">IoT with WebSockets and Python's AsyncIO</h1>
+      <p class="meta">
+        <time datetime="2018-03-03T22:49:00+01:00">Sat 03 March 2018</time>
+        <span>22 min read</span>
+        <a class="cat" href="./category/iot.html">iot/</a>
+        <a class="tag" href="./tag/python.html">#python</a>
+        <a class="tag" href="./tag/android.html">#android</a>
+        <a class="tag" href="./tag/raspberry-pi.html">#raspberry pi</a>
+        <a class="tag" href="./tag/electronics.html">#electronics</a>
+        <a href="https://github.com/P403n1x87/iot/tree/master/gravity_led" target="_blank" rel="noopener">github:P403n1x87/iot/gravity_led</a>
+      </p>
+    </header>
+
+    <div class="lead">
+      <p>After <a href="https://p403n1x87.github.io/a-gentle-introduction-to-iot.html">a gentle introduction to the concept of IoT</a> and what it entails, we take a dive into WebSockets and Asynchronous I/O in Python to explore other ways of controlling devices over a network. This post uses a simple two LED circuit to introduce WebSockets, and how to use them in Python together with the <code>asyncio</code> module.</p>
+    </div>
+
+    <div class="entry-content">
+      
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h1>
 <p>In this post, we will get back to the topic of IoT to introduce two new
 technologies by example: <strong>WebSockets</strong> and <strong>Asynchronous I/O</strong> in Python. The
 project that will allow us to explore them is a simple system of two LEDs that
@@ -152,7 +117,7 @@ device to our circuit is coming from a gravity sensor, so that when we twist the
 hand-held device clockwise or anti-clockwise, a different LED will turn on.
 Furthermore, the brightness will depend on how much the device is tilted.</p>
 <p>So, read on to find out more!</p>
-<h1 id="connecting-devices-over-a-network-websockets">Connecting Devices over a Network: WebSockets</h1>
+<h1 id="connecting-devices-over-a-network-websockets">Connecting Devices over a Network: WebSockets<a class="headerlink" href="#connecting-devices-over-a-network-websockets" title="Permanent link">¶</a></h1>
 <p>In <a href="./a-gentle-introduction-to-iot.html">A Gentle Introduction to IoT</a>, we saw
 how to control a single LED over a network by running a web server hosting the
 controlling web application. This was a simple web page that displayed a button
@@ -196,7 +161,7 @@ with the standard <code>asyncio</code> syntax, as well as the new one introduced
 492. For now, we shall have a quick overview of the new features that are
 brought to Python 3 by the <code>asyncio</code> module to better familiarise with it and
 its usage.</p>
-<h2 id="coroutines">Coroutines</h2>
+<h2 id="coroutines">Coroutines<a class="headerlink" href="#coroutines" title="Permanent link">¶</a></h2>
 <p>I believe that the best way to understand <code>asyncio</code> is to first look at the
 basic concepts involved and recall the notion of <code>coroutine</code>. In Python we have
 the concept of <em>Generators</em> since version 2.2. Generators look and feel like
@@ -224,7 +189,6 @@ Fibonacci numbers:</p>
         <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 </code></pre></div>
-
 <p>If $n=0$, the generator doesn't yield any number and we can then return. When
 $n=1$, the generator must yield the first Fibonacci number only, which is 0, and
 so on. The difference between <code>return</code> and <code>yield</code> is that the former terminates
@@ -243,27 +207,24 @@ object, like <code>sum</code>. The first two Fibonacci numbers can then be gener
 <span class="c1"># 0</span>
 <span class="c1"># 1</span>
 </code></pre></div>
-
 <p>but if we now try to print yet another Fibonacci number, we get a
 <code>StopIteration</code> exception, which signals that the generator has returned and
 that there are no more values to be generated:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 <span class="c1"># Expected output</span>
 <span class="c1"># Traceback (most recent call last):</span>
-<span class="c1">#   File &quot;&lt;stdin&gt;&quot;, line 5, in &lt;module&gt;</span>
+<span class="c1">#   File "&lt;stdin&gt;", line 5, in &lt;module&gt;</span>
 <span class="c1">#     print(next(f))</span>
 <span class="c1">#</span>
 <span class="c1"># StopIteration</span>
 </code></pre></div>
-
 <p>The following code snippet illustrates the use of a generator with a <code>for</code> loop</p>
 <div class="highlight"><pre><span></span><code><span class="n">test_cases</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
 
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">test_cases</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test case: n = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Test case: n = </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">t</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </code></pre></div>
-
 <p>I am omitting the expected output to avoid cluttering the page, but it should be
 quite clear what the above code is supposed to do. To produce a more compact
 result we can do something like</p>
@@ -271,8 +232,8 @@ result we can do something like</p>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span> <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">test_cases</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test case: n = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sfibonacci</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Test case: n = </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sfibonacci</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span>
 
 <span class="c1"># Expected output:</span>
 <span class="c1">#</span>
@@ -289,7 +250,6 @@ result we can do something like</p>
 <span class="c1"># Test case: n = 20</span>
 <span class="c1"># 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181</span>
 </code></pre></div>
-
 <p>which also shows how to construct a generator out of another generator.</p>
 <p>From the above example we deduce that the <code>yield</code> keyword is generating a value
 while also "<em>pausing</em>" the execution of the function, until another value is
@@ -314,17 +274,16 @@ with a call to <code>send</code> on the generator, like so</p>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="k">yield</span>
         <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#</span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"#</span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 
 <span class="n">coro</span> <span class="o">=</span> <span class="n">coroutine</span><span class="p">()</span>
 <span class="n">coro</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
-<span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
-<span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">)</span>
+<span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"Hello"</span><span class="p">)</span>
+<span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"World"</span><span class="p">)</span>
 <span class="c1"># Expected output</span>
 <span class="c1"># #1 : Hello</span>
 <span class="c1"># #2 : World</span>
 </code></pre></div>
-
 <p>If you look to code like the above for the first time, you might be wondering
 why I have included a call to <code>next</code>. Remember from our discussion on generators
 that, contrary to normal functions, a call to <code>coroutine</code> returns a generator
@@ -347,7 +306,7 @@ enough to convince you that, with coroutines in Python we can implement
 single-threaded concurrency, which offer an ideal ground for asynchronous I/O
 operations, without the overhead of many context switches between different
 threads.</p>
-<h2 id="the-asyncio-module">The <code>asyncio</code> module</h2>
+<h2 id="the-asyncio-module">The <code>asyncio</code> module<a class="headerlink" href="#the-asyncio-module" title="Permanent link">¶</a></h2>
 <p>If you have ever done any sort of I/O before, like reading from/writing to a
 file, or creating a socket and waiting for a connection etc... you will surely
 know that most of the I/O operations are blocking. For example, if you are
@@ -395,10 +354,9 @@ reverses it.</p>
         <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">websockets</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">echo</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8765</span><span class="p">))</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">websockets</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">echo</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="mi">8765</span><span class="p">))</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
 </code></pre></div>
-
 <p>and here is the client code</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
@@ -409,14 +367,13 @@ reverses it.</p>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"Hello world!"</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">websocket</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">input</span><span class="p">())</span>
 
-<span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;ws://localhost:8765&#39;</span><span class="p">))</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">hello</span><span class="p">(</span><span class="s1">'ws://localhost:8765'</span><span class="p">))</span>
 </code></pre></div>
-
 <p>And that's where we make our first encounter with the new <code>async</code>/<code>await</code>
 keywords, introduced by the already cited PEP 492. The new syntax <code>async def</code> is
 used to declare a <em>native coroutine</em> in Python 3.5 and later versions. Perhaps
@@ -457,7 +414,6 @@ complicated for <code>async with</code>, which requires a replacement for <code>
 <code>yield from</code>. The latter is substantially equivalent to</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">foo</span><span class="p">():</span> <span class="k">yield</span> <span class="n">a</span>    <span class="c1"># Same as: yield from foo()</span>
 </code></pre></div>
-
 <p>With this in mind, <code>async with</code> can be coded with a more traditional <code>try ...
 finally</code> block as</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># async with coro() as foo:</span>
@@ -470,7 +426,6 @@ finally</code> block as</p>
 <span class="k">finally</span><span class="p">:</span>
     <span class="c1"># Whatever coro().__aexit__() would have done.</span>
 </code></pre></div>
-
 <p>The <code>async for</code> loop would translate to something like the following</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># async for foo in bar():</span>
 <span class="c1">#     # &lt;code&gt;</span>
@@ -482,7 +437,6 @@ finally</code> block as</p>
 <span class="k">except</span> <span class="ne">StopAsyncIteration</span><span class="p">:</span>
     <span class="k">return</span>
 </code></pre></div>
-
 <p>This coding is not strict, since you could, or you might have to replace the
 code of <code>bar().__anext__()</code> with the actual coding inside this coroutine. This
 is the case for the code that we are about to see, in which we perform the above
@@ -501,10 +455,9 @@ translations. The server code for Python 3.4 is the following</p>
         <span class="n">message</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
         <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">websockets</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">echo</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8765</span><span class="p">))</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">websockets</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">echo</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="mi">8765</span><span class="p">))</span>
 <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
 </code></pre></div>
-
 <p>while the client code now looks like this</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python3</span>
 
@@ -518,7 +471,7 @@ translations. The server code for Python 3.4 is the following</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
     <span class="n">websocket</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"Hello world!"</span><span class="p">)</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
@@ -526,17 +479,16 @@ translations. The server code for Python 3.4 is the following</p>
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;ws://localhost:8765&#39;</span><span class="p">))</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">hello</span><span class="p">(</span><span class="s1">'ws://localhost:8765'</span><span class="p">))</span>
 </code></pre></div>
-
 <p>Note how to execute a native coroutine, or one decorated with
 <code>@asyncio.coroutine</code> in Python 3.4, needs to be executed by an event loop from
 the <code>asyncio</code> module.</p>
-<h1 id="setting-things-up">Setting Things Up</h1>
+<h1 id="setting-things-up">Setting Things Up<a class="headerlink" href="#setting-things-up" title="Permanent link">¶</a></h1>
 <p>We shall now present the circuit that makes up the device that we want to
 control over the network, and both the server and client code that will allow us
 to use the gravity sensor of an Android device to operate it.</p>
-<h2 id="the-circuitry">The Circuitry</h2>
+<h2 id="the-circuitry">The Circuitry<a class="headerlink" href="#the-circuitry" title="Permanent link">¶</a></h2>
 <p>This part of the post will be brief, because we are going to recycle part of the
 previous post on IoT A Gentle Introduction to IoT. In fact, we are going to
 double it up by making a circuit with two LEDs, each one following the same
@@ -546,14 +498,14 @@ tilt our device to the right, the green LED will become brighter, while when we
 tilt it to the left, the red LED will become brighter.</p>
 <p>So, based on the knowledge acquired with the previous post on IoT, the circuit
 that we want to build will look like this.</p>
-<p><img alt="Double LED configuration" src="./images/ws_asyncio/ws_asyncio_bb.png"></p>
+<p><a href="./images/ws_asyncio/ws_asyncio_bb.png" rel="noopener" target="_blank"><img alt="Double LED configuration" src="./images/ws_asyncio/ws_asyncio_bb.png"/></a></p>
 <p>For this project I am using a Raspberry Pi 3 Model B. As you can see from the
 picture above, we need two LEDs, preferably of different colours, e.g. green and
 red, and two 220 Ω resistors. The green LED will be controlled via the BCM 18
 (8) pin (green jumper wire), while the red one is controlled via the BCM 5 (29)
 pin (red jumper wire) of the Raspberry Pi. The black jumper wires indicate a
 connection on a ground pin.</p>
-<h2 id="the-server-code">The Server Code</h2>
+<h2 id="the-server-code">The Server Code<a class="headerlink" href="#the-server-code" title="Permanent link">¶</a></h2>
 <p>The server code will run on the Raspberry Pi and will open a WebSocket server,
 listening for connection requests. At the moment of writing, Raspbian Jesse has
 Python 3.4.2 in its repository, so that we cannot benefit of the native Python
@@ -593,7 +545,7 @@ do is inherit from <code>WSServer</code> and implement the <code>handler</code> 
 here.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@asyncio</span><span class="o">.</span><span class="n">coroutine</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connection ID </span><span class="si">{}</span><span class="s2"> established [path </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Connection ID </span><span class="si">{}</span><span class="s2"> established [path </span><span class="si">{}</span><span class="s2">]"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
 
     <span class="n">G</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>
     <span class="n">G</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">CHR</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
@@ -610,7 +562,7 @@ here.</p>
             <span class="n">g</span>         <span class="o">=</span> <span class="n">gyro_data</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">val</span>       <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received datum </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Received datum </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">pr</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
                 <span class="n">pl</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -619,13 +571,12 @@ here.</p>
                 <span class="n">pl</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="o">-</span><span class="n">val</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">websockets</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionClosed</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connection ID </span><span class="si">{}</span><span class="s2"> closed.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conn_id</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Connection ID </span><span class="si">{}</span><span class="s2"> closed."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conn_id</span><span class="p">))</span>
             <span class="n">pr</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="k">break</span>
 
     <span class="n">G</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
 </code></pre></div>
-
 <p>Here we initialise the Pi's GPIO and start listening to data over the socket
 until the server is running or the connection is closed by the client. The two
 pins that we have chosen to use to control the LEDs (<code>CHR</code> and <code>CHL</code>) are set on
@@ -643,9 +594,8 @@ value is negative the LED on the <code>CHL</code> pin will start to turn on.</p>
 for example</p>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>main.py<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="m">5678</span>
 </code></pre></div>
-
 <p>to listen on <em>any</em> IP address on the Raspberry Pi and accept connections from everywhere.</p>
-<h2 id="the-client-code">The Client Code</h2>
+<h2 id="the-client-code">The Client Code<a class="headerlink" href="#the-client-code" title="Permanent link">¶</a></h2>
 <p>For the client, we are going to develop a minimalist Android application, with
 the same project structure that we have encountered in the previous post on
 <a href="./android-development-from-the-command-line.html">Android Development from the Command
@@ -672,13 +622,12 @@ via callbacks triggered by the on-board gravity sensor on the Android device:</p
 <span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">values</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">);</span>
 <span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">webSocketClient</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">));</span>
+<span class="w">    </span><span class="n">webSocketClient</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Float</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">g</span><span class="o">*</span><span class="mi">100</span><span class="p">));</span>
 <span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">WebsocketNotConnectedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">Log</span><span class="p">.</span><span class="na">w</span><span class="p">(</span><span class="s">&quot;ctrl_ws_client&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sensor updated but socket not connected&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Log</span><span class="p">.</span><span class="na">w</span><span class="p">(</span><span class="s">"ctrl_ws_client"</span><span class="p">,</span><span class="w"> </span><span class="s">"Sensor updated but socket not connected"</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-
 <p>This method is part of the <code>MainActivity</code> class since we decided that this
 should implement the <code>SensorEventListener</code> interface. When a connection is
 successfully started, we register the instance of this class with the sensor, so
@@ -689,10 +638,9 @@ WebSocket.</p>
 with the command</p>
 <div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>installDebug
 </code></pre></div>
-
 <p>assuming that you have an Android device in developer mode connected to your
 building machine via USB. This is what it looks like on my Nexus 5</p>
-<p><img alt="ctrl_ws_client" class="center-image" src="./images/ws_asyncio/ctrl_ws_client.png"></p>
+<p><a href="./images/ws_asyncio/ctrl_ws_client.png" rel="noopener" target="_blank"><img alt="ctrl_ws_client" class="center-image" src="./images/ws_asyncio/ctrl_ws_client.png"/></a></p>
 <p>Before moving to the conclusion, just a quick note on the contents of the
 <code>AndroidManifest.xml</code> file. If you have had a look at it, you might have noticed
 the attribute <code>android:configChanges="orientation|screenSize"</code> on the <code>activity</code>
@@ -702,7 +650,7 @@ previous connection would be closed and we would have to restart it by pressing
 on the toggle button. The use of this attribute is not mandatory, but bear in
 mind that if you decide not to use it, then you would have to make sure that the
 same WebSocket connection is persisted across every screen rotation.</p>
-<h1 id="conclusions">Conclusions</h1>
+<h1 id="conclusions">Conclusions<a class="headerlink" href="#conclusions" title="Permanent link">¶</a></h1>
 <p>In the introduction, I have mentioned that WebSockets can be operated in two
 modes: <em>text</em> and <em>binary</em>. In the code that we have seen in this post we have
 sent <em>text</em> frames between the server and the client. This is because we have
@@ -720,65 +668,65 @@ the <code>ByteBuffer</code> version of the <code>onMessage</code> callback of th
 class, i.e. the one with signature</p>
 <div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onMessage</span><span class="p">(</span><span class="w"> </span><span class="n">ByteBuffer</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">)</span>
 </code></pre></div>
-  </div><!-- /.entry-content -->
-</section>
-
-<div id="giscus" class="py-8">
-  <script src="https://giscus.app/client.js"
-          data-repo="p403n1x87/P403n1x87.github.io"
-          data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
-          data-category="Giscus"
-          data-category-id="DIC_kwDOBLR9Zs4C9NXy"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="transparent_dark"
-          data-lang="en"
-          crossorigin="anonymous"
-          async>
-  </script>
-</div>
     </div>
-  </div>
 
-  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
-    <address id="about" class="vcard body text-3xl py-4">
-    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
-      <i class="fa fa-github" aria-hidden="true"></i>
-    </a>
-    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
-      <i class="fa fa-linkedin" aria-hidden="true"></i>
-    </a>
-    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
-      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
-    </a>
-    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
-      <i class="fa fa-steam" aria-hidden="true"></i>
-    </a>
-    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
-      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
-    </a>
-    </address><!-- /#about -->
-    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
-      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
-    </a>
-    <p class="text-xs pt-4">
-      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
-    </p>
-  </footer><!-- /#contentinfo -->
+    <footer class="article-footer">
+      <nav class="neighbors" aria-label="More posts">
+        <a class="neighbor prev" rel="prev" href="./android-development-from-the-command-line.html">
+          <span class="label">$ cd ../older</span>
+          Android Development from the Command Line
+        </a>
+        <a class="neighbor next" rel="next" href="./extending-python-with-assembly.html">
+          <span class="label">$ cd ../newer</span>
+          Extending Python with Assembly
+        </a>
+      </nav>
+
+      <section class="comments">
+        <p class="cmd"><span class="ps1">$</span> cat comments.log</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="p403n1x87/P403n1x87.github.io"
+                data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
+                data-category="Giscus"
+                data-category-id="DIC_kwDOBLR9Zs4C9NXy"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="transparent_dark"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </section>
+    </footer>
+  </article>
+</div>
+  </main>
+
+  <footer class="statusline frame">
+    <span class="status-session">[heliopolis]</span>
+    <span class="status-window">0:less*</span>
+    <nav class="status-links" aria-label="Elsewhere">
+      <a href="https://github.com/p403n1x87" rel="me noopener" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" rel="me noopener" target="_blank">linkedin</a>
+      <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
+      <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
+      <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
+      <a href="./feeds/all.atom.xml">rss</a>
+    </nav>
+    <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104560783-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-104560783-1', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
-
 </html>

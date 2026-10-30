@@ -1,80 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>The Hub of Heliopolis - Categories</title>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content="Pelican" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub of Heliopolis - Categories</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" />
+  <link rel="stylesheet" href="./theme/css/terminal.css" />
+  <link rel="stylesheet" href="./theme/css/pygment.css" />
+  <script src="./theme/js/terminal.js" defer></script>
 </head>
 
-<body id="index" class="home p-8">
-  <header id="banner" class="body text-xl">
-    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
-  </header><!-- /#banner -->
-
-  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
-    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
-
-      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
-
-  </ul></nav><!-- /#menu -->
-
-  <div id="heading">
-  </div>
-
-  <div class="flex flex-wrap py-4">
-    <div id="sidepane" class="flex-none">
-    </div>
-    <div id="content-block" class="flex-none">
-    <h1>Categories on The Hub of Heliopolis</h1>
-    <ul>
-        <li><a href="./category/iot.html">IoT</a> (2)</li>
-        <li><a href="./category/programming.html">Programming</a> (15)</li>
-        <li><a href="./category/technology.html">Technology</a> (1)</li>
-        <li><a href="./category/work.html">Work</a> (1)</li>
-    </ul>
-    </div>
-  </div>
-
-  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
-    <address id="about" class="vcard body text-3xl py-4">
-    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
-      <i class="fa fa-github" aria-hidden="true"></i>
-    </a>
-    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
-      <i class="fa fa-linkedin" aria-hidden="true"></i>
-    </a>
-    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
-      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
-    </a>
-    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
-      <i class="fa fa-steam" aria-hidden="true"></i>
-    </a>
-    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
-      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
-    </a>
-    </address><!-- /#about -->
-    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
-      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
-    </a>
-    <p class="text-xs pt-4">
-      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
+<body class="">
+  <header class="site-header frame">
+    <p class="prompt">
+      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/categories</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
-  </footer><!-- /#contentinfo -->
+    <nav class="menu" aria-label="Main">
+      <a href="./">cd ~</a>
+      <a href="./archives.html">ls posts/</a>
+      <a href="./tags.html">ls tags/</a>
+      <a href="./pages/about.html">cat about.md</a>
+      <a href="./feeds/all.atom.xml">tail -f feed</a>
+    </nav>
+  </header>
+
+  <main class="site-main frame">
+    <div class="single">
+<p class="cmd"><span class="ps1">$</span> ls -l categories/</p>
+<ul class="ls-l">
+  <li><span class="count">2</span> <a class="cat" href="./category/iot.html">iot/</a></li>
+  <li><span class="count">15</span> <a class="cat" href="./category/programming.html">programming/</a></li>
+  <li><span class="count">1</span> <a class="cat" href="./category/technology.html">technology/</a></li>
+  <li><span class="count">1</span> <a class="cat" href="./category/work.html">work/</a></li>
+</ul>
+    </div>
+  </main>
+
+  <footer class="statusline frame">
+    <span class="status-session">[heliopolis]</span>
+    <span class="status-window">0:categories*</span>
+    <nav class="status-links" aria-label="Elsewhere">
+      <a href="https://github.com/p403n1x87" rel="me noopener" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" rel="me noopener" target="_blank">linkedin</a>
+      <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
+      <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
+      <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
+      <a href="./feeds/all.atom.xml">rss</a>
+    </nav>
+    <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104560783-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-104560783-1', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
-
 </html>

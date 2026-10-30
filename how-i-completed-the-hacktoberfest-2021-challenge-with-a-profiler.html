@@ -1,95 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>The Hub of Heliopolis - How I completed the Hacktoberfest 2021 challenge with a profiler</title>
-  <meta charset="utf-8" />
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content="Pelican" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub of Heliopolis - How I completed the Hacktoberfest 2021 challenge with a profiler</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" />
+  <link rel="stylesheet" href="./theme/css/terminal.css" />
+  <link rel="stylesheet" href="./theme/css/pygment.css" />
+  <script src="./theme/js/terminal.js" defer></script>
 
-  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
-  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
-
-
-    <meta name="tags" content="python" />
-    <meta name="tags" content="profiling" />
+  <meta name="tags" content="python" />
+  <meta name="tags" content="profiling" />
 </head>
 
-<body id="index" class="home p-8">
-  <header id="banner" class="body text-xl">
-    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
-  </header><!-- /#banner -->
-
-  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
-    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
-
-      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
-
-  </ul></nav><!-- /#menu -->
-
-  <div id="heading">
-  <header class="post-info relative">
-    <div id="heading-bg" style="background-image: url(images/headings/hacktoberfest.png);"></div>
-    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
-      <h1 class="entry-title">How I completed the Hacktoberfest 2021 challenge with a profiler</h1>
-    
-      <div class="py-1 text-xs">
-        <time class="published py-1" datetime="2021-12-16T15:18:00+00:00">
-          &#128197; Thu 16 December 2021
-        </time>
-        <span class="readtime py-1">&#9202; A 4 min read</span>
-      </div>
-
-      <div class="py-1 text-xs">
-        <span class="category py-1">
-            &#128451; <a href="./category/programming.html">Programming</a>
-        </span>
-        <span class="tags py-1">
-          &#127991;
-            <a class="tag" href="./tag/python.html">python</a>
-            <a class="tag" href="./tag/profiling.html">profiling</a>
-        </span>
-      </div>
-    </div>
+<body class="article">
+  <header class="site-header frame">
+    <p class="prompt">
+      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+    </p>
+    <nav class="menu" aria-label="Main">
+      <a href="./">cd ~</a>
+      <a href="./archives.html">ls posts/</a>
+      <a href="./tags.html">ls tags/</a>
+      <a href="./pages/about.html">cat about.md</a>
+      <a href="./feeds/all.atom.xml">tail -f feed</a>
+    </nav>
   </header>
-  </div>
 
-  <div class="flex flex-wrap py-4">
-    <div id="sidepane" class="flex-none">
-<footer class="post-info text-sm">
-  <div id="sidebar_toc" class="py-2" />
-</footer><!-- /.post-info -->
+  <main class="site-main frame">
+<div class="with-aside">
+  <aside class="aside"></aside>
 
-<script type="text/javascript">
-  window.onload = function() {
-    toc = document.getElementsByClassName('toc')[0];
-    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
-    toc.parentNode.removeChild(toc)
+  <article class="article">
+    <header class="article-header">
+      <p class="cmd"><span class="ps1">$</span> cat how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.md</p>
+      <h1 class="article-title">How I completed the Hacktoberfest 2021 challenge with a profiler</h1>
+      <p class="meta">
+        <time datetime="2021-12-16T15:18:00+00:00">Thu 16 December 2021</time>
+        <span>4 min read</span>
+        <a class="cat" href="./category/programming.html">programming/</a>
+        <a class="tag" href="./tag/python.html">#python</a>
+        <a class="tag" href="./tag/profiling.html">#profiling</a>
+      </p>
+    </header>
 
-    document.querySelectorAll('.entry-content img').forEach(function(img) {
-      if (img.parentElement.tagName !== 'A') {
-        var a = document.createElement('a');
-        a.href = img.src;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        img.parentNode.insertBefore(a, img);
-        a.appendChild(img);
-      }
-    });
-  }
-</script>
+    <div class="lead">
+      <p>I shall reveal to you how I managed to complete the Hacktoberfest 2021 challenge with just a profiler. So read on if you are interested!</p>
     </div>
-    <div id="content-block" class="flex-none">
-<section id="content" class="body">
-  <div id="summary" class="py-0">
-    <p>I shall reveal to you how I managed to complete the Hacktoberfest 2021 challenge with just a profiler. So read on if you are interested!</p>
-  </div>
 
-
-  <div class="entry-content">
-    <p>Remember my post about <a href="./how-to-bust-python-performance-issues.html">how to bust performace issues</a>? My claim there was
+    <div class="entry-content">
+      <p>Remember my post about <a href="./how-to-bust-python-performance-issues.html">how to bust performace issues</a>? My claim there was
 that if you picked a project at random from e.g. GitHub, you'd find something
 that would catch your eye if you ran the code through a profiler. Iterating this
 process then seemed like a good strategy to generate PRs, which is what you need
@@ -115,49 +79,46 @@ local clone and looked at how the test suite is run. Peeking at the GitHub
 Actions I could see the test suite was triggered with <code>nox</code></p>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>nox
 </code></pre></div>
-
 <p>Inside the <code>noxfile.py</code> we can find the <code>tests</code> session, which is the one we are
 interested in</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">tests</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the test suite.&quot;&quot;&quot;</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;poetry&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-dev&quot;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Run the test suite."""</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">"poetry"</span><span class="p">,</span> <span class="s2">"install"</span><span class="p">,</span> <span class="s2">"--no-dev"</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">install_with_constraints</span><span class="p">(</span>
         <span class="n">session</span><span class="p">,</span>
-        <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-black&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-cov&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-isort&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-flake8&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-mypy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;types-requests&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;types-orjson&quot;</span><span class="p">,</span>
+        <span class="s2">"pytest"</span><span class="p">,</span>
+        <span class="s2">"pytest-black"</span><span class="p">,</span>
+        <span class="s2">"pytest-cov"</span><span class="p">,</span>
+        <span class="s2">"pytest-isort"</span><span class="p">,</span>
+        <span class="s2">"pytest-flake8"</span><span class="p">,</span>
+        <span class="s2">"pytest-mypy"</span><span class="p">,</span>
+        <span class="s2">"types-requests"</span><span class="p">,</span>
+        <span class="s2">"types-orjson"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;pytest&quot;</span><span class="p">,</span> <span class="s2">&quot;-vv&quot;</span><span class="p">,</span> <span class="s2">&quot;--cov=./&quot;</span><span class="p">,</span> <span class="s2">&quot;--cov-report=xml&quot;</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">"pytest"</span><span class="p">,</span> <span class="s2">"-vv"</span><span class="p">,</span> <span class="s2">"--cov=./"</span><span class="p">,</span> <span class="s2">"--cov-report=xml"</span><span class="p">)</span>
 </code></pre></div>
-
 <p>So let's create a <code>profile</code> session where we run the test suite through Austin.
 All we have to do is add <code>austin</code> at the right place in the arguments to
 <code>session.run</code>, plus some additional options, e.g.:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@nox</span><span class="o">.</span><span class="n">session</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">profile</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Profile the test suite.&quot;&quot;&quot;</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;poetry&quot;</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-dev&quot;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">profile_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AUSTIN_FILE&quot;</span><span class="p">,</span> <span class="s2">&quot;tests.austin&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Profile the test suite."""</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">"poetry"</span><span class="p">,</span> <span class="s2">"install"</span><span class="p">,</span> <span class="s2">"--no-dev"</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">profile_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AUSTIN_FILE"</span><span class="p">,</span> <span class="s2">"tests.austin"</span><span class="p">)</span>
     <span class="n">install_with_constraints</span><span class="p">(</span>
         <span class="n">session</span><span class="p">,</span>
-        <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-black&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-cov&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-isort&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-flake8&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-mypy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;types-requests&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;types-orjson&quot;</span><span class="p">,</span>
+        <span class="s2">"pytest"</span><span class="p">,</span>
+        <span class="s2">"pytest-black"</span><span class="p">,</span>
+        <span class="s2">"pytest-cov"</span><span class="p">,</span>
+        <span class="s2">"pytest-isort"</span><span class="p">,</span>
+        <span class="s2">"pytest-flake8"</span><span class="p">,</span>
+        <span class="s2">"pytest-mypy"</span><span class="p">,</span>
+        <span class="s2">"types-requests"</span><span class="p">,</span>
+        <span class="s2">"types-orjson"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;austin&quot;</span><span class="p">,</span> <span class="s2">&quot;-so&quot;</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="s2">&quot;1ms&quot;</span><span class="p">,</span> <span class="s2">&quot;pytest&quot;</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">"austin"</span><span class="p">,</span> <span class="s2">"-so"</span><span class="p">,</span> <span class="n">profile_file</span><span class="p">,</span> <span class="s2">"-i"</span><span class="p">,</span> <span class="s2">"1ms"</span><span class="p">,</span> <span class="s2">"pytest"</span><span class="p">)</span>
 </code></pre></div>
-
 <p>Here I've actually removed options to <code>pytest</code> which I don't care about, like
 code coverage, as it's not what I want to profile this time. The <code>-s</code> option
 tells Austin to give us non-idle samples only, effectively giving us a profile
@@ -168,20 +129,15 @@ invoke</p>
 <div class="highlight"><pre><span></span><code>pipx<span class="w"> </span>install<span class="w"> </span>nox<span class="w">  </span><span class="c1"># if not installed already</span>
 <span class="nv">AUSTIN_FILE</span><span class="o">=</span>tests.austin<span class="w"> </span>nox<span class="w"> </span>-rs<span class="w"> </span>profile
 </code></pre></div>
-
 <p>Once this completes, the profiling data will be sitting in <code>tests.austin</code>, ready
 to be analysed. With VS Code open on my local copy of <code>pyWhat</code>, I've used the
 <a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode">Austin VS Code</a> extension to visualise the data in the form of a flame
 graph and, by poking around, this is what caught my eye</p>
 <p align="center">
-  <a href="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png" target="_blank">
-    <img
-      src="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png"
-      alt="pyWhat tests before the fix"
-    />
-  </a>
+<a href="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png" target="_blank">
+<img alt="pyWhat tests before the fix" src="https://user-images.githubusercontent.com/20231758/138076258-67c0e621-9055-477f-97f8-5754147267aa.png"/>
+</a>
 </p>
-
 <p>The suspect here is the chunky <code>deepcopy</code> frame stack which is quite noticeable.
 The question, of course, is whether the deepcopy is really needed. Clicking on
 the <code>check</code> frame takes us straight into the part of the code where the
@@ -193,76 +149,72 @@ ran the test and checked for the expected output. All was looking find. In fact,
 things now looked much, much better! Rerunning the profile session with the
 change produced the following picture:</p>
 <p align="center">
-  <a href="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png" target="_blank">
-    <img
-      src="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png"
-      alt="pyWhat tests after the fix"
-    />
-  </a>
+<a href="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png" target="_blank">
+<img alt="pyWhat tests after the fix" src="https://user-images.githubusercontent.com/20231758/138076271-6241b43b-d1f3-439d-9afc-3022ce2e231b.png"/>
+</a>
 </p>
-
 <p>The <code>deepcopy</code> stacks have disappeared and the <code>check</code> frame is overall much
 slimmer! And so, just like that, a performance regression has been found and
 fixed in just a few minutes :).</p>
-  </div><!-- /.entry-content -->
-</section>
-
-<div id="giscus" class="py-8">
-  <script src="https://giscus.app/client.js"
-          data-repo="p403n1x87/P403n1x87.github.io"
-          data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
-          data-category="Giscus"
-          data-category-id="DIC_kwDOBLR9Zs4C9NXy"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="transparent_dark"
-          data-lang="en"
-          crossorigin="anonymous"
-          async>
-  </script>
-</div>
     </div>
-  </div>
 
-  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
-    <address id="about" class="vcard body text-3xl py-4">
-    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
-      <i class="fa fa-github" aria-hidden="true"></i>
-    </a>
-    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
-      <i class="fa fa-linkedin" aria-hidden="true"></i>
-    </a>
-    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
-      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
-    </a>
-    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
-      <i class="fa fa-steam" aria-hidden="true"></i>
-    </a>
-    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
-      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
-    </a>
-    </address><!-- /#about -->
-    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
-      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
-    </a>
-    <p class="text-xs pt-4">
-      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
-    </p>
-  </footer><!-- /#contentinfo -->
+    <footer class="article-footer">
+      <nav class="neighbors" aria-label="More posts">
+        <a class="neighbor prev" rel="prev" href="./spy-on-python-down-to-the-linux-kernel-level.html">
+          <span class="label">$ cd ../older</span>
+          Spy on Python down to the Linux kernel level
+        </a>
+        <a class="neighbor next" rel="next" href="./increasing-austin-accuracy-with-a-dobule-heap-trick.html">
+          <span class="label">$ cd ../newer</span>
+          Increasing Austin accuracy with a dobule-heap trick
+        </a>
+      </nav>
+
+      <section class="comments">
+        <p class="cmd"><span class="ps1">$</span> cat comments.log</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="p403n1x87/P403n1x87.github.io"
+                data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
+                data-category="Giscus"
+                data-category-id="DIC_kwDOBLR9Zs4C9NXy"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="transparent_dark"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </section>
+    </footer>
+  </article>
+</div>
+  </main>
+
+  <footer class="statusline frame">
+    <span class="status-session">[heliopolis]</span>
+    <span class="status-window">0:less*</span>
+    <nav class="status-links" aria-label="Elsewhere">
+      <a href="https://github.com/p403n1x87" rel="me noopener" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" rel="me noopener" target="_blank">linkedin</a>
+      <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
+      <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
+      <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
+      <a href="./feeds/all.atom.xml">rss</a>
+    </nav>
+    <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104560783-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-104560783-1', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
-
 </html>

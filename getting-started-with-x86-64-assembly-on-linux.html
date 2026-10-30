@@ -1,93 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>The Hub of Heliopolis - Getting Started with x86-64 Assembly on Linux</title>
-  <meta charset="utf-8" />
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content="Pelican" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub of Heliopolis - Getting Started with x86-64 Assembly on Linux</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" />
+  <link rel="stylesheet" href="./theme/css/terminal.css" />
+  <link rel="stylesheet" href="./theme/css/pygment.css" />
+  <script src="./theme/js/terminal.js" defer></script>
 
-  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
-  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
-
-
-    <meta name="tags" content="assembly" />
+  <meta name="tags" content="assembly" />
 </head>
 
-<body id="index" class="home p-8">
-  <header id="banner" class="body text-xl">
-    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
-  </header><!-- /#banner -->
-
-  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
-    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
-
-      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
-
-  </ul></nav><!-- /#menu -->
-
-  <div id="heading">
-  <header class="post-info relative">
-    <div id="heading-bg" style="background-image: url(images/asm-header.png);"></div>
-    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
-      <h1 class="entry-title">Getting Started with x86-64 Assembly on Linux</h1>
-    
-      <div class="py-1 text-xs">
-        <time class="published py-1" datetime="2016-08-10T15:48:37+01:00">
-          &#128197; Wed 10 August 2016
-        </time>
-        <span class="readtime py-1">&#9202; A 19 min read</span>
-      </div>
-
-      <div class="py-1 text-xs">
-        <span class="category py-1">
-            &#128451; <a href="./category/programming.html">Programming</a>
-        </span>
-        <span class="tags py-1">
-          &#127991;
-            <a class="tag" href="./tag/assembly.html">assembly</a>
-        </span>
-      </div>
-    </div>
+<body class="article">
+  <header class="site-header frame">
+    <p class="prompt">
+      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/getting-started-with-x86-64-assembly-on-linux</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+    </p>
+    <nav class="menu" aria-label="Main">
+      <a href="./">cd ~</a>
+      <a href="./archives.html">ls posts/</a>
+      <a href="./tags.html">ls tags/</a>
+      <a href="./pages/about.html">cat about.md</a>
+      <a href="./feeds/all.atom.xml">tail -f feed</a>
+    </nav>
   </header>
-  </div>
 
-  <div class="flex flex-wrap py-4">
-    <div id="sidepane" class="flex-none">
-<footer class="post-info text-sm">
-  <div id="sidebar_toc" class="py-2" />
-</footer><!-- /.post-info -->
-
-<script type="text/javascript">
-  window.onload = function() {
-    toc = document.getElementsByClassName('toc')[0];
-    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
-    toc.parentNode.removeChild(toc)
-
-    document.querySelectorAll('.entry-content img').forEach(function(img) {
-      if (img.parentElement.tagName !== 'A') {
-        var a = document.createElement('a');
-        a.href = img.src;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        img.parentNode.insertBefore(a, img);
-        a.appendChild(img);
-      }
-    });
-  }
-</script>
-    </div>
-    <div id="content-block" class="flex-none">
-<section id="content" class="body">
-  <div id="summary" class="py-0">
-    <p>You have experience of x86 assembly and you wonder what the fundamental architectural differences with the 64 bit Intel architecture are? Then this post might be what you are looking for. Here we'll see how to use the Netwide Assembler (NASM) to write a simple Hello World application in x86_64 assembly. Along the way, we will also have the chance to see how to use some standard tools to optimise the final executable by stripping out unnecessary debug symbols.</p>
-  </div>
-
-
-  <div class="entry-content">
-    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+  <main class="site-main frame">
+<div class="with-aside">
+  <aside class="aside">    <details class="toc" id="toc">
+      <summary>getting-started-with-x86-64-assembly-on-linux.md</summary>
+      <div class="toc"><span class="toctitle">Table of contents:</span><ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#tools">Tools</a></li>
 <li><a href="#hello-syscalls">Hello Syscalls!</a></li>
@@ -95,6 +42,29 @@
 <li><a href="#conclusions">Conclusions</a></li>
 </ul>
 </div>
+    </details>
+    <script>
+      if (matchMedia("(min-width: 1000px)").matches) document.getElementById("toc").open = true;
+    </script></aside>
+
+  <article class="article">
+    <header class="article-header">
+      <p class="cmd"><span class="ps1">$</span> cat getting-started-with-x86-64-assembly-on-linux.md</p>
+      <h1 class="article-title">Getting Started with x86-64 Assembly on Linux</h1>
+      <p class="meta">
+        <time datetime="2016-08-10T15:48:37+01:00">Wed 10 August 2016</time>
+        <span>19 min read</span>
+        <a class="cat" href="./category/programming.html">programming/</a>
+        <a class="tag" href="./tag/assembly.html">#assembly</a>
+      </p>
+    </header>
+
+    <div class="lead">
+      <p>You have experience of x86 assembly and you wonder what the fundamental architectural differences with the 64 bit Intel architecture are? Then this post might be what you are looking for. Here we'll see how to use the Netwide Assembler (NASM) to write a simple Hello World application in x86_64 assembly. Along the way, we will also have the chance to see how to use some standard tools to optimise the final executable by stripping out unnecessary debug symbols.</p>
+    </div>
+
+    <div class="entry-content">
+      
 <p>In this post we will learn how to assemble and link a simple "Hello World"
 application written in x86-64 assembly for the Linux operating system. If you
 have experience with Intel IA-32 assembly and you want to quickly get adjusted
@@ -105,7 +75,7 @@ documents is Paul Carter's PC Assembly Language, which I highly recommend if
 you're moving your first steps into the assembly language. If you then decide to
 come back to this post, you should be able to read it with no problems, since
 the tools that I will employ here are the same used in Carter's book.</p>
-<h1 id="overview">Overview</h1>
+<h1 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h1>
 <p>This post is organised as follows. In the next section, I gather some details
 about the tools that we will use to code, assemble, link and execute the
 applications. As already mentioned above, most of the tools are the same as
@@ -119,7 +89,7 @@ to explore the x86-64 calling convention as set out in the <a href="http://www.x
 Binary Interface</a>.</p>
 <p>All the code shown in this post will also be available from the <a href="https://github.com/P403n1x87/asm/tree/master/hello64">dedicated asm
 GitHub repository</a>.</p>
-<h1 id="tools">Tools</h1>
+<h1 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">¶</a></h1>
 <p>The Netwide Assembler is arguably the most popular assembler for the Linux
 Operating System and it is an open-source project. Its documentation is nicely
 written and explains all the features of the language and of the (dis)assembler.
@@ -129,7 +99,6 @@ probably be the right place. To assemble a 64-bit application we will need to
 use the command</p>
 <div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>myapp.o<span class="w"> </span>myapp.asm
 </code></pre></div>
-
 <p>The flag <code>-f elf64</code> instructs NASM that we want to create a 64-bit ELF object
 file. The flag <code>-o myapp.o</code> tells the assembler that we want the output object
 file to be <code>myapp.o</code> in the current directory, whereas <code>myapp.asm</code> specifies the
@@ -141,7 +110,6 @@ order to obtain a valid executable file. The typical usage of <code>ld</code> th
 encounter in this post is</p>
 <div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-o<span class="w"> </span>myapp.o<span class="w"> </span>myapp
 </code></pre></div>
-
 <p>This is enough to produce a valid executable when we are not linking our object
 file <code>myapp.o</code> against any external shared library or any other object file.
 Occasionally, depending on your distribution, you will have to specify which
@@ -151,7 +119,6 @@ shared libraries. On Ubuntu 16.04, the right 64-bit interpreter is at
 <code>/lib64/ld-linux-x86-64.so.2</code> and therefore my invocation of <code>ld</code> will look like</p>
 <div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-o<span class="w"> </span>myapp<span class="w"> </span>myapp.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
 </code></pre></div>
-
 <p>Some external shared libraries are designed to work with C. It is then advisable
 to include a <code>main</code> function in the assembly source code since the Standard C
 Library will take care of some essential cleanup steps when the execution
@@ -163,9 +130,8 @@ Compiler to link our object file with other object files (and in particular with
 <code>libc</code>). The typical usage of <code>gcc</code> will be something like</p>
 <div class="highlight"><pre><span></span><code>gcc<span class="w"> </span>-o<span class="w"> </span>myapp.o<span class="w"> </span>myapp
 </code></pre></div>
-
 <p>which is very much similar to <code>ld</code>.</p>
-<h1 id="hello-syscalls">Hello Syscalls!</h1>
+<h1 id="hello-syscalls">Hello Syscalls!<a class="headerlink" href="#hello-syscalls" title="Permanent link">¶</a></h1>
 <p>In this first example we will make use of the Linux system calls to print the
 string <code>Hello World!</code> to the screen. Here is where we encounter a major
 difference between the 32-bit and the 64-bit Linux world.</p>
@@ -191,7 +157,7 @@ to make system calls. You can still use interrupts to make system calls, but
 <p>The purpose of this section is to explore this new opcode with an example.
 Without further ado, let's dive into some assembly code. The following is the
 content of my <code>hello64.asm</code> file.</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<figure class="code"><figcaption>hello64.asm</figcaption><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -238,7 +204,7 @@ content of my <code>hello64.asm</code> file.</p>
 <span class="c1">; Initialised data goes here</span>
 <span class="c1">;</span>
 <span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">"Hello World!"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span>
 <span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span>
 
 <span class="c1">;</span>
@@ -260,9 +226,8 @@ content of my <code>hello64.asm</code> file.</p>
 <span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span>
 <span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
 <span class="w">    </span><span class="nf">syscall</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></table></div></figure>
 
-<p><em>hello64.asm</em></p>
 <p>Lines 1, 13, 20 and 22 are part of the skeleton of any NASM source code. With
 line 1 we export the symbol <code>_start</code>, which defines the entry point for the
 application, i.e. the point in where the execution starts from. The actual
@@ -315,7 +280,6 @@ Return value
 ------------
 The number of bytes of the pointed string written on the file descriptor.
 </code></pre></div>
-
 <p>The number that appears on the top right corner is the code associated to the
 system call (compare this with line 6 above), and by convention this goes into
 the <code>rax</code> register (see line 24). Since <code>sys_write</code> requires 3 integer
@@ -343,7 +307,6 @@ Return value
 ------------
 This system call does not return.
 </code></pre></div>
-
 <p>With line 32 we load the code of <code>sys_exit</code> into the <code>rax</code> register in
 preparation for the system call. As error code, we might want to return <code>0</code> if
 <code>sys_write</code> has done its job properly, i.e. if it has written all the expected
@@ -360,30 +323,25 @@ make the system call and terminate the execution.</p>
 <div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>hello64.o<span class="w"> </span>hello64.asm
 ld<span class="w"> </span>-o<span class="w"> </span>hello64<span class="w"> </span>hello64.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
 </code></pre></div>
-
 <p>This will assemble the source code of <code>hello64.asm</code> into the object file
 <code>hello64.o</code>, while the linker will finish off the job by linking the interpreter
 to the object file and produce the ELF64 executable. To run the application,
 simply type</p>
 <div class="highlight"><pre><span></span><code>./hello64
 </code></pre></div>
-
 <p>If you also want to display the exit code to make sure the executable is
 behaving as expected we could use</p>
-<div class="highlight"><pre><span></span><code>./hello64<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;exit code:&quot;</span><span class="w"> </span><span class="nv">$?</span>
+<div class="highlight"><pre><span></span><code>./hello64<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"exit code:"</span><span class="w"> </span><span class="nv">$?</span>
 </code></pre></div>
-
 <p>and, on screen, we should now see</p>
 <div class="highlight"><pre><span></span><code>Hello World!
 exit code: 0
 </code></pre></div>
-
 <p>Apart from the fun, another reason to write assembly code is that you can shrink
 the size of the executable file. Let's check how big <code>hello64</code> is at this stage</p>
 <div class="highlight"><pre><span></span><code>$ wc -c &lt; hello64
 1048
 </code></pre></div>
-
 <p>A kilobyte seems a bit excessive for an assembly application that only prints a
 short string on screen. The reason of such a bloated executable is in the symbol
 table created by NASM. This plays an important role inside our ELF file in case
@@ -407,17 +365,14 @@ SYMBOL TABLE:
 00000000006000e5 g       .data 0000000000000000 _edata
 00000000006000e8 g       .data 0000000000000000 _end
 </code></pre></div>
-
 <p>Assuming that we are not planning of doing this with our simple Hello World
 example, we strip the symbol table off <code>hello64</code> with</p>
 <div class="highlight"><pre><span></span><code>strip<span class="w"> </span>-s<span class="w"> </span>hello64
 </code></pre></div>
-
 <p>If we now check the file size again, this is what we get</p>
 <div class="highlight"><pre><span></span><code>$ wc -c &lt; hello64
 512
 </code></pre></div>
-
 <p>i.e. less than half the original size. Looking at the symbol table again, this
 is what we get now:</p>
 <div class="highlight"><pre><span></span><code>$ objdump -t hello64
@@ -427,12 +382,10 @@ hello64: file format elf64-x86-64
 SYMBOL TABLE:
 no symbols
 </code></pre></div>
-
 <p>Observe that we can obtain the same result with the -s switch to the linker we
 decide to use, that is, either ld or gcc. Thus, for example,</p>
 <div class="highlight"><pre><span></span><code>ld<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello64<span class="w"> </span>hello64.o
 </code></pre></div>
-
 <p>will produce an ELF executable that lacks the symbol table completely.</p>
 <p>The possibility of removing symbols from an ELF file gives us the chance of
 defining the constants for the system calls once and for all. In my GitHub
@@ -441,7 +394,7 @@ repository you can find the file
 where I have defined all the system calls together with their associated ID, and
 the "signature" of each on a comment line. With the help of this file, our
 source code would look like this</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<figure class="code"><figcaption>hello64_inc.asm</figcaption><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -477,7 +430,7 @@ source code would look like this</p>
 <span class="normal">34</span>
 <span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">global</span><span class="w"> </span><span class="nv">_start</span>
 
-<span class="cp">%include &quot;../syscalls.inc&quot;</span>
+<span class="cp">%include "../syscalls.inc"</span>
 
 <span class="c1">;</span>
 <span class="c1">; CONSTANTS</span>
@@ -488,7 +441,7 @@ source code would look like this</p>
 <span class="c1">; Initialised data goes here</span>
 <span class="c1">;</span>
 <span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">"Hello World!"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="c1">; char *</span>
 <span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="o">-</span><span class="nv">hello</span><span class="w">                 </span><span class="c1">; size_t</span>
 
 <span class="c1">;</span>
@@ -510,9 +463,8 @@ source code would look like this</p>
 <span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span>
 <span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rdi</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
 <span class="w">    </span><span class="nf">syscall</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></table></div></figure>
 
-<p><em>hello64_inc.asm</em></p>
 <p>Note the inclusion of the file <code>syscalls.inc</code> at line 3, assumed to be stored in
 the parent folder of the one containing the assembly source code, and the only
 constant <code>STDOUT</code> at line 8.</p>
@@ -522,19 +474,17 @@ but get rid of the one associated to constants that are meaningful to just your
 source code, you can add a <code>-N &lt;symbol name&gt;</code> (e.g. <code>strip -N STDOUT hello64</code>)
 switch to strip for each symbol you want dropped. To automate this when using
 <code>syscalls.inc</code>, one can execute the following (rather long) command</p>
-<div class="highlight"><pre><span></span><code>strip<span class="w"> </span><span class="sb">`</span><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>s<span class="w"> </span>_<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="nv">$line</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;-N </span><span class="nv">$s</span><span class="s2"> &quot;</span><span class="p">;</span><span class="w"> </span><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>&lt;<span class="o">(</span>tail<span class="w"> </span>-n<span class="w"> </span>+5<span class="w"> </span>../syscalls.inc<span class="o">)</span><span class="sb">`</span><span class="w"> </span>hello64
+<div class="highlight"><pre><span></span><code>strip<span class="w"> </span><span class="sb">`</span><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">''</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>s<span class="w"> </span>_<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="nv">$line</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">"-N </span><span class="nv">$s</span><span class="s2"> "</span><span class="p">;</span><span class="w"> </span><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>&lt;<span class="o">(</span>tail<span class="w"> </span>-n<span class="w"> </span>+5<span class="w"> </span>../syscalls.inc<span class="o">)</span><span class="sb">`</span><span class="w"> </span>hello64
 </code></pre></div>
-
 <p>on the ELF executable.</p>
 <p>Finally, let's verify that all we really have is pure assembly code, i.e. that
 our application doesn't depend on external shared objects:</p>
 <div class="highlight"><pre><span></span><code>$ ldd hello64
         not a dynamic executable
 </code></pre></div>
-
 <p>In this case, this output is telling us that <code>hello64</code> is not linked to any
 other shared object files.</p>
-<h1 id="hello-libc">Hello libc!</h1>
+<h1 id="hello-libc">Hello libc!<a class="headerlink" href="#hello-libc" title="Permanent link">¶</a></h1>
 <p>We shall now rewrite the above Hello World! example and let the Standard C
 Library take care of the output operation. That is, we won't deal with system
 calls directly, we shall instead delegate a higher abstraction layer, the
@@ -549,10 +499,9 @@ child processes to terminate an application gracefully.</p>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">printf</span><span class="p">(</span><span class="s">"Hello World!</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
-
 <p>Inside the <code>main</code> function, we call <code>printf</code> to print the string on screen and
 then use its return value, decreased by the string length, as exit code. Thus,
 if <code>printf</code> writes all the bytes of our string, we get 0 as exit code, meaning
@@ -564,7 +513,7 @@ parameter passing. In this case, since we are just printing a string, we are not
 passing any other arguments apart from the location of the first character of
 the string, and therefore we need to set <code>rax</code> to zero. With all these
 considerations, the assembly analogue of the above C code will look like this</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<figure class="code"><figcaption>hello64_libc.asm</figcaption><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -593,7 +542,7 @@ considerations, the assembly analogue of the above C code will look like this</p
 <span class="c1">; Initialised data goes here</span>
 <span class="c1">;</span>
 <span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">"Hello World!"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span>
 <span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w">               </span><span class="c1">; size_t</span>
 <span class="c1">;</span>
 <span class="c1">; Code goes here</span>
@@ -607,9 +556,8 @@ considerations, the assembly analogue of the above C code will look like this</p
 <span class="w">    </span><span class="nf">xor</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nb">rax</span>
 <span class="w">    </span><span class="nf">call</span><span class="w">    </span><span class="nv">printf</span>
 <span class="w">    </span><span class="nf">sub</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">hello_len</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></table></div></figure>
 
-<p><em>hello64_libc.asm</em></p>
 <p>On line 1 we export the main symbol, which will get called by the <code>libc</code>
 framework. On line 3 we instruct NASM that our application uses an external
 symbol, i.e. the variadic function <code>printf</code>. There is nothing new to say about
@@ -627,7 +575,6 @@ and link it with</p>
 <div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>hello64_libc.o<span class="w"> </span>hello64_libc
 gcc<span class="w"> </span>-o<span class="w"> </span>hello64_libc<span class="w"> </span>hello64_libc.o
 </code></pre></div>
-
 <p>The ELF executable I get on my machine is 8696 bytes in size, and 6328 without
 the symbol table. If we thought 1048 was too much for a simple Hello World
 application, the libc example is 8 times bigger. And without symbols, you can
@@ -637,7 +584,7 @@ see that we are wasting about 8K by relying on the Standard C Library.</p>
 executable only depends on the Standard C Library. However, as discussed above,
 we lose an important clean-up process that can be convenient, if not necessary,
 at times.</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<figure class="code"><figcaption>hello64_libc2.asm</figcaption><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -667,7 +614,7 @@ at times.</p>
 <span class="normal">28</span>
 <span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">global</span><span class="w"> </span><span class="nv">_start</span>
 
-<span class="cp">%include &quot;../syscalls.inc&quot;</span>
+<span class="cp">%include "../syscalls.inc"</span>
 
 <span class="k">extern</span><span class="w"> </span><span class="nv">printf</span>
 
@@ -675,7 +622,7 @@ at times.</p>
 <span class="c1">; Initialised data goes here</span>
 <span class="c1">;</span>
 <span class="k">SECTION</span><span class="w"> </span><span class="nv">.data</span>
-<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">&quot;Hello World!&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span>
+<span class="nf">hello</span><span class="w">           </span><span class="nv">db</span><span class="w">  </span><span class="s">"Hello World!"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="c1">; const char *</span>
 <span class="no">hello_len</span><span class="w">       </span><span class="kd">equ</span><span class="w"> </span><span class="kc">$</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="c1">; size_t</span>
 <span class="c1">;</span>
 <span class="c1">; Code goes here</span>
@@ -694,9 +641,8 @@ at times.</p>
 <span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="nb">rax</span><span class="p">,</span><span class="w"> </span><span class="nv">SYS_EXIT</span>
 <span class="w">    </span><span class="nf">pop</span><span class="w">     </span><span class="nb">rdi</span>
 <span class="w">    </span><span class="nf">syscall</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></table></div></figure>
 
-<p><em>hello64_libc2.asm</em></p>
 <p>Note how, on lines 1 and 18, we removed the main function and reintroduced the
 <code>_start</code> symbol to tell NASM where the entry point is. Thus, execution of our
 application now starts at line 20. Here we prepare to call the <code>printf</code>
@@ -710,12 +656,10 @@ with the commands</p>
 <div class="highlight"><pre><span></span><code>nasm<span class="w"> </span>-f<span class="w"> </span>elf64<span class="w"> </span>-o<span class="w"> </span>hello64_libc2.o<span class="w"> </span>hello64_libc2
 ld<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello64_libc2<span class="w"> </span>hello64_libc.o<span class="w"> </span>-I/lib64/ld-linux-x86-64.so.2
 </code></pre></div>
-
 <p>Checking the file size, this is what I get on my machine now</p>
 <div class="highlight"><pre><span></span><code>$ wc -c &lt; hello64_libc2
 2056
 </code></pre></div>
-
 <p>i.e. about a third of the "full" <code>libc</code> example above. There is something we can
 still do with <code>strip</code>, namely determine which sections are not needed. After
 linking with <code>ld</code>, the ELF I get has the following sections</p>
@@ -735,15 +679,13 @@ linking with <code>ld</code>, the ELF I get has the following sections</p>
   [13] .data             PROGBITS         00000000006003c0  000003c0
   [14] .shstrtab         STRTAB           0000000000000000  000003ce
 </code></pre></div>
-
 <p>By trials and errors, I have discovered that I can get rid of <code>.hash</code>,
 <code>.gnu.version</code> and <code>.eh_frame</code> while still getting a valid ELF executable that
 does its job. To get rid of these sections one can use the command</p>
 <div class="highlight"><pre><span></span><code>strip<span class="w"> </span>-R<span class="w"> </span>.hash<span class="w"> </span>-R<span class="w"> </span>.gnu.version<span class="w"> </span>-R<span class="w"> </span>.eh_frame<span class="w"> </span>hello64_libc2
 </code></pre></div>
-
 <p>which yields an executable of 1832 bytes.</p>
-<h1 id="conclusions">Conclusions</h1>
+<h1 id="conclusions">Conclusions<a class="headerlink" href="#conclusions" title="Permanent link">¶</a></h1>
 <p>With the above examples, we have seen that, if our real goal is that of coding a
 Hello World application meant to run on an architecture with the x86_64
 instruction set, assembly is the best shot we have. Chances are, if you are
@@ -755,65 +697,61 @@ the chance to see this last point from a close-up perspective in a future post.
 So take this current post as a reference point where you can look back when you
 need to recall the basics of writing a 64-bit assembly application for the Linux
 OS.</p>
-  </div><!-- /.entry-content -->
-</section>
-
-<div id="giscus" class="py-8">
-  <script src="https://giscus.app/client.js"
-          data-repo="p403n1x87/P403n1x87.github.io"
-          data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
-          data-category="Giscus"
-          data-category-id="DIC_kwDOBLR9Zs4C9NXy"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="transparent_dark"
-          data-lang="en"
-          crossorigin="anonymous"
-          async>
-  </script>
-</div>
     </div>
-  </div>
 
-  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
-    <address id="about" class="vcard body text-3xl py-4">
-    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
-      <i class="fa fa-github" aria-hidden="true"></i>
-    </a>
-    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
-      <i class="fa fa-linkedin" aria-hidden="true"></i>
-    </a>
-    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
-      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
-    </a>
-    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
-      <i class="fa fa-steam" aria-hidden="true"></i>
-    </a>
-    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
-      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
-    </a>
-    </address><!-- /#about -->
-    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
-      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
-    </a>
-    <p class="text-xs pt-4">
-      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
-    </p>
-  </footer><!-- /#contentinfo -->
+    <footer class="article-footer">
+      <nav class="neighbors" aria-label="More posts">
+        <a class="neighbor next" rel="next" href="./prime-numbers-algorithms-and-computer-architectures.html">
+          <span class="label">$ cd ../newer</span>
+          Prime Numbers, Algorithms and Computer Architectures
+        </a>
+      </nav>
+
+      <section class="comments">
+        <p class="cmd"><span class="ps1">$</span> cat comments.log</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="p403n1x87/P403n1x87.github.io"
+                data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
+                data-category="Giscus"
+                data-category-id="DIC_kwDOBLR9Zs4C9NXy"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="transparent_dark"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </section>
+    </footer>
+  </article>
+</div>
+  </main>
+
+  <footer class="statusline frame">
+    <span class="status-session">[heliopolis]</span>
+    <span class="status-window">0:less*</span>
+    <nav class="status-links" aria-label="Elsewhere">
+      <a href="https://github.com/p403n1x87" rel="me noopener" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" rel="me noopener" target="_blank">linkedin</a>
+      <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
+      <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
+      <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
+      <a href="./feeds/all.atom.xml">rss</a>
+    </nav>
+    <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104560783-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-104560783-1', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
-
 </html>

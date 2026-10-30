@@ -1,101 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>The Hub of Heliopolis - What Actually Are Containers?</title>
-  <meta charset="utf-8" />
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content="Pelican" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub of Heliopolis - What Actually Are Containers?</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="./theme/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" />
+  <link rel="stylesheet" href="./theme/css/terminal.css" />
+  <link rel="stylesheet" href="./theme/css/pygment.css" />
+  <script src="./theme/js/terminal.js" defer></script>
 
-  <link rel="stylesheet" type="text/css" href="./theme/css/pygment.css" />
-  <link rel="stylesheet" type="text/css" href="./theme/css/article.css" />
-
-
-    <meta name="tags" content="containers" />
-    <meta name="tags" content="linux" />
+  <meta name="tags" content="containers" />
+  <meta name="tags" content="linux" />
 </head>
 
-<body id="index" class="home p-8">
-  <header id="banner" class="body text-xl">
-    ~# <a href="/">the-hub-of-heliopolis</a><span class="blinking-cursor">&marker;</span>
-  </header><!-- /#banner -->
-
-  <nav id="menu" class="h-8 my-4"><ul class="overflow-hidden list-none m-0 py-2">
-    <li class="inline p-2 hover:bg-black"><a href="/">cd ~</a></li>
-
-      <li class="inline p-2 hover:bg-black"><a href="./pages/about.html">About</a></li>
-
-  </ul></nav><!-- /#menu -->
-
-  <div id="heading">
-  <header class="post-info relative">
-    <div id="heading-bg" style="background-image: url(images/containers.png);"></div>
-    <div id="heading-info" class="absolute bottom-0 p-4 w-full bg-opacity-50 bg-black">
-      <h1 class="entry-title">What Actually Are Containers?</h1>
-    
-      <div class="py-1 text-xs">
-        <time class="published py-1" datetime="2018-08-04T18:42:00+01:00">
-          &#128197; Sat 04 August 2018
-        </time>
-        <span class="readtime py-1">&#9202; A 26 min read</span>
-        <span id="github">
-          <i class="fa fa-github" aria-hidden="true"></i>
-          <a href="https://github.com/P403n1x87/asm/tree/master/chroot" target="_blank">
-            P403n1x87/asm/chroot
-          </a>
-        </span>
-      </div>
-
-      <div class="py-1 text-xs">
-        <span class="category py-1">
-            &#128451; <a href="./category/technology.html">Technology</a>
-        </span>
-        <span class="tags py-1">
-          &#127991;
-            <a class="tag" href="./tag/containers.html">containers</a>
-            <a class="tag" href="./tag/linux.html">linux</a>
-        </span>
-      </div>
-    </div>
+<body class="article">
+  <header class="site-header frame">
+    <p class="prompt">
+      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/what-actually-are-containers</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+    </p>
+    <nav class="menu" aria-label="Main">
+      <a href="./">cd ~</a>
+      <a href="./archives.html">ls posts/</a>
+      <a href="./tags.html">ls tags/</a>
+      <a href="./pages/about.html">cat about.md</a>
+      <a href="./feeds/all.atom.xml">tail -f feed</a>
+    </nav>
   </header>
-  </div>
 
-  <div class="flex flex-wrap py-4">
-    <div id="sidepane" class="flex-none">
-<footer class="post-info text-sm">
-  <div id="sidebar_toc" class="py-2" />
-</footer><!-- /.post-info -->
-
-<script type="text/javascript">
-  window.onload = function() {
-    toc = document.getElementsByClassName('toc')[0];
-    document.getElementById("sidebar_toc").innerHTML = toc.innerHTML;
-    toc.parentNode.removeChild(toc)
-
-    document.querySelectorAll('.entry-content img').forEach(function(img) {
-      if (img.parentElement.tagName !== 'A') {
-        var a = document.createElement('a');
-        a.href = img.src;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        img.parentNode.insertBefore(a, img);
-        a.appendChild(img);
-      }
-    });
-  }
-</script>
-    </div>
-    <div id="content-block" class="flex-none">
-<section id="content" class="body">
-  <div id="summary" class="py-0">
-    <p>Containers are the big thing of the moment. It is quite common to find blog posts and articles that explain what containers are <em>not</em>:  "containers are not virtual machines". Just what <em>are</em> they then? In this post we embark on a journey across some of the features of the Linux kernel to unveil the mystery.</p>
-  </div>
-
-
-  <div class="entry-content">
-    <div class="toc"><span class="toctitle">Table of contents:</span><ul>
+  <main class="site-main frame">
+<div class="with-aside">
+  <aside class="aside">    <details class="toc" id="toc">
+      <summary>what-actually-are-containers.md</summary>
+      <div class="toc"><span class="toctitle">Table of contents:</span><ul>
 <li><a href="#introduction">Introduction</a><ul>
 <li><a href="#containers-defined">Containers Defined</a></li>
 <li><a href="#a-note-on-operating-systems">A Note on Operating Systems</a></li>
@@ -125,7 +65,32 @@
 <li><a href="#conclusions">Conclusions</a></li>
 </ul>
 </div>
-<h1 id="introduction">Introduction</h1>
+    </details>
+    <script>
+      if (matchMedia("(min-width: 1000px)").matches) document.getElementById("toc").open = true;
+    </script></aside>
+
+  <article class="article">
+    <header class="article-header">
+      <p class="cmd"><span class="ps1">$</span> cat what-actually-are-containers.md</p>
+      <h1 class="article-title">What Actually Are Containers?</h1>
+      <p class="meta">
+        <time datetime="2018-08-04T18:42:00+01:00">Sat 04 August 2018</time>
+        <span>26 min read</span>
+        <a class="cat" href="./category/technology.html">technology/</a>
+        <a class="tag" href="./tag/containers.html">#containers</a>
+        <a class="tag" href="./tag/linux.html">#linux</a>
+        <a href="https://github.com/P403n1x87/asm/tree/master/chroot" target="_blank" rel="noopener">github:P403n1x87/asm/chroot</a>
+      </p>
+    </header>
+
+    <div class="lead">
+      <p>Containers are the big thing of the moment. It is quite common to find blog posts and articles that explain what containers are <em>not</em>:  "containers are not virtual machines". Just what <em>are</em> they then? In this post we embark on a journey across some of the features of the Linux kernel to unveil the mystery.</p>
+    </div>
+
+    <div class="entry-content">
+      
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h1>
 <p>When I first heard about containers, I turned to my favourite search engine to
 find out more about them and what they are. Most of the resources I have read
 through, though, seemed to put a great emphasis on what containers are <strong>not</strong>.
@@ -147,7 +112,7 @@ and secure. These other aspects, however, will be part of a separate post. Here
 we shall just focus on the essential ingredients that can allow you to literally
 handcraft and run something that you may call a container, in the sense that is
 commonly used these days.</p>
-<h2 id="containers-defined">Containers Defined</h2>
+<h2 id="containers-defined">Containers Defined<a class="headerlink" href="#containers-defined" title="Permanent link">¶</a></h2>
 <p>Before we progress any further, I believe that we should take a moment to agree
 on the meaning that we should attach to the word <em>container</em>. Much of the
 confusion, in my opinion, arises from the many different definitions that are
@@ -166,7 +131,7 @@ running an operating system with its own view of the file system, processes,
 etc... on top of the operating system that is installed on the machine. In this
 sense, a container <em>contains</em> part of the host resources and hosts its own
 system and user applications.</p>
-<h2 id="a-note-on-operating-systems">A Note on Operating Systems</h2>
+<h2 id="a-note-on-operating-systems">A Note on Operating Systems<a class="headerlink" href="#a-note-on-operating-systems" title="Permanent link">¶</a></h2>
 <p>Another cause of confusion, sometimes, is the definition of <em>operating system</em>
 itself, so before moving on, I want to make sure we agree on this too. An
 operating system can be thought as a <em>nut</em>. At its core we have, well, the
@@ -196,21 +161,20 @@ about the distribution name and the installed version. For example, on
 Debian-based distributions, this file is typically named <code>os-release</code>. In my
 case, this is what I get if I peek at its content with <code>cat</code>:</p>
 <div class="highlight"><pre><span></span><code>$ cat /etc/os-release
-NAME=&quot;Ubuntu&quot;
-VERSION=&quot;18.04 LTS (Bionic Beaver)&quot;
+NAME="Ubuntu"
+VERSION="18.04 LTS (Bionic Beaver)"
 ID=ubuntu
 ID_LIKE=debian
-PRETTY_NAME=&quot;Ubuntu 18.04 LTS&quot;
-VERSION_ID=&quot;18.04&quot;
-HOME_URL=&quot;https://www.ubuntu.com/&quot;
-SUPPORT_URL=&quot;https://help.ubuntu.com/&quot;
-BUG_REPORT_URL=&quot;https://bugs.launchpad.net/ubuntu/&quot;
-PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&quot;
+PRETTY_NAME="Ubuntu 18.04 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
 VERSION_CODENAME=bionic
 UBUNTU_CODENAME=bionic
 </code></pre></div>
-
-<h1 id="creating-jails-with-chroot">Creating Jails With <code>chroot</code></h1>
+<h1 id="creating-jails-with-chroot">Creating Jails With <code>chroot</code><a class="headerlink" href="#creating-jails-with-chroot" title="Permanent link">¶</a></h1>
 <p>One of the earliest examples of "containers" was provided by the use of
 <code>chroot</code>. This is a system call that was introduced in the BSD in 1982 and all
 it does is to change the apparent root directory for the process it is called
@@ -245,7 +209,7 @@ is being used is that, without the due precautions, it is relatively easy to
 break out of one (well, OK, maybe that's not an official reason).</p>
 <p>If the above discussion sounds a bit too abstract to you then don't worry
 because we are about to get hour hands dirty with <code>chroot</code>.</p>
-<h2 id="a-minimal-chroot-jail">A Minimal <code>chroot</code> Jail</h2>
+<h2 id="a-minimal-chroot-jail">A Minimal <code>chroot</code> Jail<a class="headerlink" href="#a-minimal-chroot-jail" title="Permanent link">¶</a></h2>
 <p>Since a <code>chroot</code> jail is pretty much like a <em>Bring Your Own System Application</em>
 party, with the kernel kindly offered by the host, a minimal <code>chroot</code> jail can
 be obtained with just the binary of a shell, and just a few other binary files.
@@ -259,7 +223,6 @@ shared object the <code>bash</code> shell depends on with <code>ldd</code></p>
         libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f9604e2d000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f960563a000)
 </code></pre></div>
-
 <p>So let's create a folder that will serve as the new root file system, e.g.
 <code>~/minimal</code>, and copy the bash executable in it, together with all its
 dependencies. Copy the <code>bash</code> executable inside <code>~/minimal/bin</code>, the libraries
@@ -267,12 +230,10 @@ from <code>/lib</code> into <code>~/minimal/lib</code> and those from <code>/lib
 Then start the <code>chroot</code> jail with</p>
 <div class="highlight"><pre><span></span><code>chroot<span class="w"> </span>~/minimal
 </code></pre></div>
-
 <p>You should now have a running bash session with a vanilla prompt format that
 looks like this</p>
 <div class="highlight"><pre><span></span><code>bash-4.4#
 </code></pre></div>
-
 <p>Note that <code>chroot</code> is being executed as the <code>root</code> user. This is because, under normal
 circumstances, only <code>root</code> has the POSIX <em>capability</em> of calling the
 <code>SYS_CHROOT</code> system call.</p>
@@ -287,7 +248,7 @@ circumstances, only <code>root</code> has the POSIX <em>capability</em> of calli
 quickly that there isn't much that you can do. Most of the standard Unix tools
 are not available, not even <code>ls</code>. This container that we created as a <code>chroot</code>
 jail is indeed minimal.</p>
-<h2 id="a-more-interesting-example">A More Interesting Example</h2>
+<h2 id="a-more-interesting-example">A More Interesting Example<a class="headerlink" href="#a-more-interesting-example" title="Permanent link">¶</a></h2>
 <p>Ubuntu has released base images of the operating system since version 12.04.
 These are just root file system images in the format of a compressed tarball.
 Suppose that a new stable version has come out and you want to give it a try
@@ -297,7 +258,6 @@ download the image that you want to test. Extract the content of the tarball
 somewhere, e.g. <code>~/ubuntu-latest</code> and "run" it with <code>chroot</code></p>
 <div class="highlight"><pre><span></span><code>chroot<span class="w"> </span>~/ubuntu-latest
 </code></pre></div>
-
 <p>We are now running an instance of a new version of Ubuntu. To check that this is
 indeed the case, look at the output of <code>cat /etc/os-release</code>. Furthermore, we
 now have access to all the basic tools that make up the Ubuntu operating system.
@@ -310,10 +270,9 @@ jail. That's why you would have to mount them manually with</p>
 mount<span class="w"> </span>-t<span class="w"> </span>sysfs<span class="w"> </span>sys<span class="w"> </span>sys/
 mount<span class="w"> </span>-o<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>/dev<span class="w"> </span>dev/
 </code></pre></div>
-
 <p>This way you will be able to use, e.g., <code>ps</code> to look at the currently running
 processes.</p>
-<h2 id="leaky-containers">Leaky Containers</h2>
+<h2 id="leaky-containers">Leaky Containers<a class="headerlink" href="#leaky-containers" title="Permanent link">¶</a></h2>
 <p>With the simplicity of <code>chroot</code> jails comes many issues that make these kind of
 "containers" <em>leaky</em>. What do I mean by this? Suppose that you want to
 <em>containerise</em> two resource-intensive applications into two different <code>chroot</code>
@@ -373,7 +332,7 @@ hypothesis) by the jail user. Indeed, <code>chroot</code> containers really requ
 of care to prevent unwanted information from leaking. That is why present days
 containers make use of a different approach to guarantee "airtight" walls, as we
 shall soon see.</p>
-<h1 id="control-groups">Control Groups</h1>
+<h1 id="control-groups">Control Groups<a class="headerlink" href="#control-groups" title="Permanent link">¶</a></h1>
 <p>As we have argued above, when we make use of containers we might want to run
 multiple instances of them on the same machine. The problem that we face is
 physical resource sharing among the containers. How can we make sure that a
@@ -401,7 +360,7 @@ disk I/O rate are other examples of resources that can be accounted for with
 control groups. This way you can have two or more CPU-bound applications running
 happily on the same machine, just by splitting the physical computing power
 among them.</p>
-<h2 id="a-hierarchy-of-cgroups">A Hierarchy of cgroups</h2>
+<h2 id="a-hierarchy-of-cgroups">A Hierarchy of cgroups<a class="headerlink" href="#a-hierarchy-of-cgroups" title="Permanent link">¶</a></h2>
 <p>Linux processes are organised in a hierarchical structure. At boot, the <code>init</code>
 process, with PID 1, is spawned, and every other process originates from it as a
 child process. This hierarchical structure is visible from the virtual file
@@ -422,7 +381,7 @@ are curious to find out more about their history and their technical details,
 you can have a look at the official documentation
 <a href="https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt">here</a> and
 <a href="https://www.kernel.org/doc/Documentation/cgroup-v2.txt">here</a>.</p>
-<h2 id="how-to-work-with-control-groups">How to Work with Control Groups</h2>
+<h2 id="how-to-work-with-control-groups">How to Work with Control Groups<a class="headerlink" href="#how-to-work-with-control-groups" title="Permanent link">¶</a></h2>
 <p>Let's have a look at how to use cgroups to limit the total amount of physical
 (or resident) memory that a process is allowed to use. The example is based on
 cgroups v1 since they are still in use today even though cgroups v2 are
@@ -446,7 +405,6 @@ total physical memory processes can use.</p>
 <span class="nb">echo</span><span class="w"> </span>100m<span class="w"> </span>&gt;<span class="w"> </span>/sys/fs/cgroup/memory/mem_cg/memory.limit_in_bytes
 <span class="nb">echo</span><span class="w"> </span>100m<span class="w"> </span>&gt;<span class="w"> </span>/sys/fs/cgroup/memory/mem_cg/memory.memsw.limit_in_bytes
 </code></pre></div>
-
 <blockquote>
 <p>If <code>memory.memsw.*</code> is not present in <code>/sys/fs/cgroup/memory</code>, you might need
   to enable it on the kernel by adding the parameters <code>cgroup_enable=memory
@@ -460,12 +418,10 @@ above the limit, the OOM killer will get rid of it. To add a process to the
 <code>mem_cg</code> cgroup we have to write its PID to the <code>tasks</code> file, e.g. with</p>
 <div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$$</span><span class="w"> </span>&gt;<span class="w"> </span>/sys/fs/cgroup/memory/mem_cg/tasks
 </code></pre></div>
-
 <p>This will put the currently running shell into the <code>mem_cg</code> cgroup. When we want
 to remove the cgroup, we can just delete its folder with</p>
 <div class="highlight"><pre><span></span><code>rmdir<span class="w"> </span>/sys/fs/cgroup/memory/mem_cg
 </code></pre></div>
-
 <p>Note that, even if fully removed from the virtual file system, any removed
 cgroups remain active until all the associated processes have terminated or have
 become zombies.</p>
@@ -479,17 +435,15 @@ cgset<span class="w"> </span>-r<span class="w"> </span>memory.memsw.limit_in_byt
 cgclassify<span class="w"> </span>-g<span class="w"> </span>memory:mem_cg<span class="w"> </span><span class="nv">$$</span>
 cgdelete<span class="w"> </span>memory:mem_cg
 </code></pre></div>
-
 <p>One can use <code>cgexec</code> as an alternative to start a new process directly within a
 cgroup:</p>
 <div class="highlight"><pre><span></span><code>cgroup<span class="w"> </span>-g<span class="w"> </span>memory:mem_cg<span class="w"> </span>/bin/bash
 </code></pre></div>
-
 <p>We can test that the memory cgroup we have created works with the following
 simple C program</p>
-<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdlib.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdio.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;string.h&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">"stdlib.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"stdio.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"string.h"</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kt">int</span><span class="w">    </span><span class="n">a</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -498,7 +452,7 @@ simple C program</p>
 <span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">++</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Allocation #%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span>
+<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">"Allocation #%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span>
 <span class="w">      </span><span class="n">memset</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -506,14 +460,12 @@ simple C program</p>
 <span class="w">  </span><span class="k">return</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
-
 <p>We have created an infinite loop in which we allocate chunks of 1 MB of memory
 at each iteration. The call to <code>memset</code> is a trick to force the Linux kernel to
 actually allocate the requested memory under the copy-on-write strategy.</p>
 <p>Once compiled, we can run it into the <code>mem_cg</code> cgroup with</p>
 <div class="highlight"><pre><span></span><code>cgexec<span class="w"> </span>-g<span class="w"> </span>mem_cg<span class="w"> </span>./a.out
 </code></pre></div>
-
 <p>We expect to see about 100 successful allocations and after that the OOM killer
 intervenes to stop our processes, since it would have reached the allocated
 memory quota by then.</p>
@@ -525,7 +477,7 @@ machine. With a similar approach, we could also make sure that it won't reserve
 all the CPU and its cores to itself, thus allowing other processes (perhaps in
 different jails/containers) to run simultaneously and smoothly on the same
 physical machine.</p>
-<h1 id="linux-namespaces">Linux Namespaces</h1>
+<h1 id="linux-namespaces">Linux Namespaces<a class="headerlink" href="#linux-namespaces" title="Permanent link">¶</a></h1>
 <p>The description of Linux namespaces given by the dedicated manpage sums up the
 concept pretty well:</p>
 <blockquote>
@@ -551,7 +503,7 @@ there are plans for new kinds to be developed and included in future releases of
 the Linux kernel.</p>
 <p>If you really want to identify a single feature that makes modern Linux
 container possible, namespaces is arguably the candidate. Let's try to see why.</p>
-<h2 id="some-implementation-details">Some Implementation Details</h2>
+<h2 id="some-implementation-details">Some Implementation Details<a class="headerlink" href="#some-implementation-details" title="Permanent link">¶</a></h2>
 <p>In order to introduce namespaces in Linux, a new system call, <code>unshare</code>, has
 been added to the kernel. Its use is "to allow a process to control its shared
 execution context without creating a new process." (quoted verbatim from the
@@ -570,7 +522,7 @@ automatically made a member of them.</p>
 implemented can be found in the
 <a href="http://man7.org/linux/man-pages/man7/namespaces.7.html"><code>namespaces(7)</code></a>
 manpage.</p>
-<h2 id="how-to-work-with-namespaces">How to Work with Namespaces</h2>
+<h2 id="how-to-work-with-namespaces">How to Work with Namespaces<a class="headerlink" href="#how-to-work-with-namespaces" title="Permanent link">¶</a></h2>
 <p>As with cgroups, an in-depth description of namespaces would require a post on
 its own. So we will have a look at just one simple example. Since networks are
 ubiquitous these days, let's try to launch a process that has its own
@@ -626,7 +578,6 @@ ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span
 <span class="c1"># Start listening for TCP packets on port 2000</span>
 nc<span class="w"> </span>-l<span class="w"> </span><span class="m">2000</span>
 </code></pre></div></td></tr></table></div>
-
 <p>On line 2 we use the extended, namespace-capable version of <code>ip</code> to create a new
 namespace of the network kind, called <code>test</code>. We then create the pair of virtual
 ethernet devices with the command on line 5. On line 12 we move the <code>veth1</code>
@@ -639,15 +590,15 @@ execution of the command on line 12.</p>
 <p>We can then use <code>netcat</code> to listen to TCP packets being sent on port 2000 from
 within the new namespace (line 20). On a new bash session in the default
 namespaces, we can start <code>netcat</code> with</p>
-<p _="%" endterminal>{% terminal $ %}
+<p _="%" endterminal="">{% terminal $ %}
 nc 10.0.0.2 2000</p>
 <p>to start sending packets to the new namespace <code>test</code> via the link between
 <code>veth0</code> and <code>veth1</code>. Everything that you type should now be echoed by the bash
 session in the <code>test</code> namespace after you press Enter.</p>
-<h1 id="putting-it-all-together">Putting It All Together</h1>
+<h1 id="putting-it-all-together">Putting It All Together<a class="headerlink" href="#putting-it-all-together" title="Permanent link">¶</a></h1>
 <p>Now let's see how to put all the stuff we have discussed thus far together to
 handcraft some more (better) containers.</p>
-<h2 id="process-containment-for-chroot-jails">Process Containment for <code>chroot</code> Jails</h2>
+<h2 id="process-containment-for-chroot-jails">Process Containment for <code>chroot</code> Jails<a class="headerlink" href="#process-containment-for-chroot-jails" title="Permanent link">¶</a></h2>
 <p>With our first attempt at manually crafting a container with <code>chroot</code>, we
 discovered a few weaknesses of different nature that made the result quite
 leaky. Let's try to address some of those issues, for instance the fact that all
@@ -658,7 +609,6 @@ Assuming that you have created the <code>test</code> network namespace as descri
 previous section, run</p>
 <div class="highlight"><pre><span></span><code>unshare<span class="w"> </span>--fork<span class="w"> </span>-p<span class="w"> </span>-u<span class="w"> </span>ip<span class="w"> </span>netns<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>chroot<span class="w"> </span>ubuntu-latest
 </code></pre></div>
-
 <p>The <code>--fork</code> switch is required by the <code>-p</code> switch because we want to spawn a
 new bash session with PID 1, rather than within the calling process. The <code>-u</code>
 switch will give us a new hostname that we are then free to change without that
@@ -668,14 +618,12 @@ namespaces of the network kind to create the Ubuntu Base <code>chroot</code> jai
 <code>proc</code> file system with, e.g.</p>
 <div class="highlight"><pre><span></span><code>mount<span class="w"> </span>-t<span class="w"> </span>proc<span class="w"> </span>proc<span class="w"> </span>/proc
 </code></pre></div>
-
 <p>and then look at the output of <code>ps aux</code>:</p>
 <div class="highlight"><pre><span></span><code># ps -ef
 UID        PID  PPID  C STIME TTY          TIME CMD
 root         1     0  0 11:54 ?        00:00:00 /bin/bash -i
 root         8     1  0 11:56 ?        00:00:00 ps -ef
 </code></pre></div>
-
 <p>The bash session that we started inside the <code>chroot</code> jail has PID 1 and the <code>ps</code>
 tool from the Ubuntu Base distribution has PID 8 and parent PID 1, i.e. the
 <code>chroot</code> jail. That's all the processes that we can see from here! If we try to
@@ -684,11 +632,10 @@ identify this bash shell from the global namespace we find something like this</
 root      5829  4957  0 12:54 pts/1    00:00:00 sudo unshare --fork -p -u ip netns exec test chroot ubuntu-latest
 root      5830  5829  0 12:54 pts/1    00:00:00 unshare --fork -p -u ip netns exec test chroot ubuntu-latest
 </code></pre></div>
-
 <p>PIDs in your case will quite likely be different, but the point here is that,
 with namespaces, we have broken the assumption that a process has a <em>unique</em>
 process ID.</p>
-<h2 id="wall-fortification">Wall Fortification</h2>
+<h2 id="wall-fortification">Wall Fortification<a class="headerlink" href="#wall-fortification" title="Permanent link">¶</a></h2>
 <p>Whilst the process view problem has been solved (we can no longer kill the host
 processes since we cannot see them), the fact that the <code>chroot</code> jail runs as
 root still leaves us with the <em>jailbreak</em> issue. To fix this we just use
@@ -721,18 +668,16 @@ mount<span class="w"> </span>--bind<span class="w"> </span>ubuntu-latest/<span c
 pivot_root<span class="w"> </span>.<span class="w"> </span>old-root/
 <span class="nb">exec</span><span class="w"> </span>chroot<span class="w"> </span>.<span class="w"> </span>/bin/bash<span class="w"> </span>--init-file<span class="w"> </span>&lt;<span class="o">(</span>mount<span class="w"> </span>-t<span class="w"> </span>proc<span class="w"> </span>proc<span class="w"> </span>/proc<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>umount<span class="w"> </span>-l<span class="w"> </span>/old-root<span class="o">)</span>
 </code></pre></div>
-
 <p>Copy and paste these lines in a file, e.g. <code>cnt-init.sh</code> and then run</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>unshare<span class="w"> </span>--fork<span class="w"> </span>-p<span class="w"> </span>-u<span class="w"> </span>-m<span class="w"> </span>ubuntu-latest/bin/bash<span class="w"> </span>--init-file<span class="w"> </span>cnt-init.sh
 </code></pre></div>
-
 <p>You can now check that the <code>/old-root</code> folder is empty, meaning that we now have
 no ways of accessing the full host file system, but only the corner that
 corresponds to the content of the new root, i.e. the content of the
 <code>ubuntu-latest</code> folder. Furthermore, you can go on and check that our recipe for
 breaking out of a vanilla <code>chroot</code> jail does not work in this case, because the
 jail itself is now an effective, rather than apparent, root!</p>
-<h1 id="conclusions">Conclusions</h1>
+<h1 id="conclusions">Conclusions<a class="headerlink" href="#conclusions" title="Permanent link">¶</a></h1>
 <p>We have come to the end of this journey across the features of the Linux kernel
 that make containers possible. I hope this has given you a better understanding
 of what many people mean when they say that containers are like virtual
@@ -747,65 +692,65 @@ nasty things (open lower-numbered ports and all such kind of businesses...). The
 point here is that, if you need containers for production environments, you
 should turn to well tested and established technologies, like LXC, Docker etc...
 .</p>
-  </div><!-- /.entry-content -->
-</section>
-
-<div id="giscus" class="py-8">
-  <script src="https://giscus.app/client.js"
-          data-repo="p403n1x87/P403n1x87.github.io"
-          data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
-          data-category="Giscus"
-          data-category-id="DIC_kwDOBLR9Zs4C9NXy"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="transparent_dark"
-          data-lang="en"
-          crossorigin="anonymous"
-          async>
-  </script>
-</div>
     </div>
-  </div>
 
-  <footer id="contentinfo" class="body p-8 mx-auto text-center block">
-    <address id="about" class="vcard body text-3xl py-4">
-    <a href="https://github.com/p403n1x87" target="_blank" class="hover:text-white">
-      <i class="fa fa-github" aria-hidden="true"></i>
-    </a>
-    <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" target="_blank" class="hover:text-white">
-      <i class="fa fa-linkedin" aria-hidden="true"></i>
-    </a>
-    <a href="https://stackexchange.com/users/528399/phoenix87" target="_blank" class="hover:text-white">
-      <i class="fa fa-stack-exchange" aria-hidden="true"></i>
-    </a>
-    <a href="https://steamcommunity.com/profiles/76561198092800937" target="_blank" class="hover:text-white">
-      <i class="fa fa-steam" aria-hidden="true"></i>
-    </a>
-    <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" target="_blank" class="hover:text-white">
-      <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
-    </a>
-    </address><!-- /#about -->
-    <a class="block py-4 hover:text-white" href="feeds/all.atom.xml">
-      <i class="fa fa-rss" aria-hidden="true"></i> Subscribe
-    </a>
-    <p class="text-xs pt-4">
-      Powered by <a href="https://getpelican.com/">Pelican</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>
-    </p>
-  </footer><!-- /#contentinfo -->
+    <footer class="article-footer">
+      <nav class="neighbors" aria-label="More posts">
+        <a class="neighbor prev" rel="prev" href="./extending-python-with-assembly.html">
+          <span class="label">$ cd ../older</span>
+          Extending Python with Assembly
+        </a>
+        <a class="neighbor next" rel="next" href="./deterministic-and-statistical-python-profiling.html">
+          <span class="label">$ cd ../newer</span>
+          Deterministic and Statistical Python Profiling
+        </a>
+      </nav>
+
+      <section class="comments">
+        <p class="cmd"><span class="ps1">$</span> cat comments.log</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="p403n1x87/P403n1x87.github.io"
+                data-repo-id="MDEwOlJlcG9zaXRvcnk3ODkzNzQ0Ng=="
+                data-category="Giscus"
+                data-category-id="DIC_kwDOBLR9Zs4C9NXy"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="transparent_dark"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </section>
+    </footer>
+  </article>
+</div>
+  </main>
+
+  <footer class="statusline frame">
+    <span class="status-session">[heliopolis]</span>
+    <span class="status-window">0:less*</span>
+    <nav class="status-links" aria-label="Elsewhere">
+      <a href="https://github.com/p403n1x87" rel="me noopener" target="_blank">github</a>
+      <a href="https://www.linkedin.com/in/gabriele-tornetta-b2733759" rel="me noopener" target="_blank">linkedin</a>
+      <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
+      <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
+      <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
+      <a href="./feeds/all.atom.xml">rss</a>
+    </nav>
+    <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104560783-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-104560783-1', 'auto');
-  ga('send', 'pageview');
-</script>
-<script src="https://use.fontawesome.com/8c7b940d60.js"></script>
-
 </html>
