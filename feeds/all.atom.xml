@@ -417,11 +417,52 @@ check that the fix worked. There are two ways to set this up:&lt;/p&gt;
   functions, call stacks, &lt;code&gt;asyncio&lt;/code&gt; task traces, GC activity and metadata. It
   works with GitHub Copilot's agent mode with no setup, and with Claude Code,
   Cursor or any other MCP client after running a single command.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;&lt;code&gt;austin-query&lt;/code&gt;&lt;/strong&gt;, from the &lt;a href="https://github.com/P403n1x87/austin-python"&gt;austin-python&lt;/a&gt; package, answers the same
-  questions from the command line, as text tables or JSON. Any agent that can
-  run shell commands can use it, in a terminal, a script or CI. Pointing the
-  agent at &lt;code&gt;austin-query --help&lt;/code&gt; is usually all the setup it needs.&lt;/li&gt;
+&lt;li&gt;The &lt;a href="https://github.com/P403n1x87/austin-python"&gt;austin-python&lt;/a&gt; package has a &lt;strong&gt;query API&lt;/strong&gt; that answers the same
+  questions in plain Python, and a command-line front-end for it,
+  &lt;code&gt;austin-query&lt;/code&gt;, that prints the results as text tables or JSON. Any agent
+  that can run shell commands can use it, in a terminal, a script or CI.
+  Pointing the agent at &lt;code&gt;austin-query --help&lt;/code&gt; is usually all the setup it needs.&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;The command line is a good place to start, but agents get more out of the
+&lt;a href="https://austin-python.readthedocs.io/en/latest/query.html"&gt;Python API&lt;/a&gt; behind it. Each query returns typed objects rather than
+text, so the agent can write a short script that hands them over to other
+libraries: pandas to compare two profiles, a plotting library to chart the
+results, or the project's own code to work out which component owns each hot
+function. An analysis that would take a long chain of CLI calls, each one
+reading the profile again, becomes a few lines of Python over a profile loaded
+once. The selectors and filters are the same as on the command line, e.g.
+&lt;code&gt;q.filter(thread="main").callers("db.py:execute")&lt;/code&gt;, so the agent can move from
+one to the other without learning anything new. For example, this is all it
+takes to see which functions got faster, or slower, after a fix:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;pandas&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;austin.query&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ProfileQuery&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;hot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Series&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+        &lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;location&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;:&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;location&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;own_pct&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ProfileQuery&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;from_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;top&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;})&lt;/span&gt;
+
+&lt;span class="n"&gt;change&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"after.mojo"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"before.mojo"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;fill_value&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;change&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort_values&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_string&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A word of caution, though: a single pair of profiles is a shaky basis for a
+verdict. Sampling, and the system itself, add noise from one run to the next,
+so part of the change above could be nothing more than that. For a rigorous
+answer, &lt;a href="https://github.com/P403n1x87/pyrometry"&gt;pyrometry&lt;/a&gt; is a small library of mine that implements the ideas of
+&lt;a href="https://arxiv.org/abs/2301.08941"&gt;On the Algebraic Properties of Flame Graphs&lt;/a&gt;. It treats
+flame graphs as vectors that can be added, subtracted and averaged, and it
+compares two &lt;em&gt;sets&lt;/em&gt; of profiles, say five runs before a change and five after,
+with a statistical test (Hotelling's T²), keeping only the stacks whose
+difference is significant. The result is then split into the stacks that
+appeared, disappeared, grew or shrank. That's out of reach for a chain of CLI
+calls, but it's a short script for an agent with the Python API, and pointing
+it at pyrometry gives it a sound method to follow instead of eyeballing two
+flame graphs. Nor is this just theory: Austin's own CI uses the same test to
+validate every pull request. It profiles the same scenarios ten times with the
+base branch and ten times with the changes, on every supported version of
+Python, and checks that the new build still reports the same data as the old
+one.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Or let it teach you.&lt;/strong&gt; Having an agent fix things for you is useful, but it
 doesn't make you any better at reading a profile. So the MCP server also has
 action tools that let the agent search and zoom the flame graph in the editor,
