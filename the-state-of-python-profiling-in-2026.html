@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - The State of Python Profiling in 2026</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/programming.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="python" />
   <meta name="tags" content="profiling" />
@@ -18,14 +19,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/the-state-of-python-profiling-in-2026</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/the-state-of-python-profiling-in-2026</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -71,10 +72,10 @@
       <p class="meta">
         <time datetime="2026-10-30T12:00:00+00:00">Fri 30 October 2026</time>
         <span>26 min read</span>
-        <a class="cat" href="./category/programming.html">programming/</a>
-        <a class="tag" href="./tag/python.html">#python</a>
-        <a class="tag" href="./tag/profiling.html">#profiling</a>
-        <a class="tag" href="./tag/optimisation.html">#optimisation</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/programming.html">programming/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/profiling.html">#profiling</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/optimisation.html">#optimisation</a>
       </p>
     </header>
 
@@ -107,7 +108,7 @@ overhead changes the program's timing, sometimes a lot. A sampling profiler
 looks at the call stack at regular intervals and builds a statistical picture
 from those snapshots. You don't get call counts, but the program runs at close
 to normal speed. I went into the differences between the two, and how they work
-under the bonnet, in <a href="./deterministic-and-statistical-python-profiling.html">an earlier post</a>.</p>
+under the bonnet, in <a href="https://p403n1x87.github.io/deterministic-and-statistical-python-profiling.html">an earlier post</a>.</p>
 <p><strong>In-process or out-of-process.</strong> An in-process profiler runs inside your
 program, usually by starting it for you or being imported. An out-of-process
 profiler is a separate program that reads the target's memory from outside.
@@ -425,7 +426,7 @@ a separate tool for two reasons. It only worked on Linux. And it broke one of
 Austin's founding principles, minimal impact on the program being profiled: to
 walk a thread's native stack reliably, libunwind needs the thread to stand
 still, so <code>austinp</code> had to stop each thread while sampling it. I wrote about
-that trade-off in <a href="./spy-on-python-down-to-the-linux-kernel-level.html">Spy on Python down to the Linux kernel level</a>.</p>
+that trade-off in <a href="https://p403n1x87.github.io/spy-on-python-down-to-the-linux-kernel-level.html">Spy on Python down to the Linux kernel level</a>.</p>
 <p>The new native mode fixes the first problem. It works on Linux (x86_64 and
 aarch64), macOS and Windows (x86_64), with no extra dependencies, because Austin
 now walks native stacks itself instead of relying on libunwind. Its design owes
@@ -454,7 +455,7 @@ mode has more impact on the program than Austin's normal mode, and the impact
 grows with the sampling rate. Use a larger interval (1 ms is a good start), and
 avoid it in production. That's why native mode is an option you turn on, not
 the default. In its normal mode, Austin still never pauses the program it's
-profiling, and I explained the reasoning behind that in <a href="./increasing-austin-accuracy-with-a-dobule-heap-trick.html">an earlier
+profiling, and I explained the reasoning behind that in <a href="https://p403n1x87.github.io/increasing-austin-accuracy-with-a-dobule-heap-trick.html">an earlier
 post</a>.</p>
 <h2 id="3-asyncio-profiling">3. asyncio Profiling<a class="headerlink" href="#3-asyncio-profiling" title="Permanent link">¶</a></h2>
 <p>On CPython 3.14 and later, Austin tracks the <code>asyncio</code> task graph: each event
@@ -487,7 +488,7 @@ why a request was slow.</p>
 the tools are missing, but because profiling feels hard to get into. You have to
 pick a tool, run it the right way, and then make sense of a flame graph full of
 frames you've never heard of. Many developers try it once, feel lost, and go
-back to guessing. That's a shame, because as I argued in <a href="./how-to-bust-python-performance-issues.html">How to bust Python
+back to guessing. That's a shame, because as I argued in <a href="https://p403n1x87.github.io/how-to-bust-python-performance-issues.html">How to bust Python
 performance issues</a>, a single profiling run often turns up
 easy wins. A big part of what I want Austin to do is lower that barrier, and
 4.1 approaches it from two directions.</p>
@@ -556,7 +557,7 @@ zoom into the hot path and explain why it's hot, point out the frame where your
 code hands over to a library, or show you what time spent waiting looks like
 compared with time spent computing. You're both looking at the same flame
 graph, so after a few sessions you start to recognise the patterns yourself,
-and the next time, you might not need to ask. <a href="./busting-performance-issues-ai-edition.html">Busting performance issues, AI
+and the next time, you might not need to ask. <a href="https://p403n1x87.github.io/busting-performance-issues-ai-edition.html">Busting performance issues, AI
 edition</a> shows both approaches on a real project, including one of
 these guided tours.</p>
 <!-- TODO: embed demo video / GIF of the agent loop here, ideally one showing
@@ -640,7 +641,7 @@ more detail. If you try it, I'd love to hear how it goes.</p>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./busting-performance-issues-ai-edition.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/busting-performance-issues-ai-edition.html">
           <span class="label">$ cd ../older</span>
           Busting performance issues, AI edition
         </a>
@@ -678,11 +679,13 @@ more detail. If you try it, I'd love to hear how it goes.</p>
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

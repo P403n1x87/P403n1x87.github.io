@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - Deterministic and Statistical Python Profiling</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/programming.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="python" />
   <meta name="tags" content="profiling" />
@@ -18,14 +19,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/deterministic-and-statistical-python-profiling</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/deterministic-and-statistical-python-profiling</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -64,10 +65,10 @@
       <p class="meta">
         <time datetime="2019-05-05T17:35:00+01:00">Sun 05 May 2019</time>
         <span>16 min read</span>
-        <a class="cat" href="./category/programming.html">programming/</a>
-        <a class="tag" href="./tag/python.html">#python</a>
-        <a class="tag" href="./tag/profiling.html">#profiling</a>
-        <a class="tag" href="./tag/optimisation.html">#optimisation</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/programming.html">programming/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/profiling.html">#profiling</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/optimisation.html">#optimisation</a>
       </p>
     </header>
 
@@ -150,7 +151,7 @@ gprof2dot<span class="w"> </span>-f<span class="w"> </span>pstats<span class="w"
 </code></pre></div>
 <p>This is what the result will look like. The colours help us identify the
 branches of execution where most of the time is spent.</p>
-<p><a href="./images/python-profiling/process_iter.svg" rel="noopener" target="_blank"><img alt="process_iter" src="./images/python-profiling/process_iter.svg"/></a></p>
+<p><a href="https://p403n1x87.github.io/images/python-profiling/process_iter.svg" rel="noopener" target="_blank"><img alt="process_iter" src="https://p403n1x87.github.io/images/python-profiling/process_iter.svg"/></a></p>
 <h2 id="a-look-under-the-bonnet">A Look Under the Bonnet<a class="headerlink" href="#a-look-under-the-bonnet" title="Permanent link">¶</a></h2>
 <p>The output of a tool like gprof2dot can be quite intuitive to understand,
 especially if you have had some prior experience with profilers. However, in
@@ -187,7 +188,7 @@ current function).</p>
 fairly stable representation of the relations between the above-mentioned
 structures that are common among many of the major CPython releases.</p>
 <p align="center">
-<a href="./images/python-profiling/python_structs.svg" rel="noopener" target="_blank"><img alt="CPython data structures" src="./images/python-profiling/python_structs.svg"/></a>
+<a href="https://p403n1x87.github.io/images/python-profiling/python_structs.svg" rel="noopener" target="_blank"><img alt="CPython data structures" src="https://p403n1x87.github.io/images/python-profiling/python_structs.svg"/></a>
 </p>
 <p>The loop around <code>PyFrameObject</code>, which represents its field <code>f_back</code>, creates
 the structure of a singly-linked list of frame objects. This is precisely the
@@ -334,7 +335,7 @@ considerations, we can expect this to be a rather rare event. Sometimes a
 picture is worth a thousand words, so here is an idealistic "CPython vs Austin"
 execution timeline comparison.</p>
 <p align="center">
-<a href="./images/python-profiling/timeline.svg" rel="noopener" target="_blank"><img alt="CPython and Austin timeline comparison" src="./images/python-profiling/timeline.svg"/></a>
+<a href="https://p403n1x87.github.io/images/python-profiling/timeline.svg" rel="noopener" target="_blank"><img alt="CPython and Austin timeline comparison" src="https://p403n1x87.github.io/images/python-profiling/timeline.svg"/></a>
 </p>
 <p>Now one could argue that, in order to decrease the error rate, an approach
 similar to pyflame, where we halt the execution before taking a snapshot, would
@@ -360,8 +361,8 @@ do</p>
 microseconds and this information will then be part of the output of the flame
 graph tool. The following image is the result that I have got from running the
 above command.</p>
-<object class="center-image" data="./images/python-profiling/process_iter_fg.svg" type="image/svg+xml" width="100%">
-<a href="./images/python-profiling/process_iter_fg.svg" rel="noopener" target="_blank"><img src="./images/python-profiling/process_iter_fg.svg" style="width:100%;"/></a>
+<object class="center-image" data="https://p403n1x87.github.io/images/python-profiling/process_iter_fg.svg" type="image/svg+xml" width="100%">
+<a href="https://p403n1x87.github.io/images/python-profiling/process_iter_fg.svg" rel="noopener" target="_blank"><img src="https://p403n1x87.github.io/images/python-profiling/process_iter_fg.svg" style="width:100%;"/></a>
 </object>
 <p>Austin is now included in the official Debian repositories. This means that you
 can install it with</p>
@@ -393,7 +394,7 @@ Full Mode, which can be toggled with <kbd>F</kbd>. The currently executing frame
 will be highlighted and a tree representation of the current frame stack will be
 available on the right-hand side of the terminal.</p>
 <p align="center">
-<a href="./images/python-profiling/austin-tui_threads_nav.gif" rel="noopener" target="_blank"><img alt="Austin TUI" src="./images/python-profiling/austin-tui_threads_nav.gif"/></a>
+<a href="https://p403n1x87.github.io/images/python-profiling/austin-tui_threads_nav.gif" rel="noopener" target="_blank"><img alt="Austin TUI" src="https://p403n1x87.github.io/images/python-profiling/austin-tui_threads_nav.gif"/></a>
 </p>
 <p>If you are a statistician or a data scientist working with Python, you can use
 the TUI to peek at your model while it is training to see what is going on and
@@ -438,7 +439,7 @@ _|    /    __ | /| / /_  _ \_  __ \     __  /| |  / / /_  ___/  __/_  /__  __ \ 
 <p>If you then open <code>http://localhost:34257</code> in your browser you will then see a
 web application that looks like the following</p>
 <p align="center">
-<a href="./images/python-profiling/web-austin.gif" rel="noopener" target="_blank"><img alt="Web Austin" src="./images/python-profiling/web-austin.gif"/></a>
+<a href="https://p403n1x87.github.io/images/python-profiling/web-austin.gif" rel="noopener" target="_blank"><img alt="Web Austin" src="https://p403n1x87.github.io/images/python-profiling/web-austin.gif"/></a>
 </p>
 <blockquote>
 <p>Note that an active internet connection is required for the application to
@@ -530,11 +531,11 @@ derive the metrics that best suit the problem at hand.</p>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./what-actually-are-containers.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/what-actually-are-containers.html">
           <span class="label">$ cd ../older</span>
           What Actually Are Containers?
         </a>
-        <a class="neighbor next" rel="next" href="./an-overview-of-monads-in-haskell.html">
+        <a class="neighbor next" rel="next" href="https://p403n1x87.github.io/an-overview-of-monads-in-haskell.html">
           <span class="label">$ cd ../newer</span>
           An Overview of Monads in Haskell
         </a>
@@ -572,11 +573,13 @@ derive the metrics that best suit the problem at hand.</p>
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - Increasing Austin accuracy with a dobule-heap trick</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/programming.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="python" />
   <meta name="tags" content="profiling" />
@@ -18,14 +19,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/increasing-austin-accuracy-with-a-dobule-heap-trick</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/increasing-austin-accuracy-with-a-dobule-heap-trick</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -40,10 +41,10 @@
       <p class="meta">
         <time datetime="2021-12-17T13:35:00+00:00">Fri 17 December 2021</time>
         <span>5 min read</span>
-        <a class="cat" href="./category/programming.html">programming/</a>
-        <a class="tag" href="./tag/python.html">#python</a>
-        <a class="tag" href="./tag/profiling.html">#profiling</a>
-        <a class="tag" href="./tag/rd.html">#r&d</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/programming.html">programming/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/profiling.html">#profiling</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/rd.html">#r&d</a>
       </p>
     </header>
 
@@ -113,7 +114,7 @@ one go. Let's try profiling</p>
 <p>with <code>-h 0</code>, i.e. with no heap. This is the picture that we get if we run the
 above with the <a href="https://marketplace.visualstudio.com/items?itemName=p403n1x87.austin-vscode">Austin VS Code</a> extension:</p>
 <p align="center">
-<a href="./images/austin-accuracy/recursive-no-heap.png" target="_blank"><img alt="Results with no heap" src="./images/austin-accuracy/recursive-no-heap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/recursive-no-heap.png" target="_blank"><img alt="Results with no heap" src="https://p403n1x87.github.io/images/austin-accuracy/recursive-no-heap.png"/></a>
 </p>
 <p>Whilst it is true that most of the CPU time is spent in <code>sum_up_to</code>, we would
 have expected a call stack at most 16 frame high in this case. This flame graph
@@ -121,7 +122,7 @@ is then misleading, although it still conveys the correct information that
 <code>sum_up_to</code> is the largest consumer of CPU time. Let's try again, but with the
 default heap size this time (which is 256 MB):</p>
 <p align="center">
-<a href="./images/austin-accuracy/recursive-heap.png" target="_blank"><img alt="Results with the double heap" src="./images/austin-accuracy/recursive-heap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap.png" target="_blank"><img alt="Results with the double heap" src="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap.png"/></a>
 </p>
 <p>This time the recursive call stack have the expected height, and Austin is able
 to tell which samples didn't look quite right. But instead of throwing them
@@ -132,20 +133,20 @@ sampled, so some of them must have effectively been running when we sampled.
 Collecting that data is therefore useful for other aggregations, like a source
 code heat map, like the one produced by the Austin VS Code extension:</p>
 <p align="center">
-<a href="./images/austin-accuracy/recursive-heap-heatmap.png" target="_blank"><img alt="Results with the double heap: source heat map" src="./images/austin-accuracy/recursive-heap-heatmap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap-heatmap.png" target="_blank"><img alt="Results with the double heap: source heat map" src="https://p403n1x87.github.io/images/austin-accuracy/recursive-heap-heatmap.png"/></a>
 </p>
 <p>But before we get too hopeful about the merits of this solution, let's have a
 look at some other examples. The following flame graph comes from profiling <a href="https://github.com/P403n1x87/aoc/blob/c309c50503bded668745269e3dbc6273acc76d04/2021/12/code.py">my
 solution</a> for <a href="https://adventofcode.com/2021/day/12">Day 12</a> of the Advent of Code 2021 challenge
 with the default heap size:</p>
 <p align="center">
-<a href="./images/austin-accuracy/day12-heap.png" target="_blank"><img alt="Results for Day 12 with the double heap" src="./images/austin-accuracy/day12-heap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/day12-heap.png" target="_blank"><img alt="Results for Day 12 with the double heap" src="https://p403n1x87.github.io/images/austin-accuracy/day12-heap.png"/></a>
 </p>
 <p>There are clearly invalid frames (those in green that start directly from <code>dfs</code>,
 in the middle of the graph) that are not reported as such. For comparison, this
 is the resulting graph with no heap:</p>
 <p align="center">
-<a href="./images/austin-accuracy/day12-no-heap.png" target="_blank"><img alt="Results for Day 12 without heap" src="./images/austin-accuracy/day12-no-heap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/day12-no-heap.png" target="_blank"><img alt="Results for Day 12 without heap" src="https://p403n1x87.github.io/images/austin-accuracy/day12-no-heap.png"/></a>
 </p>
 <p>The conclusion that we draw from these experiments is that the double-heap trick
 implemented in Austin 3.2 increases the accuracy of the results, in the sense
@@ -171,11 +172,11 @@ test script:</p>
 </code></pre></div>
 <p>with the heap:</p>
 <p align="center">
-<a href="./images/austin-accuracy/target34-heap.png" target="_blank"><img alt="Results for Day 12 without heap" src="./images/austin-accuracy/target34-heap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/target34-heap.png" target="_blank"><img alt="Results for Day 12 without heap" src="https://p403n1x87.github.io/images/austin-accuracy/target34-heap.png"/></a>
 </p>
 <p>and without:</p>
 <p align="center">
-<a href="./images/austin-accuracy/target34-no-heap.png" target="_blank"><img alt="Results for Day 12 without heap" src="./images/austin-accuracy/target34-no-heap.png"/></a>
+<a href="https://p403n1x87.github.io/images/austin-accuracy/target34-no-heap.png" target="_blank"><img alt="Results for Day 12 without heap" src="https://p403n1x87.github.io/images/austin-accuracy/target34-no-heap.png"/></a>
 </p>
 <p>i.e. they're almost identical.</p>
 <p>The default value of 256 MB for the maximum combined heap size seems a
@@ -186,11 +187,11 @@ not with the more drastic option <code>--heap 0</code>, which gives the pre-3.2 
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/how-i-completed-the-hacktoberfest-2021-challenge-with-a-profiler.html">
           <span class="label">$ cd ../older</span>
           How I completed the Hacktoberfest 2021 challenge with a profiler
         </a>
-        <a class="neighbor next" rel="next" href="./my-first-close-encounter-with-the-linux-kernel-source.html">
+        <a class="neighbor next" rel="next" href="https://p403n1x87.github.io/my-first-close-encounter-with-the-linux-kernel-source.html">
           <span class="label">$ cd ../newer</span>
           My first close encounter with the Linux kernel source
         </a>
@@ -228,11 +229,13 @@ not with the more drastic option <code>--heap 0</code>, which gives the pre-3.2 
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

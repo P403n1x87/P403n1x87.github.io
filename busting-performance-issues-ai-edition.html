@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - Busting performance issues, AI edition</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/programming.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="python" />
   <meta name="tags" content="profiling" />
@@ -18,14 +19,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/busting-performance-issues-ai-edition</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/busting-performance-issues-ai-edition</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -62,10 +63,10 @@
       <p class="meta">
         <time datetime="2026-05-16T20:05:00+01:00">Sat 16 May 2026</time>
         <span>11 min read</span>
-        <a class="cat" href="./category/programming.html">programming/</a>
-        <a class="tag" href="./tag/python.html">#python</a>
-        <a class="tag" href="./tag/profiling.html">#profiling</a>
-        <a class="tag" href="./tag/optimisation.html">#optimisation</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/programming.html">programming/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/profiling.html">#profiling</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/optimisation.html">#optimisation</a>
       </p>
     </header>
 
@@ -146,7 +147,7 @@ this unless you instruct it to.</p>
 </blockquote>
 <p>After Opencode configured itself, you might have to start a new session for it
 to pick up the connection to the server.</p>
-<figure><a href="./images/perf-llm/setup-mcp-opencode.png" rel="noopener" target="_blank"><img alt="Opencode configures itself" class="center-image" src="./images/perf-llm/setup-mcp-opencode.png"/></a><figcaption>We have asked Opencode to configure itself based on the contents of the .mcp.json file</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/setup-mcp-opencode.png" rel="noopener" target="_blank"><img alt="Opencode configures itself" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/setup-mcp-opencode.png"/></a><figcaption>We have asked Opencode to configure itself based on the contents of the .mcp.json file</figcaption></figure>
 <p>Finally, let's create a virtual environment where we can install the library in
 editable mode so that we can quickly test our changes. Pick your favourite
 version of Python (one that the library supports of course, e.g. 3.13) and run</p>
@@ -194,7 +195,7 @@ complete our baseline let's grab a profile as well</p>
 <h2 id="communicating-our-intent-to-the-agent">Communicating Our Intent to the Agent<a class="headerlink" href="#communicating-our-intent-to-the-agent" title="Permanent link">¶</a></h2>
 <p>Now that we have our baseline, let's state our intent with the agent and ask it
 to analyse the profiling data we have just collected.</p>
-<figure><a href="./images/perf-llm/profile-analysis.png" rel="noopener" target="_blank"><img alt="The agent loads the initial profile" class="center-image" src="./images/perf-llm/profile-analysis.png"/></a><figcaption>We ask the Opencode agent to load the profile data we have collected with the Austin tools</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/profile-analysis.png" rel="noopener" target="_blank"><img alt="The agent loads the initial profile" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/profile-analysis.png"/></a><figcaption>We ask the Opencode agent to load the profile data we have collected with the Austin tools</figcaption></figure>
 <p>Because the agent has access to the Austin MCP tools, it can easily figure out
 that it needs to use the load tool to open the profile. It can then use the
 other tools to pull meaningful profiling data, such as the top functions in
@@ -202,15 +203,15 @@ terms of own time (the plateau analysis) and the call stacks. This allows the
 agent to focus on areas of the code base that the profile has highlighted as
 requiring attention, instead of getting lost in the entirety of the source code.
 Immediately the agent comes back to us with some ideas.</p>
-<figure><a href="./images/perf-llm/first-optimisation.png" rel="noopener" target="_blank"><img alt="The first optimisation" class="center-image" src="./images/perf-llm/first-optimisation.png"/></a><figcaption>The first optimisation is implemented and already giving a small improvement. But we can do better</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/first-optimisation.png" rel="noopener" target="_blank"><img alt="The first optimisation" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/first-optimisation.png"/></a><figcaption>The first optimisation is implemented and already giving a small improvement. But we can do better</figcaption></figure>
 <h2 id="on-a-mission">On a Mission<a class="headerlink" href="#on-a-mission" title="Permanent link">¶</a></h2>
 <p>Galvanised by the early success, the agent gets very eager to implement more and
 more improvements, quickly spiraling into an iteration loop where it
 autonomously runs and profiles the benchmark script.</p>
-<figure><a href="./images/perf-llm/rinse-repeat.png" rel="noopener" target="_blank"><img alt="Iteration loop" class="center-image" src="./images/perf-llm/rinse-repeat.png"/></a><figcaption>The agent gets into an optimisation iteration loop by itself until it can find margin for improvement</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/rinse-repeat.png" rel="noopener" target="_blank"><img alt="Iteration loop" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/rinse-repeat.png"/></a><figcaption>The agent gets into an optimisation iteration loop by itself until it can find margin for improvement</figcaption></figure>
 <p>We ask the agent to include test runs in the loop to make sure that its changes
 are not breaking anything and it complies immediately</p>
-<figure><a href="./images/perf-llm/tests-ok.png" rel="noopener" target="_blank"><img alt="Tests into the loop for validation" class="center-image" src="./images/perf-llm/tests-ok.png"/></a><figcaption>Tests are now part of the iteration loop to add validation</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/tests-ok.png" rel="noopener" target="_blank"><img alt="Tests into the loop for validation" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/tests-ok.png"/></a><figcaption>Tests are now part of the iteration loop to add validation</figcaption></figure>
 <p>Now we're not here to advocate for this or that model (I have obtained much
 better results with more powerful models), but we've already achieved a <strong>+17%
 improvement</strong> (203 → 237 iterations per second) in just a few minutes of running
@@ -219,7 +220,7 @@ win. We can maybe push things a bit further with some human input. For example,
 looking at the Top View from the Austin side panel, we notice that <code>dis</code> shows
 up at the top in terms of own time and we might wonder if we can bypass its
 overhead for something more direct for our needs.</p>
-<figure><a href="./images/perf-llm/human-input.png" rel="noopener" target="_blank"><img alt="User input to the agent" class="center-image" src="./images/perf-llm/human-input.png"/></a><figcaption>We ask the agent to consider some aspects of the coding based on what we can see from the Austin data, e.g. the top view</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/human-input.png" rel="noopener" target="_blank"><img alt="User input to the agent" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/human-input.png"/></a><figcaption>We ask the agent to consider some aspects of the coding based on what we can see from the Austin data, e.g. the top view</figcaption></figure>
 <h1 id="a-guided-tour-of-profiles">A Guided Tour of Profiles<a class="headerlink" href="#a-guided-tour-of-profiles" title="Permanent link">¶</a></h1>
 <p>Reading a profile is generally not an easy task, especially when you jump into a
 code  base that you are not familiar with, and the profile looks "hairy": many
@@ -236,7 +237,7 @@ to show us the relevant part in a profile where it is considering making
 performance optimisations, and why. This might help the user develop a better
 intuition of how to use profiles, essentially using the coding agent as a tutor
 that can instruct how to read a profile.</p>
-<figure><a href="./images/perf-llm/zoom-in.png" rel="noopener" target="_blank"><img alt="Profiler guided tour" class="center-image" src="./images/perf-llm/zoom-in.png"/></a><figcaption>We ask the agent to show us around the profile so that we can also get an idea of what is going on</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/zoom-in.png" rel="noopener" target="_blank"><img alt="Profiler guided tour" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/zoom-in.png"/></a><figcaption>We ask the agent to show us around the profile so that we can also get an idea of what is going on</figcaption></figure>
 <h2 id="a-bonus-learning-to-read-profiles">A Bonus: Learning to Read Profiles<a class="headerlink" href="#a-bonus-learning-to-read-profiles" title="Permanent link">¶</a></h2>
 <p>So beyond just fixing issues, there's a hidden gem in this workflow: you can use
 the agent as a <em>learning tool</em>. Instead of just handing off the problem, try
@@ -260,24 +261,24 @@ issues in the code without consulting any profiling data and by just looking at
 the code? To try answer this question, I have repeated the experiment, starting
 from the same commit, and I have asked the agent to identify any optimisation
 opportunities just by looking at the code</p>
-<figure><a href="./images/perf-llm/without-profiles.png" rel="noopener" target="_blank"><img alt="Try again without profiles" class="center-image" src="./images/perf-llm/without-profiles.png"/></a><figcaption>The agent is now tasked to find optimisations without any profiling data</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/without-profiles.png" rel="noopener" target="_blank"><img alt="Try again without profiles" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/without-profiles.png"/></a><figcaption>The agent is now tasked to find optimisations without any profiling data</figcaption></figure>
 <p>Perhaps unsurprisingly, after a first scan of the code, the agent feels the need
 to reach out for a profiler (cProfile from the Python standard library in this
 case) to guide its analysis.</p>
-<figure><a href="./images/perf-llm/the-need-for-profiling.png" rel="noopener" target="_blank"><img alt="The need for profiling data" class="center-image" src="./images/perf-llm/the-need-for-profiling.png"/></a><figcaption>The agent feels the need for profiling data</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/the-need-for-profiling.png" rel="noopener" target="_blank"><img alt="The need for profiling data" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/the-need-for-profiling.png"/></a><figcaption>The agent feels the need for profiling data</figcaption></figure>
 <p>However, even with that data now at its disposal, it struggles quite a bit to
 decide what needs to be optimised. It looks as if it had identified the repeated
 validation issue, but it's not quite sure it is the best path to take. After 15
 minutes the agent is still debating on what to do.</p>
-<figure><a href="./images/perf-llm/still-debating.png" rel="noopener" target="_blank"><img alt="Long debate" class="center-image" src="./images/perf-llm/still-debating.png"/></a><figcaption>The agent is not quite sure what to do exactly</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/still-debating.png" rel="noopener" target="_blank"><img alt="Long debate" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/still-debating.png"/></a><figcaption>The agent is not quite sure what to do exactly</figcaption></figure>
 <p>When asked where we are in terms of gains after some attempts at reducing some
 repeated operations, the agent replies that the gains are still quite marginal
 and that it needs to think about the code more.</p>
-<figure><a href="./images/perf-llm/slow-progress.png" rel="noopener" target="_blank"><img alt="Slow progress" class="center-image" src="./images/perf-llm/slow-progress.png"/></a><figcaption>The agent is getting somewhere, but the progress is pretty slow by its own admission</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/slow-progress.png" rel="noopener" target="_blank"><img alt="Slow progress" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/slow-progress.png"/></a><figcaption>The agent is getting somewhere, but the progress is pretty slow by its own admission</figcaption></figure>
 <p>Half an hour in we still haven't breached the 5% barrier, and when I ask the
 agent to validate its changes by running the test suite we discover a
 segmentation fault.</p>
-<figure><a href="./images/perf-llm/tests-nok.png" rel="noopener" target="_blank"><img alt="Tests are crashing hard" class="center-image" src="./images/perf-llm/tests-nok.png"/></a><figcaption>The tests are failing hard with a segmentation fault</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/perf-llm/tests-nok.png" rel="noopener" target="_blank"><img alt="Tests are crashing hard" class="center-image" src="https://p403n1x87.github.io/images/perf-llm/tests-nok.png"/></a><figcaption>The tests are failing hard with a segmentation fault</figcaption></figure>
 <p>One fair conclusion we can draw from this is that indeed profiling data matters,
 as well as the quality of the data itself. Quite likely, the Austin MCP server
 was able to feed the agent with more fine-grained, detailed profiling data that
@@ -300,11 +301,11 @@ far a little profiling data goes.</p>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./running-c-unit-tests-with-pytest.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/running-c-unit-tests-with-pytest.html">
           <span class="label">$ cd ../older</span>
           Running C unit tests with pytest
         </a>
-        <a class="neighbor next" rel="next" href="./the-state-of-python-profiling-in-2026.html">
+        <a class="neighbor next" rel="next" href="https://p403n1x87.github.io/the-state-of-python-profiling-in-2026.html">
           <span class="label">$ cd ../newer</span>
           The State of Python Profiling in 2026
         </a>
@@ -342,11 +343,13 @@ far a little profiling data goes.</p>
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

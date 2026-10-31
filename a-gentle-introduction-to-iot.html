@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - A Gentle Introduction to IoT</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/iot.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="raspberry pi" />
   <meta name="tags" content="wsgi" />
@@ -18,14 +19,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/a-gentle-introduction-to-iot</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/a-gentle-introduction-to-iot</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -66,10 +67,10 @@
       <p class="meta">
         <time datetime="2017-07-31T19:30:15+01:00">Mon 31 July 2017</time>
         <span>18 min read</span>
-        <a class="cat" href="./category/iot.html">iot/</a>
-        <a class="tag" href="./tag/raspberry-pi.html">#raspberry pi</a>
-        <a class="tag" href="./tag/wsgi.html">#wsgi</a>
-        <a class="tag" href="./tag/electronics.html">#electronics</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/iot.html">iot/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/raspberry-pi.html">#raspberry pi</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/wsgi.html">#wsgi</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/electronics.html">#electronics</a>
       </p>
     </header>
 
@@ -163,11 +164,11 @@ output. Pin 2 is the one to its right, Pin 3 is the one below it, and so forth.
 The latter is the numbering convention used in the Broadcom manual.</p>
 <h2 id="the-circuit">The Circuit<a class="headerlink" href="#the-circuit" title="Permanent link">¶</a></h2>
 <p>Here is the schematic of the circuit that we want to build.</p>
-<figure><a href="./images/iot/iot_schem.png" rel="noopener" target="_blank"><img alt="The circuit schematics" class="center-image" src="./images/iot/iot_schem.png"/></a><figcaption>The schematic of the circuit, showing all the components used for this project.</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/iot/iot_schem.png" rel="noopener" target="_blank"><img alt="The circuit schematics" class="center-image" src="https://p403n1x87.github.io/images/iot/iot_schem.png"/></a><figcaption>The schematic of the circuit, showing all the components used for this project.</figcaption></figure>
 <p>As I have already mentioned, I prefer using a T-cobbler to connect all the GPIO
 pins to the breadboard. In case you are not using one, this is what your
 breadboard should look like this picture.</p>
-<figure><a href="./images/iot/iot_bb.png" rel="noopener" target="_blank"><img alt="The physical components" class="center-image" src="./images/iot/iot_bb.png"/></a><figcaption>Another schematic representation of the circuit, showing how the components are physically connected with each other on the breadboard and the Raspberry Pi 3 Model B.</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/iot/iot_bb.png" rel="noopener" target="_blank"><img alt="The physical components" class="center-image" src="https://p403n1x87.github.io/images/iot/iot_bb.png"/></a><figcaption>Another schematic representation of the circuit, showing how the components are physically connected with each other on the breadboard and the Raspberry Pi 3 Model B.</figcaption></figure>
 <p>Where did the magic number 220 Ω come from? The explanation is very simple and
 essentially based on Ohm's law. Across a resistor $R$ to which a voltage
 difference of $V$ is applied, the current flowing through it is given by</p>
@@ -490,7 +491,7 @@ scripts contained in the web application folder.</p>
 to its local IP address, append '/led' to it to start the web application (e.g.
 <code>http://192.168.0.203/led</code>) and you should now be in the web application, with a
 red button that will now allow you to control the LED state over the LAN.</p>
-<figure><a href="./images/iot/website.png" rel="noopener" target="_blank"><img alt="The final look of the web application" class="center-image" src="./images/iot/website.png"/></a><figcaption>The final look of the web application. The red button in the middle is used to toggle the LED state.</figcaption></figure>
+<figure><a href="https://p403n1x87.github.io/images/iot/website.png" rel="noopener" target="_blank"><img alt="The final look of the web application" class="center-image" src="https://p403n1x87.github.io/images/iot/website.png"/></a><figcaption>The final look of the web application. The red button in the middle is used to toggle the LED state.</figcaption></figure>
 <p>If you are behind a router, of course you will need to forward the port 80 to
 the Pi's local address before you could be able to access your web application
 from the internet, outside of your local network. In this case you will have to
@@ -511,11 +512,11 @@ organically combined together to create something.</p>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./prime-numbers-algorithms-and-computer-architectures.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/prime-numbers-algorithms-and-computer-architectures.html">
           <span class="label">$ cd ../older</span>
           Prime Numbers, Algorithms and Computer Architectures
         </a>
-        <a class="neighbor next" rel="next" href="./android-development-from-the-command-line.html">
+        <a class="neighbor next" rel="next" href="https://p403n1x87.github.io/android-development-from-the-command-line.html">
           <span class="label">$ cd ../newer</span>
           Android Development from the Command Line
         </a>
@@ -553,11 +554,13 @@ organically combined together to create something.</p>
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

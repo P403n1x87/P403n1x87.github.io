@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - How to bust Python performance issues</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/programming.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="python" />
   <meta name="tags" content="profiling" />
@@ -18,14 +19,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/how-to-bust-python-performance-issues</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/how-to-bust-python-performance-issues</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -40,10 +41,10 @@
       <p class="meta">
         <time datetime="2021-07-02T17:43:00+01:00">Fri 02 July 2021</time>
         <span>6 min read</span>
-        <a class="cat" href="./category/programming.html">programming/</a>
-        <a class="tag" href="./tag/python.html">#python</a>
-        <a class="tag" href="./tag/profiling.html">#profiling</a>
-        <a class="tag" href="./tag/optimisation.html">#optimisation</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/programming.html">programming/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/profiling.html">#profiling</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/optimisation.html">#optimisation</a>
       </p>
     </header>
 
@@ -119,7 +120,7 @@ terminal with</p>
 bottom panel. Sometimes you would have to right click inside the panel and click
 the menu entry to fully activate the extension.</p>
 <p align="center">
-<a href="./images/bust-perf-issues/austin-panel.png" rel="noopener" target="_blank"><img alt="The Austin Flame Graph panel within VS Code" src="./images/bust-perf-issues/austin-panel.png"/></a>
+<a href="https://p403n1x87.github.io/images/bust-perf-issues/austin-panel.png" rel="noopener" target="_blank"><img alt="The Austin Flame Graph panel within VS Code" src="https://p403n1x87.github.io/images/bust-perf-issues/austin-panel.png"/></a>
 </p>
 <p>At this point we are ready to load the profiling data that we have collected.
 Click on the <code>OPEN</code> button or press <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> +
@@ -127,7 +128,7 @@ Click on the <code>OPEN</code> button or press <kbd>CTRL</kbd> + <kbd>SHIFT</kbd
 Austin VS Code extension will analyse all the collected sample and generate the
 flame graph.</p>
 <p align="center">
-<a href="./images/bust-perf-issues/open-profile.gif" rel="noopener" target="_blank"><img alt="Open a profile file" src="./images/bust-perf-issues/open-profile.gif"/></a>
+<a href="https://p403n1x87.github.io/images/bust-perf-issues/open-profile.gif" rel="noopener" target="_blank"><img alt="Open a profile file" src="https://p403n1x87.github.io/images/bust-perf-issues/open-profile.gif"/></a>
 </p>
 <p>The picture we get is certainly overwhelming at first, especially for those that
 are not familiar with how <code>pytest</code> works internally. This is perhaps a nice way
@@ -140,21 +141,21 @@ scroll until we find the largest one. When we click on it, it will expand to the
 full width of the panel to give us a better idea of what lies underneath it, and
 the corresponding portion of the source code will also appear in VS Code!</p>
 <p align="center">
-<a href="./images/bust-perf-issues/pytest_pyfunc_call.gif" rel="noopener" target="_blank"><img alt="pytest_pyfunc_call" src="./images/bust-perf-issues/pytest_pyfunc_call.gif"/></a>
+<a href="https://p403n1x87.github.io/images/bust-perf-issues/pytest_pyfunc_call.gif" rel="noopener" target="_blank"><img alt="pytest_pyfunc_call" src="https://p403n1x87.github.io/images/bust-perf-issues/pytest_pyfunc_call.gif"/></a>
 </p>
 <p>We now have a better view of the tests that are being executed under this path.
 At this point we can start looking for the largest leaf frames and see if we can
 make any sense of them. When I first looked at this graph, one thing that
 quickly caught my eye was this particular stack.</p>
 <p align="center">
-<a href="./images/bust-perf-issues/test_log.png" rel="noopener" target="_blank"><img alt="test_log" src="./images/bust-perf-issues/test_log.png"/></a>
+<a href="https://p403n1x87.github.io/images/bust-perf-issues/test_log.png" rel="noopener" target="_blank"><img alt="test_log" src="https://p403n1x87.github.io/images/bust-perf-issues/test_log.png"/></a>
 </p>
 <p>Clicking on the <code>test_log</code> frame reveals the test code in VS Code. Surprisingly,
 the test has just a single call to <code>Console.log</code>, and the percent timing
 annotation generated by the Austin extension tell us that, of the whole on-CPU
 time for the test suite, about 4.9% is spent on that single call!</p>
 <p align="center">
-<a href="./images/bust-perf-issues/test_log_code.png" rel="noopener" target="_blank"><img alt="The code for the test_log test case" src="./images/bust-perf-issues/test_log_code.png"/></a>
+<a href="https://p403n1x87.github.io/images/bust-perf-issues/test_log_code.png" rel="noopener" target="_blank"><img alt="The code for the test_log test case" src="https://p403n1x87.github.io/images/bust-perf-issues/test_log_code.png"/></a>
 </p>
 <p>Looking back at the flame graph, we realise that all the time in the <code>log</code> frame
 is spent calling <code>stack</code>. Clicking on the <code>log</code> frame reveals the source code
@@ -185,7 +186,7 @@ code out and re-run the tests with</p>
 test case <code>test_log</code> has pretty much disappeared as it basically takes almost
 zero CPU time now.</p>
 <p align="center">
-<a href="./images/bust-perf-issues/test_log_pr.png" rel="noopener" target="_blank"><img alt="test_log with the performance change" src="./images/bust-perf-issues/test_log_pr.png"/></a>
+<a href="https://p403n1x87.github.io/images/bust-perf-issues/test_log_pr.png" rel="noopener" target="_blank"><img alt="test_log with the performance change" src="https://p403n1x87.github.io/images/bust-perf-issues/test_log_pr.png"/></a>
 </p>
 <p>Instead we see <code>test_log_caller_frame_info</code>, which is the test case for the
 compatibility utility for those Python implementations that do not implement
@@ -200,11 +201,11 @@ before you ship it! ;P</p>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./looking-back-at-my-time-at-avaloq.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/looking-back-at-my-time-at-avaloq.html">
           <span class="label">$ cd ../older</span>
           Looking Back at My Time at Avaloq
         </a>
-        <a class="neighbor next" rel="next" href="./spy-on-python-down-to-the-linux-kernel-level.html">
+        <a class="neighbor next" rel="next" href="https://p403n1x87.github.io/spy-on-python-down-to-the-linux-kernel-level.html">
           <span class="label">$ cd ../newer</span>
           Spy on Python down to the Linux kernel level
         </a>
@@ -242,11 +243,13 @@ before you ship it! ;P</p>
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

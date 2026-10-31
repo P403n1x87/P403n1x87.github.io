@@ -6,9 +6,10 @@
   <meta name="generator" content="Pelican" />
   <title>The Hub of Heliopolis - IoT with WebSockets and Python's AsyncIO</title>
   <link href="https://p403n1x87.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Full Atom Feed" />
-  <link rel="stylesheet" href="./theme/css/terminal.css" />
-  <link rel="stylesheet" href="./theme/css/pygment.css" />
-  <script src="./theme/js/terminal.js" defer></script>
+  <link href="https://p403n1x87.github.io/feeds/iot.atom.xml" type="application/atom+xml" rel="alternate" title="The Hub of Heliopolis Categories Atom Feed" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/terminal.css" />
+  <link rel="stylesheet" href="https://p403n1x87.github.io/theme/css/pygment.css" />
+  <script src="https://p403n1x87.github.io/theme/js/terminal.js" defer></script>
 
   <meta name="tags" content="python" />
   <meta name="tags" content="android" />
@@ -19,14 +20,14 @@
 <body class="article">
   <header class="site-header frame">
     <p class="prompt">
-      <a class="prompt-user" href="./">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="./">~</a>/<a href="./archives.html">posts</a>/iot-with-websockets-and-pythons-asyncio</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
+      <a class="prompt-user" href="https://p403n1x87.github.io/">p403n1x87@heliopolis</a>:<span class="prompt-cwd"><a href="https://p403n1x87.github.io/">~</a>/<a href="https://p403n1x87.github.io/archives.html">posts</a>/iot-with-websockets-and-pythons-asyncio</span>$ <span class="cursor" aria-hidden="true">&#9646;</span>
     </p>
     <nav class="menu" aria-label="Main">
-      <a href="./">cd ~</a>
-      <a href="./archives.html">ls posts/</a>
-      <a href="./tags.html">ls tags/</a>
-      <a href="./pages/about.html">cat about.md</a>
-      <a href="./feeds/all.atom.xml">tail -f feed</a>
+      <a href="https://p403n1x87.github.io/">cd ~</a>
+      <a href="https://p403n1x87.github.io/archives.html">ls posts/</a>
+      <a href="https://p403n1x87.github.io/tags.html">ls tags/</a>
+      <a href="https://p403n1x87.github.io/pages/about.html">cat about.md</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">tail -f feed</a>
     </nav>
   </header>
 
@@ -62,17 +63,17 @@
       <p class="meta">
         <time datetime="2018-03-03T22:49:00+01:00">Sat 03 March 2018</time>
         <span>22 min read</span>
-        <a class="cat" href="./category/iot.html">iot/</a>
-        <a class="tag" href="./tag/python.html">#python</a>
-        <a class="tag" href="./tag/android.html">#android</a>
-        <a class="tag" href="./tag/raspberry-pi.html">#raspberry pi</a>
-        <a class="tag" href="./tag/electronics.html">#electronics</a>
+        <a class="cat" href="https://p403n1x87.github.io/category/iot.html">iot/</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/android.html">#android</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/raspberry-pi.html">#raspberry pi</a>
+        <a class="tag" href="https://p403n1x87.github.io/tag/electronics.html">#electronics</a>
         <a href="https://github.com/P403n1x87/iot/tree/master/gravity_led" target="_blank" rel="noopener">github:P403n1x87/iot/gravity_led</a>
       </p>
     </header>
 
     <div class="lead">
-      <p>After <a href="https://p403n1x87.github.io/a-gentle-introduction-to-iot.html">a gentle introduction to the concept of IoT</a> and what it entails, we take a dive into WebSockets and Asynchronous I/O in Python to explore other ways of controlling devices over a network. This post uses a simple two LED circuit to introduce WebSockets, and how to use them in Python together with the <code>asyncio</code> module.</p>
+      <p>After <a href="{filename}2017-07-31-intro-to-iot.md">a gentle introduction to the concept of IoT</a> and what it entails, we take a dive into WebSockets and Asynchronous I/O in Python to explore other ways of controlling devices over a network. This post uses a simple two LED circuit to introduce WebSockets, and how to use them in Python together with the <code>asyncio</code> module.</p>
     </div>
 
     <div class="entry-content">
@@ -93,7 +94,7 @@ to first have a high level view of how all the pieces fit together, thus
 motivating the choices of technologies mentioned above. The idea of the project
 stems from the following scenario: suppose you want to build a device that can
 be controlled over the network, e.g. an hand-held device like a phone. As we
-have seen in <a href="./a-gentle-introduction-to-iot.html">a previous post</a>, one way of
+have seen in <a href="https://p403n1x87.github.io/a-gentle-introduction-to-iot.html">a previous post</a>, one way of
 achieving this is by using a single-board computer like a Raspberry Pi and
 control it via a web server.</p>
 <p>Now, what if you wanted more control over the connection method to the device,
@@ -115,7 +116,7 @@ hand-held device clockwise or anti-clockwise, a different LED will turn on.
 Furthermore, the brightness will depend on how much the device is tilted.</p>
 <p>So, read on to find out more!</p>
 <h1 id="connecting-devices-over-a-network-websockets">Connecting Devices over a Network: WebSockets<a class="headerlink" href="#connecting-devices-over-a-network-websockets" title="Permanent link">¶</a></h1>
-<p>In <a href="./a-gentle-introduction-to-iot.html">A Gentle Introduction to IoT</a>, we saw
+<p>In <a href="https://p403n1x87.github.io/a-gentle-introduction-to-iot.html">A Gentle Introduction to IoT</a>, we saw
 how to control a single LED over a network by running a web server hosting the
 controlling web application. This was a simple web page that displayed a button
 that not only showed the current state of the LED, but allowed to control it by
@@ -142,7 +143,7 @@ see that we can either send <em>text</em> messages, or raw <em>binary</em> data,
 operating the WebSocket with <em>text</em> or <em>binary</em> frames.</p>
 <p>Having justified the use of WebSockets for our project, we now have to motivate
 the use of the other mentioned technology: <code>asyncio</code>.</p>
-<p>Like in <a href="./a-gentle-introduction-to-iot.html">A Gentle Introduction to IoT</a>,
+<p>Like in <a href="https://p403n1x87.github.io/a-gentle-introduction-to-iot.html">A Gentle Introduction to IoT</a>,
 the choice of Python is motivated by the use of the Raspberry Pi. In Python,
 WebSocket support is provided by the
 <a href="https://pypi.python.org/pypi/websockets"><code>websockets</code></a> module, which is built
@@ -495,7 +496,7 @@ tilt our device to the right, the green LED will become brighter, while when we
 tilt it to the left, the red LED will become brighter.</p>
 <p>So, based on the knowledge acquired with the previous post on IoT, the circuit
 that we want to build will look like this.</p>
-<p><a href="./images/ws_asyncio/ws_asyncio_bb.png" rel="noopener" target="_blank"><img alt="Double LED configuration" src="./images/ws_asyncio/ws_asyncio_bb.png"/></a></p>
+<p><a href="https://p403n1x87.github.io/images/ws_asyncio/ws_asyncio_bb.png" rel="noopener" target="_blank"><img alt="Double LED configuration" src="https://p403n1x87.github.io/images/ws_asyncio/ws_asyncio_bb.png"/></a></p>
 <p>For this project I am using a Raspberry Pi 3 Model B. As you can see from the
 picture above, we need two LEDs, preferably of different colours, e.g. green and
 red, and two 220 Ω resistors. The green LED will be controlled via the BCM 18
@@ -595,7 +596,7 @@ for example</p>
 <h2 id="the-client-code">The Client Code<a class="headerlink" href="#the-client-code" title="Permanent link">¶</a></h2>
 <p>For the client, we are going to develop a minimalist Android application, with
 the same project structure that we have encountered in the previous post on
-<a href="./android-development-from-the-command-line.html">Android Development from the Command
+<a href="https://p403n1x87.github.io/android-development-from-the-command-line.html">Android Development from the Command
 Line</a>. Again, the code is quite extensive,
 but you can find it in the
 <a href="https://github.com/P403n1x87/iot/tree/master/gravity_led/client">gravity_iot/client</a>
@@ -637,7 +638,7 @@ with the command</p>
 </code></pre></div>
 <p>assuming that you have an Android device in developer mode connected to your
 building machine via USB. This is what it looks like on my Nexus 5</p>
-<p><a href="./images/ws_asyncio/ctrl_ws_client.png" rel="noopener" target="_blank"><img alt="ctrl_ws_client" class="center-image" src="./images/ws_asyncio/ctrl_ws_client.png"/></a></p>
+<p><a href="https://p403n1x87.github.io/images/ws_asyncio/ctrl_ws_client.png" rel="noopener" target="_blank"><img alt="ctrl_ws_client" class="center-image" src="https://p403n1x87.github.io/images/ws_asyncio/ctrl_ws_client.png"/></a></p>
 <p>Before moving to the conclusion, just a quick note on the contents of the
 <code>AndroidManifest.xml</code> file. If you have had a look at it, you might have noticed
 the attribute <code>android:configChanges="orientation|screenSize"</code> on the <code>activity</code>
@@ -669,11 +670,11 @@ class, i.e. the one with signature</p>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
-        <a class="neighbor prev" rel="prev" href="./android-development-from-the-command-line.html">
+        <a class="neighbor prev" rel="prev" href="https://p403n1x87.github.io/android-development-from-the-command-line.html">
           <span class="label">$ cd ../older</span>
           Android Development from the Command Line
         </a>
-        <a class="neighbor next" rel="next" href="./extending-python-with-assembly.html">
+        <a class="neighbor next" rel="next" href="https://p403n1x87.github.io/extending-python-with-assembly.html">
           <span class="label">$ cd ../newer</span>
           Extending Python with Assembly
         </a>
@@ -711,11 +712,13 @@ class, i.e. the one with signature</p>
       <a href="https://stackexchange.com/users/528399/phoenix87" rel="me noopener" target="_blank">stackexchange</a>
       <a href="https://steamcommunity.com/profiles/76561198092800937" rel="me noopener" target="_blank">steam</a>
       <a href="https://en.wikipedia.org/wiki/User:Gabriele_Nunzio_Tornetta" rel="me noopener" target="_blank">wikipedia</a>
-      <a href="./feeds/all.atom.xml">rss</a>
-      <a href="./pages/privacy.html">privacy</a>
+      <a href="https://p403n1x87.github.io/feeds/all.atom.xml">rss</a>
+      <a href="https://p403n1x87.github.io/pages/privacy.html">privacy</a>
     </nav>
     <span class="status-right">Gabriele N. Tornetta &middot; built with <a href="https://getpelican.com/">pelican</a></span>
   </footer>
 
+  <script data-goatcounter="https://thehubofheliopolis.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
