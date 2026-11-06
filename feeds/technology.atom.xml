@@ -500,7 +500,7 @@ execution of the command on line 12.&lt;/p&gt;
 &lt;p&gt;We can then use &lt;code&gt;netcat&lt;/code&gt; to listen to TCP packets being sent on port 2000 from
 within the new namespace (line 20). On a new bash session in the default
 namespaces, we can start &lt;code&gt;netcat&lt;/code&gt; with&lt;/p&gt;
-&lt;p _="%" endterminal=""&gt;{% terminal $ %}
+&lt;p _="" endterminal=""&gt;{% terminal $ %}
 nc 10.0.0.2 2000&lt;/p&gt;
 &lt;p&gt;to start sending packets to the new namespace &lt;code&gt;test&lt;/code&gt; via the link between
 &lt;code&gt;veth0&lt;/code&gt; and &lt;code&gt;veth1&lt;/code&gt;. Everything that you type should now be echoed by the bash

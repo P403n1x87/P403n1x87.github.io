@@ -4243,7 +4243,7 @@ to the following commutative diagram&lt;/dd&gt;
 \end{CD}$$&lt;/p&gt;
 &lt;p&gt;That is, we define the natural transformation $\beta\circ\alpha : J \circ F
 \Rightarrow K \circ G$ as having components&lt;/p&gt;
-&lt;p&gt;$$(\beta \circ \alpha)&lt;em g_x_="G(X)"&gt;X = \beta&lt;/em&gt; \circ J(\alpha_X)$$&lt;/p&gt;
+&lt;p&gt;$$(\beta \circ \alpha)&lt;em g_x_=""&gt;X = \beta&lt;/em&gt; \circ J(\alpha_X)$$&lt;/p&gt;
 &lt;p&gt;Using $\eta$ and $\mu$ as short-hand notation for the natural transformations
 &lt;code&gt;pure&lt;/code&gt; and &lt;code&gt;join&lt;/code&gt;, we see that the two coherence properties above can be stated
 in the form of commutative diagram&lt;/p&gt;
@@ -5226,7 +5226,7 @@ execution of the command on line 12.&lt;/p&gt;
 &lt;p&gt;We can then use &lt;code&gt;netcat&lt;/code&gt; to listen to TCP packets being sent on port 2000 from
 within the new namespace (line 20). On a new bash session in the default
 namespaces, we can start &lt;code&gt;netcat&lt;/code&gt; with&lt;/p&gt;
-&lt;p _="%" endterminal=""&gt;{% terminal $ %}
+&lt;p _="" endterminal=""&gt;{% terminal $ %}
 nc 10.0.0.2 2000&lt;/p&gt;
 &lt;p&gt;to start sending packets to the new namespace &lt;code&gt;test&lt;/code&gt; via the link between
 &lt;code&gt;veth0&lt;/code&gt; and &lt;code&gt;veth1&lt;/code&gt;. Everything that you type should now be echoed by the bash

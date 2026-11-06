@@ -3939,7 +3939,7 @@ to the following commutative diagram&lt;/dd&gt;
 \end{CD}$$&lt;/p&gt;
 &lt;p&gt;That is, we define the natural transformation $\beta\circ\alpha : J \circ F
 \Rightarrow K \circ G$ as having components&lt;/p&gt;
-&lt;p&gt;$$(\beta \circ \alpha)&lt;em g_x_="G(X)"&gt;X = \beta&lt;/em&gt; \circ J(\alpha_X)$$&lt;/p&gt;
+&lt;p&gt;$$(\beta \circ \alpha)&lt;em g_x_=""&gt;X = \beta&lt;/em&gt; \circ J(\alpha_X)$$&lt;/p&gt;
 &lt;p&gt;Using $\eta$ and $\mu$ as short-hand notation for the natural transformations
 &lt;code&gt;pure&lt;/code&gt; and &lt;code&gt;join&lt;/code&gt;, we see that the two coherence properties above can be stated
 in the form of commutative diagram&lt;/p&gt;

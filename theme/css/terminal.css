@@ -654,6 +654,81 @@ figure.code > .highlight { margin: 0; border-top-left-radius: 0; }
   color: var(--fg-bright);
 }
 
+/* ---- Revision log, as git-log(1) output ---------------------------------- */
+
+.revisions {
+  margin: 3rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.9em;
+}
+
+.revisions ol { list-style: none; margin: 0; padding: 0; }
+.revisions li { margin: 0.25rem 0; }
+.revisions time { color: var(--yellow); margin-right: 1ch; }
+
+/* A block changed by a revision, marked in the gutter like a modified line in
+   a diff. The note reveals the update on hover or focus; where there is no
+   hover or no room in the gutter, it is shown as a box under the block. */
+.entry-content .revised { position: relative; }
+
+.entry-content .revised::before {
+  content: "";
+  position: absolute;
+  top: 0.2em;
+  bottom: 0.2em;
+  left: -1.25ch;
+  border-left: 2px dashed color-mix(in srgb, var(--yellow) 60%, transparent);
+}
+
+.revision-note {
+  position: absolute;
+  top: 0;
+  left: -2.75ch;
+  color: var(--yellow);
+  font-weight: 700;
+  cursor: help;
+}
+
+.revision-popup {
+  display: none;
+  position: absolute;
+  top: 1.6em;
+  left: 0;
+  z-index: 10;
+  width: min(56ch, calc(100vw - 2 * var(--gutter)));
+  padding: 0.5rem 1ch;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-size: 0.85em;
+  font-weight: 400;
+  cursor: auto;
+}
+
+.revision-popup time { display: block; color: var(--yellow); font-weight: 700; }
+.revision-popup a[href="#revisions"] { display: block; margin-top: 0.25rem; }
+
+.revision-note:hover .revision-popup,
+.revision-note:focus-within .revision-popup { display: block; }
+
+@media (max-width: 639px), (hover: none) {
+  .revision-note {
+    position: static;
+    display: block;
+    margin-top: 0.75rem;
+    cursor: auto;
+  }
+
+  .revision-mark { display: none; }
+
+  .revision-popup {
+    display: block;
+    position: static;
+    width: auto;
+  }
+}
+
 /* ---- Article footer ------------------------------------------------------ */
 
 .neighbors {

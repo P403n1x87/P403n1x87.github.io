@@ -588,7 +588,7 @@ execution of the command on line 12.</p>
 <p>We can then use <code>netcat</code> to listen to TCP packets being sent on port 2000 from
 within the new namespace (line 20). On a new bash session in the default
 namespaces, we can start <code>netcat</code> with</p>
-<p _="%" endterminal="">{% terminal $ %}
+<p _="" endterminal="">{% terminal $ %}
 nc 10.0.0.2 2000</p>
 <p>to start sending packets to the new namespace <code>test</code> via the link between
 <code>veth0</code> and <code>veth1</code>. Everything that you type should now be echoed by the bash
@@ -691,6 +691,7 @@ point here is that, if you need containers for production environments, you
 should turn to well tested and established technologies, like LXC, Docker etc...
 .</p>
     </div>
+
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
