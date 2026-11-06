@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"/><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"/><id>https://p403n1x87.github.io/</id><updated>2026-10-30T12:00:00+00:00</updated><subtitle>notes on technology and my experiments with it.</subtitle><entry><title>The State of Python Profiling in 2026</title><link href="https://p403n1x87.github.io/the-state-of-python-profiling-in-2026.html" rel="alternate"/><published>2026-10-30T12:00:00+00:00</published><updated>2026-10-30T12:00:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2026-10-30:/the-state-of-python-profiling-in-2026.html</id><summary type="html">&lt;p&gt;CPython now ships its own sampling profiler, free-threading is going mainstream, and coding agents have started reading profiles. In this post I look at where Python profiling stands today, compare Tachyon, py-spy, Scalene and Austin, and go through what's new in Austin 4.1.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Python profiling has changed more in the last two years than in the decade
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Hub of Heliopolis</title><link href="https://p403n1x87.github.io/" rel="alternate"/><link href="https://p403n1x87.github.io/feeds/all.atom.xml" rel="self"/><id>https://p403n1x87.github.io/</id><updated>2026-11-06T00:00:00+00:00</updated><subtitle>notes on technology and my experiments with it.</subtitle><entry><title>The State of Python Profiling in 2026</title><link href="https://p403n1x87.github.io/the-state-of-python-profiling-in-2026.html" rel="alternate"/><published>2026-10-30T12:00:00+00:00</published><updated>2026-11-06T00:00:00+00:00</updated><author><name>Gabriele N. Tornetta</name></author><id>tag:p403n1x87.github.io,2026-10-30:/the-state-of-python-profiling-in-2026.html</id><summary type="html">&lt;p&gt;CPython now ships its own sampling profiler, free-threading is going mainstream, and coding agents have started reading profiles. In this post I look at where Python profiling stands today, compare Tachyon, py-spy, Scalene and Austin, and go through what's new in Austin 4.1.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Python profiling has changed more in the last two years than in the decade
 before. CPython 3.14 gave external tools an official way to look inside a
 running interpreter, and made &lt;code&gt;asyncio&lt;/code&gt; task graphs inspectable from outside the
 process. CPython 3.15 ships a sampling profiler in the standard library.
@@ -202,13 +202,19 @@ Austin has had for years:&lt;/p&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;Some of these exist in py-spy too, and it goes the other way as well: Tachyon's
+&lt;p class="revised" data-revision="2026-11-06"&gt;Some of these exist in py-spy too, and it goes the other way as well: Tachyon's
 &lt;code&gt;asyncio&lt;/code&gt; support landed before Austin's. That's how open source should work,
 with good ideas spreading between projects. What's missing is the credit. PEP
 799 doesn't mention Austin, py-spy or any of the external profilers whose
 approach Tachyon adopts. I think that's a missed opportunity to recognise the
 years of community work that came before the standard library caught up, and
-that made it possible.&lt;/p&gt;
+that made it possible.&lt;span aria-label="Updated on 2026-11-06" class="revision-note" role="note" tabindex="0"&gt; &lt;span class="revision-mark"&gt;~&lt;/span&gt;&lt;span class="revision-popup"&gt;&lt;time datetime="2026-11-06"&gt;Update 2026-11-06&lt;/time&gt; Since this post was first published, the core developers have added an
+acknowledgement to Tachyon's documentation and to What's New in Python 3.15
+(&lt;a href="https://github.com/python/cpython/pull/161445"&gt;gh-161445&lt;/a&gt;), recognising Austin, py-spy, Pyflame and rbspy, and thanking
+"their authors and the wider profiling community for their work and ideas".
+Thank you! It's a small paragraph, but it means a lot to everyone who spent
+years building these tools before the standard library caught up. &lt;a href="#revisions"&gt;Revision log&lt;/a&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
+
 &lt;h1 id="py-spy-the-established-choice"&gt;py-spy: The Established Choice&lt;a class="headerlink" href="#py-spy-the-established-choice" title="Permanent link"&gt;¶&lt;/a&gt;&lt;/h1&gt;
 &lt;p&gt;&lt;a href="https://github.com/benfred/py-spy"&gt;py-spy&lt;/a&gt;, written in Rust, made out-of-process
 sampling mainstream for Python, and it's what many people mean when they say

@@ -71,6 +71,7 @@
       <h1 class="article-title">The State of Python Profiling in 2026</h1>
       <p class="meta">
         <time datetime="2026-10-30T12:00:00+00:00">Fri 30 October 2026</time>
+        <span><a href="#revisions">updated</a> <time datetime="2026-11-06T00:00:00+00:00">Fri 06 November 2026</time></span>
         <span>26 min read</span>
         <a class="cat" href="https://p403n1x87.github.io/category/programming.html">programming/</a>
         <a class="tag" href="https://p403n1x87.github.io/tag/python.html">#python</a>
@@ -287,13 +288,19 @@ Austin has had for years:</p>
 </tr>
 </tbody>
 </table>
-<p>Some of these exist in py-spy too, and it goes the other way as well: Tachyon's
+<p class="revised" data-revision="2026-11-06">Some of these exist in py-spy too, and it goes the other way as well: Tachyon's
 <code>asyncio</code> support landed before Austin's. That's how open source should work,
 with good ideas spreading between projects. What's missing is the credit. PEP
 799 doesn't mention Austin, py-spy or any of the external profilers whose
 approach Tachyon adopts. I think that's a missed opportunity to recognise the
 years of community work that came before the standard library caught up, and
-that made it possible.</p>
+that made it possible.<span aria-label="Updated on 2026-11-06" class="revision-note" role="note" tabindex="0"> <span class="revision-mark">~</span><span class="revision-popup"><time datetime="2026-11-06">Update 2026-11-06</time> Since this post was first published, the core developers have added an
+acknowledgement to Tachyon's documentation and to What's New in Python 3.15
+(<a href="https://github.com/python/cpython/pull/161445">gh-161445</a>), recognising Austin, py-spy, Pyflame and rbspy, and thanking
+"their authors and the wider profiling community for their work and ideas".
+Thank you! It's a small paragraph, but it means a lot to everyone who spent
+years building these tools before the standard library caught up. <a href="#revisions">Revision log</a></span></span></p>
+
 <h1 id="py-spy-the-established-choice">py-spy: The Established Choice<a class="headerlink" href="#py-spy-the-established-choice" title="Permanent link">¶</a></h1>
 <p><a href="https://github.com/benfred/py-spy">py-spy</a>, written in Rust, made out-of-process
 sampling mainstream for Python, and it's what many people mean when they say
@@ -639,6 +646,13 @@ Homebrew, Snap, Chocolatey, Scoop, conda-forge and as standalone binaries from
 more detail. If you try it, I'd love to hear how it goes.</p>
     </div>
 
+    <section class="revisions" id="revisions">
+      <p class="cmd"><span class="ps1">$</span> git log --format='%as %s' the-state-of-python-profiling-in-2026.md</p>
+      <ol>
+        <li><time datetime="2026-11-06">2026-11-06</time> Tachyon's documentation now acknowledges Austin and the other external profilers (<a href="https://github.com/python/cpython/pull/161445">gh-161445</a>).</li>
+        <li><time datetime="2026-10-30">2026-10-30</time> First published</li>
+      </ol>
+    </section>
 
     <footer class="article-footer">
       <nav class="neighbors" aria-label="More posts">
